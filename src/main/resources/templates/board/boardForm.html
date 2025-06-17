@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/basicLayout :: basicLayout (~{::title}, ~{::link}, ~{::script}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시물 작성 - 자유게시판</title>
+    <link rel="stylesheet" href="/css/board-add.css">
+    <script type="text/javascript" src="/js/file.js"></script>
+</head>
+<body>
+
+<section class="write-section" tabindex="0">
+    <h2>게시물 작성</h2>
+    <p>자유게시판에 게시될 글의 제목과 내용을 입력해 주세요.</p>
+
+    <form action="/bbs/write" th:object="${addBoardDto}" method="post" enctype="multipart/form-data">
+        <ul class="write-list">
+            <li>
+                <label for="title">제목<span class="required-star">*</span></label>
+                <input id="title" type="text" th:field="*{title}"
+                       style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;"
+                       placeholder="제목에 핵심 내용을 요약보세요."
+                >
+                <p class="field-error" th:errors="*{title}"></p>
+            </li>
+            <li>
+                <label for="content">내용<span class="required-star">*</span></label>
+                <textarea id="content" th:field="*{content}" rows="10"
+                          style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;"
+                          placeholder="서로 예의를 지키며 존중하는 문화를 만들가요."
+                ></textarea>
+                <p class="field-error" th:errors="*{content}"></p>
+            </li>
+            <li>
+                <label for="files" class="file-label"><i class="bi bi-file-earmark-arrow-up"></i> 첨부파일
+                    (<span id="total-file-size">0MB</span> / 200MB)</label>
+                <input type="file" id="files" th:field="*{files}" multiple>
+                <span id="file-info"></span>
+            </li>
+
+            <hr>
+
+            <li class="button-group">
+                <button id="submit" type="submit"
+                        style="padding: .5rem 1rem; border: none; background: #0d6efd; color: #fff;"
+                >등록</button>
+                <a th:href="@{/bbs}" style="margin-left: 1rem; color: #0d6efd; text-decoration: none;">취소</a>
+            </li>
+        </ul>
+    </form>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/basicLayout :: basicLayout (~{::title}, ~{::link}, ~{}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판</title>
+    <link rel="stylesheet" href="/css/table.css">
+</head>
+<body>
+
+<section class="mt-5">
+    <form id="searchForm" action="/bbs" th:object="${condition}" method="get">
+        <div class="container">
+            <div class="search-container">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <!-- 검색어 -->
+                    <input type="text"
+                           th:field="*{searchTerm}"
+                           class="form-control flex-grow-1"
+                           style="flex: 0 1 300px;"
+                           placeholder="검색어를 입력하세요.">
+                    <!-- 옵션 토글 -->
+                    <button class="btn btn-outline-secondary" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#advancedOptions"
+                            aria-expanded="false">
+                        <i class="bi bi-sliders"></i>
+                    </button>
+                    <!-- 검색 버튼 -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> 검색
+                    </button>
+                    <!-- 초기화 버튼 -->
+                    <button type="button" class="btn btn-secondary"
+                            onclick="location.href='/bbs'">
+                        초기화
+                    </button>
+                </div>
+                <!-- 고급 옵션: 검색 대상, 페이지당 목록, 정렬 -->
+                <div class="collapse mt-2" id="advancedOptions">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <select th:field="*{searchTarget}" class="form-select" style="width:12rem;">
+                            <option th:each="st : ${searchTargets}"
+                                    th:value="${st}"
+                                    th:text="|${st.description}으로 검색|"></option>
+                        </select>
+                        <select name="size" th:field="*{size}" class="form-select" style="width:8rem;">
+                            <option value="10">10개씩</option>
+                            <option value="12">12개씩</option>
+                            <option value="15">15개씩</option>
+                            <option value="50">50개씩</option>
+                            <option value="100">100개씩</option>
+                        </select>
+                        <select name="sortBy" th:field="*{sortBy}" class="form-select" style="width:10rem;">
+                            <option th:each="ss : ${searchSorts}"
+                                    th:value="${ss}"
+                                    th:text="|등록일 ${ss.description}|"
+                            ></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+<section class="container d-flex justify-content-between align-items-center py-2 mt-4">
+    <ul class="list-inline mb-0">
+        <li class="list-inline-item">
+            <i class="bi bi-file-earmark-text"></i>
+            총 게시물 <span class="text-danger fw-bold" th:text="${page.totalElements}">100</span>건
+        </li>
+        <li class="list-inline-item">
+            현재 페이지
+            <span class="text-danger fw-bold"
+                  th:text="${page.totalPages == 0} ? '1/1' : ${page.number + 1} + '/' +  ${page.totalPages}">1/10
+            </span>
+        </li>
+    </ul>
+</section>
+
+<section class="container">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle board-table mb-0">
+            <thead>
+            <tr>
+                <th class="col-num text-center">순번</th>
+                <th class="col-title">제목</th>
+                <th class="col-writer text-center d-none d-sm-table-cell">등록자</th>
+                <th class="col-date text-center d-none d-md-table-cell">등록일</th>
+                <th class="col-views text-center d-none d-lg-table-cell">조회수</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${page.content.isEmpty()}">
+                <td colspan="5" class="text-center text-muted py-3">데이터가 존재하지 않습니다.</td>
+            </tr>
+            <tr th:each="ct : ${page.content}">
+                <td th:text="${page.totalElements - (page.number * page.size + ctStat.count) + 1}"
+                    class="text-center">순번 ...
+                </td>
+                <td style="padding-left: 12px">
+                    <a th:text="${ct.title}"
+                       th:href="@{/bbs/{id}/{slug}(id=${ct.id}, slug=${ct.slug})}">
+                        제목 ...
+                    </a>
+                </td>
+                <td th:text="${ct.name}" class="text-center d-none d-sm-table-cell">이름 ...</td>
+                <td th:text="${ct.createdDate}" class="text-center d-none d-md-table-cell">2025-06-13</td>
+                <td th:text="${ct.views}" class="text-center d-none d-lg-table-cell">10</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+        <a href="/bbs/write" class="btn btn-primary rounded-0">글쓰기</a>
+    </div>
+
+    <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination mb-0">
+            <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/bbs(
+                        searchTarget=${condition.searchTarget},
+                        searchTerm=${condition.searchTerm},
+                        page=${page.number} - 1,
+                        size=${page.size},
+                        sortBy=${condition.sortBy})}"
+                >«</a>
+            </li>
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(0, page.totalPages > 0 ? page.totalPages - 1 : 0)}"
+                th:classappend="${i == page.number}? 'active'">
+                <a class="page-link"
+                   th:href="@{/bbs(
+                        searchTarget=${condition.searchTarget},
+                        searchTerm=${condition.searchTerm},
+                        page=${i},
+                        size=${page.size},
+                        sortBy=${condition.sortBy})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${page.last}? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/bbs(
+                        searchTarget=${condition.searchTarget},
+                        searchTerm=${condition.searchTerm},
+                        page=${page.number} + 1,
+                        size=${page.size},
+                        sortBy=${condition.sortBy})}">»</a>
+            </li>
+        </ul>
+    </nav>
+</section>
+
+</body>
+</html>

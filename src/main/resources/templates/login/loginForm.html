@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/basicLayout :: basicLayout (~{::title}, ~{}, ~{}, ~{::section})}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>자유게시판 - 로그인</title>
+</head>
+<body>
+
+<section>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4">
+                <h2 class="mb-4">로그인</h2>
+
+                <form th:action th:object="${loginDto}" method="post">
+
+                    <div th:if="${#fields.hasGlobalErrors()}">
+                        <p th:each="err : ${#fields.globalErrors()}"
+                           th:text="${err}" class="text-danger">글로벌 오류메시지</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">이메일 <span class="text-danger">*</span></label>
+                        <input type="text" id="email" th:field="*{email}"
+                               class="form-control w-75" placeholder="이메일을 입력해주세요.">
+                        <p th:errors="*{email}" class="text-danger small mt-1">이메일 오류</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">비밀번호 <span class="text-danger">*</span></label>
+                        <input type="password" id="password" th:field="*{password}"
+                               class="form-control w-75" placeholder="비밀번호를 입력해주세요.">
+                        <p th:errors="*{password}" class="text-danger small mt-1">비밀번호 오류</p>
+                    </div>
+                    <hr class="w-75">
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary w-75">로그인하기</button>
+                    </div>
+                    <div class="mb-3">
+                        <a th:if="${param.redirectURL == null}" href="/signup"
+                           class="btn btn-link ps-0">계정이 없으신가요? 회원가입 페이지로 이동하기</a>
+                        <a th:if="${param.redirectURL != null}" th:href="@{/signup(redirectURL=${param.redirectURL})}"
+                           class="btn btn-link ps-0">계정이 없으신가요? 회원가입 페이지로 이동하기</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

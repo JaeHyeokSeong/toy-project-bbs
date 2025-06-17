@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: board
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+
+#file 저장되어질 위치
+file.dir: /Users/jaehyeokseong/study/toyproject/2025/board-project/files/
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace

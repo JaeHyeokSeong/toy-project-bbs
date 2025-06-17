@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{ layout/basicLayout :: basicLayout (~{::title}, ~{::link}, ~{::script}, ~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="|${boardDto.title} - 자유게시판|">자유게시판 - 게시물 보기</title>
+    <link rel="stylesheet" href="/css/board.css">
+    <script type="text/javascript" src="/js/board.js"></script>
+</head>
+<body>
+
+<section class="container board-view my-5">
+
+    <h5><span id="go-list" style="cursor: pointer"><i class="bi bi-arrow-left h4"></i> 목록</span></h5>
+
+    <!-- 제목 -->
+    <table class="table-title mb-0 mt-4"><thead>
+    <tr><th colspan="4" th:text="${boardDto.title}">게시물 제목</th></tr>
+    </thead></table>
+
+    <!-- 메타 정보 -->
+    <table class="meta-table mb-0"><tbody>
+    <tr>
+        <th style="width:15%">등록자명</th>
+        <td style="width:35%" th:text="${boardDto.name}"></td>
+        <th style="width:15%">등록일</th>
+        <td style="width:35%" th:text="${boardDto.createdDate}"></td>
+    </tr>
+    <tr>
+        <th style="width:15%">조회수</th>
+        <td colspan="3" style="width:85%" th:text="${boardDto.views}"></td>
+    </tr>
+    </tbody></table>
+
+    <hr>
+
+    <div class="mt-3" th:if="${boardDto.uploadedFiles.size() > 0}">
+        <h6 style="margin-left: 13px"><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일</h6>
+        <ul>
+            <li th:each="attachedFile : ${boardDto.uploadedFiles}">
+                <a th:text="${attachedFile.getOriginalFileName()}"
+                   th:href="|/api/files/${attachedFile.getStoreFileName()}|"></a>
+            </li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <!-- 본문 -->
+    <div class="content" th:utext="${boardDto.content}">
+        본문 내용이 여기에 표시됩니다. 줄바꿈도 그대로 유지됩니다.
+    </div>
+
+    <hr>
+
+    <!-- 댓글 입력 안내 -->
+    <div class="comment-box" th:if="${session.memberId == null}">
+        <div class="comment-row">
+            <div class="comment-title">
+                <span>댓글을 남겨주세요.</span>
+            </div>
+            <div class="comment-note">
+                ※ 댓글쓰기 이용 시 <span class="fw-bold">본인 인증</span>이 꼭 필요합니다.
+            </div>
+            <button class="btn btn-primary rounded-0">댓글쓰기</button>
+        </div>
+    </div>
+
+    <!-- 수정/삭제 -->
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a th:href="@{/bbs/edit/{id}(id=${boardDto.id})}"
+           class="btn btn-secondary rounded-0"
+           th:if="${session.memberId} == ${boardDto.memberId}"
+        >
+            수정
+        </a>
+
+        <form th:if="${session.memberId} == ${boardDto.memberId}"
+              th:action="@{/bbs/delete/{id}(id=${boardDto.id})}"
+              method="post">
+            <button type="submit" class="btn btn-warning rounded-0">
+                삭제
+            </button>
+        </form>
+    </div>
+
+</section>
+
+</body>
+</html>
