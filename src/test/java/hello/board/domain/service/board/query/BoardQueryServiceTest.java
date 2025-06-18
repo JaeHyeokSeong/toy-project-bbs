@@ -413,7 +413,7 @@ class BoardQueryServiceTest {
         assertThat(result.getBoardId()).isEqualTo(savedBoard.getId());
         assertThat(result.getTitle()).isEqualTo(savedBoard.getTitle());
         assertThat(result.getContent()).isEqualTo(savedBoard.getContent());
-        assertThat(result.getUploadFileListDto().size()).isEqualTo(0);
+        assertThat(result.getUploadedFiles().size()).isEqualTo(0);
     }
 
     @Test
@@ -490,6 +490,6 @@ class BoardQueryServiceTest {
         assertThat(result.getBoardId()).isEqualTo(savedBoard2.getId());
         assertThat(result.getTitle()).isEqualTo(savedBoard2.getTitle());
         assertThat(result.getContent()).isEqualTo(savedBoard2.getContent());
-        assertThat(result.getUploadFileListDto().size()).isEqualTo(0);
+        assertThat(result.getUploadedFiles().size()).isEqualTo(0);
     }
 }

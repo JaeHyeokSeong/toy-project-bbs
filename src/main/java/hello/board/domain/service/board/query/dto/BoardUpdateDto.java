@@ -14,20 +14,22 @@ import java.util.List;
 @NoArgsConstructor
 public class BoardUpdateDto {
     private Long boardId;
+    private String slug;
     @NotBlank
     @Length(max = 100)
     private String title;
     @NotBlank
     private String content;
-    private List<UploadFileDto> uploadFileListDto;
+    private List<UploadFileDto> uploadedFiles;
     private List<MultipartFile> multipartFiles;
     private boolean updateFile;
 
     public BoardUpdateDto(Board board) {
         boardId = board.getId();
+        slug = board.getSlug();
         title = board.getTitle();
         content = board.getContent();
-        uploadFileListDto = board.getUploadFiles()
+        uploadedFiles = board.getUploadFiles()
                 .stream()
                 .map(UploadFileDto::new)
                 .toList();

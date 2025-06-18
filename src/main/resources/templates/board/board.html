@@ -78,7 +78,7 @@
         <form th:if="${session.memberId} == ${boardDto.memberId}"
               th:action="@{/bbs/delete/{id}(id=${boardDto.id})}"
               method="post">
-            <button type="submit" class="btn btn-warning rounded-0">
+            <button type="submit" id="delete-btn" class="btn btn-warning rounded-0">
                 삭제
             </button>
         </form>

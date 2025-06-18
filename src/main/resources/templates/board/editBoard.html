@@ -50,7 +50,7 @@
                          text-decoration-color: #6c757d">수정하기</span>
                     </label>
                     <ul>
-                        <li th:each="file : *{uploadFileListDto}">
+                        <li th:each="file : *{uploadedFiles}">
                             <a th:text="${file.originalFileName}" th:href="|/api/files/${file.storeFileName}|"></a>
                         </li>
                     </ul>
@@ -65,7 +65,8 @@
                 <button id="submit" type="submit"
                         style="padding: .5rem 1rem; border: none; background: #0d6efd; color: #fff;"
                 >등록</button>
-                <a th:href="@{/bbs}" style="margin-left: 1rem; color: #0d6efd; text-decoration: none;">취소</a>
+                <a th:href="|/bbs/${boardUpdateDto.getBoardId()}/${boardUpdateDto.getSlug()}|"
+                   style="margin-left: 1rem; color: #0d6efd; text-decoration: none;">취소</a>
             </li>
         </ul>
     </form>
