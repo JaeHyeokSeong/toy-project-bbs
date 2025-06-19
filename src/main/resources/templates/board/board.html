@@ -46,9 +46,21 @@
 
     <hr>
 
-    <!-- 본문 -->
-    <div class="content" th:utext="${boardDto.content}">
-        본문 내용이 여기에 표시됩니다. 줄바꿈도 그대로 유지됩니다.
+    <div class="d-flex align-items-start mt-4 mb-3">
+        <!-- 좋아요 싫어요 버튼 및 갯수 -->
+        <div class="action-buttons d-flex flex-column align-items-center me-4">
+            <button class="btn" th:onclick="${session.memberId == null} ? 'alert(\'로그인이 필요합니다.\');'">
+                <i class="bi bi-hand-thumbs-up"></i>
+            </button>
+            <p>0</p>
+            <button class="btn" th:onclick="${session.memberId == null} ? 'alert(\'로그인이 필요합니다.\');'">
+                <i class="bi bi-hand-thumbs-down"></i>
+            </button>
+        </div>
+        <!-- 본문 영역 -->
+        <div class="content flex-grow-1" th:text="${boardDto.content}">
+            본문 내용이 여기에 표시됩니다.
+        </div>
     </div>
 
     <hr>
@@ -60,7 +72,7 @@
                 <span>댓글을 남겨주세요.</span>
             </div>
             <div class="comment-note">
-                ※ 댓글쓰기 이용 시 <span class="fw-bold">본인 인증</span>이 꼭 필요합니다.
+                ※ 댓글쓰기 이용 시 <span class="fw-bold">로그인</span>이 꼭 필요합니다.
             </div>
             <button class="btn btn-primary rounded-0">댓글쓰기</button>
         </div>

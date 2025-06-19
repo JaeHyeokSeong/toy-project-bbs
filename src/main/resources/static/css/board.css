@@ -75,3 +75,16 @@
     margin-right: .5rem;
     white-space: nowrap;
 }
+
+/*게시물 좋아요, 싫어요 버튼*/
+.board-view .action-buttons {
+    flex-shrink: 0;
+}
+.board-view .action-buttons button {
+    width: 48px;
+}
+.board-view .action-buttons p {
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: center;
+}
