@@ -53,6 +53,7 @@ public class BoardController {
 
     @GetMapping("/{id}/{slug}")
     public String board(@PathVariable Long id, @PathVariable String slug, Model model,
+                        @SessionAttribute(value = SessionConst.MEMBER_ID, required = false) Long memberId,
                         HttpServletRequest request, HttpServletResponse response) {
         log.info("id={}, slug={}", id, slug);
 
@@ -60,7 +61,7 @@ public class BoardController {
         //따라서 조회수를 증가하지 않는다, 반대로 조회가 안되어진 경우에는 새로운 게시물이란 의미.
         int count = getCount(id, request, response);
         log.info("조회수 증가되어질 count={}", count);
-        BoardDto boardDto = boardQueryService.findBoardDto(id, slug, count);
+        BoardDto boardDto = boardQueryService.findBoardDto(id, slug, count, memberId);
         model.addAttribute("boardDto", boardDto);
 
         return "board/board";

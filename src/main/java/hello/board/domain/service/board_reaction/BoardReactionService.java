@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,10 @@ public class BoardReactionService {
      * @throws java.util.NoSuchElementException boardId 또는 memberId를 이용해서 Board 또는 Member을 못찾은 경우
      */
     public void reflectReaction(Long boardId, Long memberId, ReactionType reactionType) {
-        Board board = boardRepository.findById(boardId).orElseThrow();
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 memberId 입니다. 전달된 memberId: " + memberId));
         Optional<BoardReaction> findBoardReaction = boardReactionRepository.findByBoardAndMember(board, member);
 
         //사용자가 해당 게시물에 어떠한 반응도 안한경우
@@ -54,6 +57,16 @@ public class BoardReactionService {
         }
     }
 
+    public ReactionType findReaction(Long boardId, Long memberId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 memberId 입니다. 전달된 memberId: " + memberId));
+        Optional<BoardReaction> findBoardReaction = boardReactionRepository.findByBoardAndMember(board, member);
+
+        return findBoardReaction.map(BoardReaction::getReactionType).orElse(null);
+    }
+
     /**
      * boardId에 해당하는 게시물의 전체 (좋아요 수 - 싫어요 수) 결과를 반환 합니다.
      * @throws java.util.NoSuchElementException boardId를 이용해서 Board를 못찾은 경우
@@ -61,7 +74,8 @@ public class BoardReactionService {
     @Transactional(readOnly = true)
     public long totalReactionCount(Long boardId) {
         //존재하는 게시물인지 확인하기
-        boardRepository.findById(boardId).orElseThrow();
+        boardRepository.findById(boardId).orElseThrow(() ->
+                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
 
         //해당 게시물의 전체 좋아요 수
         long totalLikeCount = boardReactionRepository

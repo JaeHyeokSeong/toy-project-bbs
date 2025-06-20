@@ -97,7 +97,7 @@ class BoardServiceTest {
         );
 
         //then
-        BoardDto result = boardQueryService.findBoardDto(savedBoard.getId(), slug, 0);
+        BoardDto result = boardQueryService.findBoardDto(savedBoard.getId(), slug, 0, null);
         assertThat(result.getTitle()).isEqualTo("newTitle");
         assertThat(result.getContent()).isEqualTo("newContent");
         assertThat(result.getUploadedFiles().size()).isEqualTo(1);

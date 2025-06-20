@@ -47,14 +47,26 @@
     <hr>
 
     <div class="d-flex align-items-start mt-4 mb-3">
+        <div id="board-id" hidden th:text="${boardDto.id}"></div>
         <!-- 좋아요 싫어요 버튼 및 갯수 -->
-        <div class="action-buttons d-flex flex-column align-items-center me-4">
-            <button class="btn" th:onclick="${session.memberId == null} ? 'alert(\'로그인이 필요합니다.\');'">
+        <div th:if="${session.memberId == null}" class="action-buttons d-flex flex-column align-items-center me-4">
+            <button class="btn" th:onclick="|alert('로그인이 필요합니다.');|">
                 <i class="bi bi-hand-thumbs-up"></i>
             </button>
-            <p>0</p>
-            <button class="btn" th:onclick="${session.memberId == null} ? 'alert(\'로그인이 필요합니다.\');'">
+            <p th:text="${boardDto.totalReactionCount}">0</p>
+            <button class="btn" th:onclick="|alert('로그인이 필요합니다.');|">
                 <i class="bi bi-hand-thumbs-down"></i>
+            </button>
+        </div>
+        <div th:if="${session.memberId != null}" class="action-buttons d-flex flex-column align-items-center me-4">
+            <button class="btn" id="thumbs-up">
+                <i id="thumbs-up-class" th:class="${boardDto.reactionType?.name()} == 'LIKE'
+                 ? 'bi bi-hand-thumbs-up-fill' : 'bi bi-hand-thumbs-up'"></i>
+            </button>
+            <p id="total-reaction-ct" th:text="${boardDto.totalReactionCount}">0</p>
+            <button class="btn" id="thumbs-down">
+                <i id="thumbs-down-class" th:class="${boardDto.reactionType?.name()} == 'DISLIKE'
+                 ? 'bi bi-hand-thumbs-down-fill' : 'bi bi-hand-thumbs-down'"></i>
             </button>
         </div>
         <!-- 본문 영역 -->

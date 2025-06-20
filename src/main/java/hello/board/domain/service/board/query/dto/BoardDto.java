@@ -2,6 +2,7 @@ package hello.board.domain.service.board.query.dto;
 
 import hello.board.domain.service.upload_file.dto.UploadFileDto;
 import hello.board.entity.Board;
+import hello.board.entity.ReactionType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,10 +19,12 @@ public class BoardDto {
     private String createdDate;
     private LocalDateTime lastModifiedDate;
     private List<UploadFileDto> uploadedFiles;
+    private long totalReactionCount;
 
     //회원 정보
     private Long memberId;
     private String name;
+    private ReactionType reactionType;
 
     public BoardDto(Board board) {
         //게시물 정보 초기화

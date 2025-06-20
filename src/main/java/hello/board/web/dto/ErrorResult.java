@@ -5,9 +5,9 @@ import lombok.Data;
 @Data
 public class ErrorResult {
     private String statusCode;
-    private String message;
+    private Object message;
 
-    public ErrorResult(String statusCode, String message) {
+    public ErrorResult(String statusCode, Object message) {
         this.statusCode = statusCode;
         this.message = message;
     }

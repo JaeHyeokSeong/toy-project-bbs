@@ -1,21 +1,20 @@
 package hello.board.interceptor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.board.SessionConst;
 import hello.board.domain.service.member.MemberService;
+import hello.board.web.dto.ErrorResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.util.UriUtils;
 
-import java.nio.charset.StandardCharsets;
-
-@Slf4j
 @RequiredArgsConstructor
-public class LoginInterceptor implements HandlerInterceptor {
+public class ApiLoginInterceptor implements HandlerInterceptor {
 
+    private final ObjectMapper objectMapper;
     private final MemberService memberService;
 
     @Override
@@ -28,21 +27,14 @@ public class LoginInterceptor implements HandlerInterceptor {
             return memberService.findById((Long) session.getAttribute(SessionConst.MEMBER_ID)).isPresent();
         }
 
-        //비로그인한 사용자 접근
-        String encodedURI = getEncodedURI(request);
-        response.sendRedirect("/login?redirectURL=" + encodedURI);
-        return false;
-    }
+        //비로그인 사용자 접근
+        ErrorResult errorResult = new ErrorResult("401 Unauthorized", "로그인이 필요합니다.");
+        String value = objectMapper.writeValueAsString(errorResult);
 
-    private static String getEncodedURI(HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        String queryString = request.getQueryString();
-        log.info("requestURI={}", requestURI);
-        log.info("queryString={}", queryString);
-        if (queryString != null) {
-            requestURI = requestURI + "?" + queryString;
-        }
-        log.info("최종 requestURI={}", requestURI);
-        return UriUtils.encode(requestURI, StandardCharsets.UTF_8);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        response.getWriter().write(value);
+        return false;
     }
 }

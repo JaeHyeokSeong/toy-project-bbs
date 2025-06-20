@@ -47,7 +47,7 @@ class BoardQueryServiceTest {
         Board board = boardService.saveBoard(member.getId(), title, content, new ArrayList<>());
 
         //when
-        BoardDto boardDto = boardQueryService.findBoardDto(board.getId(), board.getSlug(), 1);
+        BoardDto boardDto = boardQueryService.findBoardDto(board.getId(), board.getSlug(), 1, null);
 
         //then
         assertThat(boardDto.getId()).isEqualTo(board.getId());
@@ -70,7 +70,7 @@ class BoardQueryServiceTest {
         Board board = boardService.saveBoard(member.getId(), title, content, new ArrayList<>());
 
         //when then
-        assertThatThrownBy(() -> boardQueryService.findBoardDto(board.getId() + 1, board.getSlug(), 1))
+        assertThatThrownBy(() -> boardQueryService.findBoardDto(board.getId() + 1, board.getSlug(), 1, null))
                 .isInstanceOf(NoSuchElementException.class);
     }
 
