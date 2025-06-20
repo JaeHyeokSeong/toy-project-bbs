@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -82,5 +83,9 @@ public class BoardService {
 
         //게시물 작세하기
         boardRepository.deleteById(boardId);
+    }
+
+    public Optional<Board> findById(Long boardId) {
+        return boardRepository.findById(boardId);
     }
 }

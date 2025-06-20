@@ -154,10 +154,12 @@ public class BoardController {
         Cookie[] cookies = request.getCookies();
         String boardViewedName = "board_viewed_" + id;
 
-        for (Cookie cookie : cookies) {
-            boolean isViewed = cookie.getName().equals(boardViewedName);
-            if (isViewed) {
-                return 0;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                boolean isViewed = cookie.getName().equals(boardViewedName);
+                if (isViewed) {
+                    return 0;
+                }
             }
         }
 
