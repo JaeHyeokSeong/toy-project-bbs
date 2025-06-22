@@ -34,6 +34,7 @@ public class Comment extends BaseEntity {
     @OneToMany(mappedBy = "parentComment")
     private List<Comment> childComments = new ArrayList<>();
 
+    @Lob
     private String content;
 
     //==연관관계 메서드==//

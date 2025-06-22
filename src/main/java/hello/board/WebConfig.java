@@ -29,6 +29,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(new ApiLoginInterceptor(objectMapper, memberService))
                 .order(3)
-                .addPathPatterns("/api/board-reaction/*");
+                .addPathPatterns("/api/board-reaction/*", "/api/comment-parent/*");
     }
 }

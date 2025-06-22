@@ -14,6 +14,6 @@ public class FileExControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public ErrorResult NoSuchElementEx(NoSuchElementException e) {
-        return new ErrorResult("404 Not Found", e.getMessage());
+        return new ErrorResult(HttpStatus.NOT_FOUND.toString(), e.getMessage());
     }
 }

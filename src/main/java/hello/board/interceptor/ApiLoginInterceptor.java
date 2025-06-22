@@ -28,7 +28,7 @@ public class ApiLoginInterceptor implements HandlerInterceptor {
         }
 
         //비로그인 사용자 접근
-        ErrorResult errorResult = new ErrorResult("401 Unauthorized", "로그인이 필요합니다.");
+        ErrorResult errorResult = new ErrorResult(HttpStatus.UNAUTHORIZED.toString(), "로그인이 필요합니다.");
         String value = objectMapper.writeValueAsString(errorResult);
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
