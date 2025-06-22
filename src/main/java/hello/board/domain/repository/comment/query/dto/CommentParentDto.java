@@ -9,9 +9,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentParentDto {
 
+    //답변 정보
     private Long commentId;
-    private Long boardId;
-    private Long memberId;
-    private LocalDateTime createdDate;
     private String content;
+    private LocalDateTime createdDate;
+
+    //게시물 정보
+    private Long boardId;
+
+    //작성자 정보
+    private String name;
 }

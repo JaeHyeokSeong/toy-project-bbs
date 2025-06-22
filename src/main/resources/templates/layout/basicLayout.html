@@ -33,15 +33,15 @@
 
         <!-- 로그인X -->
         <div th:if="${session.memberId} == null">
-            <button id="signup-bt" class="btn btn-outline-primary me-2 rounded-0">회원가입</button>
-            <button id="login-bt" class="btn btn-primary rounded-0">로그인</button>
+            <button id="signup-bt" class="btn btn-outline-primary me-2">회원가입</button>
+            <button id="login-bt" class="btn btn-primary">로그인</button>
         </div>
 
         <!-- 로그인O -->
         <div th:if="${session.memberId} != null" class="d-flex align-items-center">
-            <a href="/account" class="btn btn-outline-primary me-2 rounded-0">회원정보</a>
+            <a href="/account" class="btn btn-outline-primary me-2">회원정보</a>
             <form action="/logout" method="post" class="d-inline">
-                <button class="btn btn-primary rounded-0">로그아웃</button>
+                <button class="btn btn-primary">로그아웃</button>
             </form>
         </div>
     </div>

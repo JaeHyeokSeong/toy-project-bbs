@@ -18,4 +18,8 @@ public class CommentQueryService {
     public Slice<CommentParentDto> findAllCommentsParent(Long boardId, Pageable pageable) {
         return commentQueryRepository.findAllCommentsParent(boardId, pageable);
     }
+
+    public Long totalCountForCommentParent(Long boardId) {
+        return commentQueryRepository.totalCountForCommentParent(boardId);
+    }
 }

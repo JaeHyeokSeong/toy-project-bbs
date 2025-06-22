@@ -3,17 +3,26 @@ package hello.board.api.comment.dto;
 import hello.board.entity.Comment;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class AddCommentParentResponseDto {
+    //답변 정보
     private Long commentId;
-    private Long boardId;
-    private Long memberId;
     private String content;
+    private LocalDateTime createdDate;
+
+    //게시물 정보
+    private Long boardId;
+
+    //사용자 정보
+    private Long memberId;
 
     public AddCommentParentResponseDto(Comment comment) {
-        this.commentId = comment.getId();
-        this.boardId = comment.getBoard().getId();
-        this.memberId = comment.getMember().getId();
-        this.content = comment.getContent();
+        commentId = comment.getId();
+        content = comment.getContent();
+        createdDate = comment.getCreatedDate();
+        boardId = comment.getBoard().getId();
+        memberId = comment.getMember().getId();
     }
 }

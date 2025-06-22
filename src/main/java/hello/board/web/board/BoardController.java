@@ -9,8 +9,10 @@ import hello.board.domain.service.board.query.BoardQueryService;
 import hello.board.domain.service.board.query.dto.BoardDto;
 import hello.board.domain.service.board.query.dto.BoardListDto;
 import hello.board.domain.service.board.query.dto.BoardUpdateDto;
+import hello.board.domain.service.member.MemberService;
 import hello.board.entity.Board;
 import hello.board.entity.FileStore;
+import hello.board.entity.Member;
 import hello.board.web.board.dto.AddBoardDto;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +39,7 @@ public class BoardController {
     private final BoardService boardService;
     private final BoardQueryService boardQueryService;
     private final FileStore fileStore;
+    private final MemberService memberService;
 
     @GetMapping
     public String boards(@ModelAttribute("condition") BoardSearchCondition condition,
@@ -63,6 +66,12 @@ public class BoardController {
         log.info("조회수 증가되어질 count={}", count);
         BoardDto boardDto = boardQueryService.findBoardDto(id, slug, count, memberId);
         model.addAttribute("boardDto", boardDto);
+
+        //로그인한 사용자 이름가지고 오기 - 답변 등록에서 사용
+        if (memberId != null) {
+            Member member = memberService.findById(memberId).orElseThrow();
+            model.addAttribute("memberName", member.getName());
+        }
 
         return "board/board";
     }

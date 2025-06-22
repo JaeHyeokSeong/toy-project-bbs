@@ -1,6 +1,7 @@
 package hello.board.domain.service.board;
 
 import hello.board.domain.repository.board.BoardRepository;
+import hello.board.domain.repository.board_reaction.BoardReactionRepository;
 import hello.board.domain.repository.comment.CommentRepository;
 import hello.board.domain.repository.upload_file.UploadFileRepository;
 import hello.board.domain.service.member.MemberService;
@@ -26,6 +27,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final UploadFileRepository uploadFileRepository;
+    private final BoardReactionRepository boardReactionRepository;
 
     /**
      * 게시물 저장
@@ -75,11 +77,14 @@ public class BoardService {
         //권한 체크
         boardRepository.findBoard(boardId, memberId).orElseThrow();
 
-        //파일 모두 삭제하기
+        //파일 모두 삭제하기 (벌크연산)
         uploadFileRepository.deleteAllUploadFiles(boardId);
 
         //게시물에 달린 댓글 삭제하기 (벌크연산)
         commentRepository.deleteAllByBoardId(boardId);
+
+        //게시물에 달린 좋아요, 싫어요 삭제하기 (벌크연산)
+        boardReactionRepository.deleteAllBoardReaction(boardId);
 
         //게시물 작세하기
         boardRepository.deleteById(boardId);

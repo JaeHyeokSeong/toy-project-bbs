@@ -2,6 +2,7 @@ package hello.board.api.comment;
 
 import hello.board.api.comment.dto.AddCommentParentDto;
 import hello.board.api.comment.dto.AddCommentParentResponseDto;
+import hello.board.api.comment.dto.CommentParentTotalCountDto;
 import hello.board.domain.repository.comment.query.dto.CommentParentDto;
 import hello.board.domain.service.comment.CommentService;
 import hello.board.domain.service.comment.query.CommentQueryService;
@@ -27,6 +28,12 @@ public class CommentApiController {
     @GetMapping("/api/comments-parent/{boardId}")
     public Slice<CommentParentDto> commentParentDtoList(@PathVariable Long boardId, Pageable pageable) {
         return commentQueryService.findAllCommentsParent(boardId, pageable);
+    }
+
+    @GetMapping("/api/comments-parent-total-count/{boardId}")
+    public CommentParentTotalCountDto commentParentTotalCount(@PathVariable Long boardId) {
+        Long count = commentQueryService.totalCountForCommentParent(boardId);
+        return new CommentParentTotalCountDto(boardId, count);
     }
 
     @ResponseStatus

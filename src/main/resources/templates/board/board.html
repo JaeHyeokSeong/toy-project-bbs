@@ -77,23 +77,10 @@
 
     <hr>
 
-    <!-- 댓글 입력 안내 -->
-    <div class="comment-box" th:if="${session.memberId == null}">
-        <div class="comment-row">
-            <div class="comment-title">
-                <span>댓글을 남겨주세요.</span>
-            </div>
-            <div class="comment-note">
-                ※ 댓글쓰기 이용 시 <span class="fw-bold">로그인</span>이 꼭 필요합니다.
-            </div>
-            <button class="btn btn-primary rounded-0">댓글쓰기</button>
-        </div>
-    </div>
-
     <!-- 수정/삭제 -->
     <div class="d-flex justify-content-end gap-2 mt-4">
         <a th:href="@{/bbs/edit/{id}(id=${boardDto.id})}"
-           class="btn btn-secondary rounded-0"
+           class="btn btn-secondary"
            th:if="${session.memberId} == ${boardDto.memberId}"
         >
             수정
@@ -102,10 +89,38 @@
         <form th:if="${session.memberId} == ${boardDto.memberId}"
               th:action="@{/bbs/delete/{id}(id=${boardDto.id})}"
               method="post">
-            <button type="submit" id="delete-btn" class="btn btn-warning rounded-0">
+            <button type="submit" id="delete-btn" class="btn btn-warning">
                 삭제
             </button>
         </form>
+    </div>
+
+    <!-- 답변 -->
+    <div>
+        <!-- 총 답변 수 -->
+        <div>
+            <p id="comment-count"></p>
+        </div>
+
+        <!-- 답변 등록 -->
+        <div class="add-comment-parent mb-4">
+        <textarea id="add-comment-parent"
+                  class="add-comment-input"
+                  rows="1"
+                  th:placeholder="${session.memberId} != null
+                      ? ${memberName} + '님, 답변을 작성해보세요.' : '로그인 후 답변을 작성해 주세요.'"
+                  th:disabled="${session.memberId == null}"
+        ></textarea>
+            <button id="submit-comment-parent" class="reply-btn" style="display: none;">답변 등록</button>
+            <button id="cancel-comment-parent" class="cancel-btn" style="display: none;">취소</button>
+        </div>
+
+        <!-- 답변 조회하기 -->
+        <div class="mt-4">
+            <div id="comments-container" class="comments-container"></div>
+            <!-- 로딩 스피너 -->
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+        </div>
     </div>
 
 </section>
