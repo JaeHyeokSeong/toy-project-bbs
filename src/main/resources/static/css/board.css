@@ -219,3 +219,37 @@
 .save-edit-btn:hover, .cancel-edit-btn:hover {
     text-decoration: underline;
 }
+/* 첨부파일 리스트: 한 줄에 하나씩 */
+.uploaded-files ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;  /* 세로 방향으로 한 줄씩 */
+    gap: 1rem;               /* 아이템 간 간격 */
+}
+/* 개별 아이템 */
+.uploaded-files ul li .thumb-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 27px;
+}
+/* 썸네일 이미지 */
+.uploaded-files ul li .thumb-img {
+    display: block;
+    max-width: 300px;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* 다운로드 링크 */
+.uploaded-files ul li .download-link {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #007bff;
+    text-decoration: none;
+}
+.uploaded-files ul li .download-link:hover {
+    text-decoration: underline;
+}

@@ -34,12 +34,22 @@
 
     <hr>
 
-    <div class="mt-3" th:if="${boardDto.uploadedFiles.size() > 0}">
-        <h6 style="margin-left: 13px"><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일</h6>
+    <div class="uploaded-files mt-3" th:if="${boardDto.uploadedFiles.size() > 0}">
+        <h6><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 (총 [[${boardDto.uploadedFiles.size()}]]개)</h6>
         <ul>
             <li th:each="attachedFile : ${boardDto.uploadedFiles}">
-                <a th:text="${attachedFile.getOriginalFileName()}"
-                   th:href="|/api/files/${attachedFile.getStoreFileName()}|"></a>
+                <div class="thumb-wrapper">
+                    <img
+                            th:src="|/api/images/${attachedFile.storeFileName}|"
+                            th:alt="${attachedFile.originalFileName}"
+                            class="thumb-img"
+                    >
+                    <a
+                            th:text="|[${attachedFileStat.count}] ${attachedFile.getOriginalFileName()}|"
+                            th:href="|/api/files/${attachedFile.getStoreFileName()}|"
+                            class="download-link"
+                    ></a>
+                </div>
             </li>
         </ul>
     </div>

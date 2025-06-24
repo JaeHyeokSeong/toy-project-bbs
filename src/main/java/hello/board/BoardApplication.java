@@ -11,12 +11,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
+import java.util.TimeZone;
 
 @EnableJpaAuditing
 @SpringBootApplication
 public class BoardApplication {
 
 	public static void main(String[] args) {
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 		SpringApplication.run(BoardApplication.class, args);
 	}
 
