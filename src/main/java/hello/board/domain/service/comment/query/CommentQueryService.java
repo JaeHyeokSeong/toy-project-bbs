@@ -1,7 +1,8 @@
 package hello.board.domain.service.comment.query;
 
 import hello.board.domain.repository.comment.query.CommentQueryRepository;
-import hello.board.domain.repository.comment.query.dto.CommentParentDto;
+import hello.board.domain.repository.comment.query.dto.CommentDto;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -15,11 +16,12 @@ public class CommentQueryService {
 
     private final CommentQueryRepository commentQueryRepository;
 
-    public Slice<CommentParentDto> findAllCommentsParent(Long boardId, Pageable pageable) {
-        return commentQueryRepository.findAllCommentsParent(boardId, pageable);
+    public Slice<CommentDto> findAllComments(Long boardId, @Nullable Long parentCommentId,
+                                             @Nullable Long memberId, Pageable pageable) {
+        return commentQueryRepository.findAllComments(boardId, parentCommentId, memberId, pageable);
     }
 
-    public Long totalCountForCommentParent(Long boardId) {
-        return commentQueryRepository.totalCountForCommentParent(boardId);
+    public Long totalCount(Long boardId, @Nullable Long parentCommentId) {
+        return commentQueryRepository.totalCount(boardId, parentCommentId);
     }
 }

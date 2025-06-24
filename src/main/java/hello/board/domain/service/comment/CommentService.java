@@ -2,6 +2,7 @@ package hello.board.domain.service.comment;
 
 import hello.board.domain.repository.comment.CommentRepository;
 import hello.board.domain.service.board.BoardService;
+import hello.board.domain.service.comment.dto.UpdateCommentResultDto;
 import hello.board.domain.service.member.MemberService;
 import hello.board.entity.Board;
 import hello.board.entity.Comment;
@@ -40,7 +41,11 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void changeContent(Long commentId, Long memberId, String content) {
+    /**
+     * comment 내용 수정
+     * @throws NoAccessCommentException 접근 권한이 없는 경우
+     */
+    public UpdateCommentResultDto changeContent(Long commentId, Long memberId, String content) {
         //권환 확인
         Comment comment = commentRepository.findComment(commentId, memberId)
                 .orElseThrow(() -> new NoAccessCommentException(
@@ -49,5 +54,6 @@ public class CommentService {
                 );
 
         comment.changeContent(content);
+        return new UpdateCommentResultDto(comment);
     }
 }

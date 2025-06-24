@@ -1,10 +1,10 @@
 package hello.board.domain.repository.comment.query;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import hello.board.domain.repository.comment.query.dto.CommentParentDto;
-import hello.board.entity.QComment;
-import hello.board.entity.QMember;
+import hello.board.domain.repository.comment.query.dto.CommentDto;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static hello.board.entity.QComment.*;
-import static hello.board.entity.QMember.*;
+import static hello.board.entity.QComment.comment;
+import static hello.board.entity.QMember.member;
 
 @Repository
 public class CommentQueryRepository {
@@ -26,16 +26,20 @@ public class CommentQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Slice<CommentParentDto> findAllCommentsParent(Long boardId, Pageable pageable) {
-        List<CommentParentDto> content = queryFactory.select(Projections.constructor(CommentParentDto.class,
+    public Slice<CommentDto> findAllComments(Long boardId, @Nullable Long parentCommentId,
+                                             @Nullable Long memberId, Pageable pageable) {
+
+        List<CommentDto> content = queryFactory.select(Projections.constructor(CommentDto.class,
                         comment.id,
                         comment.content,
                         comment.createdDate,
                         comment.board.id,
-                        member.name
+                        member.name,
+                        memberId == null ? Expressions.asBoolean(false) : member.id.eq(memberId)
                 ))
                 .from(comment)
-                .where(comment.board.id.eq(boardId), comment.parentComment.isNull())
+                .where(comment.board.id.eq(boardId), parentCommentId == null ? comment.parentComment.isNull() :
+                        comment.parentComment.id.eq(parentCommentId))
                 .join(comment.member, member)
                 .orderBy(comment.createdDate.asc())
                 .offset(pageable.getOffset())
@@ -46,7 +50,7 @@ public class CommentQueryRepository {
         if (content.size() > pageable.getPageSize()) {
             hasNext = true;
 
-            List<CommentParentDto> recreatedContent = new ArrayList<>();
+            List<CommentDto> recreatedContent = new ArrayList<>();
             for (int i = 0; i < pageable.getPageSize(); i++) {
                 recreatedContent.add(content.get(i));
             }
@@ -56,10 +60,11 @@ public class CommentQueryRepository {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    public Long totalCountForCommentParent(Long boardId) {
+    public Long totalCount(Long boardId, @Nullable Long parentCommentId) {
         return queryFactory.select(comment.count())
                 .from(comment)
-                .where(comment.board.id.eq(boardId), comment.parentComment.isNull())
+                .where(comment.board.id.eq(boardId), parentCommentId == null ? comment.parentComment.isNull() :
+                        comment.parentComment.id.eq(parentCommentId))
                 .fetchOne();
     }
 }
