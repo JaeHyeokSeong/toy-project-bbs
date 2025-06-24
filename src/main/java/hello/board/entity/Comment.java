@@ -54,4 +54,9 @@ public class Comment extends BaseEntity {
         }
         return comment;
     }
+
+    //==비즈니스 로직==//
+    public void changeContent(String content) {
+        this.content = content;
+    }
 }

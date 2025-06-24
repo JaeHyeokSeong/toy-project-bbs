@@ -80,7 +80,7 @@ $(document).ready(function () {
 });
 
 //답변
-$(function() {
+$(document).ready(function() {
     const boardId = $("#board-id").text().trim();
     let page    = 0;
     let size    = 10;

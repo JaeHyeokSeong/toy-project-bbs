@@ -6,6 +6,7 @@ import hello.board.domain.service.member.MemberService;
 import hello.board.entity.Board;
 import hello.board.entity.Comment;
 import hello.board.entity.Member;
+import hello.board.exception.NoAccessCommentException;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,16 @@ public class CommentService {
 
         Comment comment = Comment.createComment(board, member, content, parentComment);
         return commentRepository.save(comment);
+    }
+
+    public void changeContent(Long commentId, Long memberId, String content) {
+        //권환 확인
+        Comment comment = commentRepository.findComment(commentId, memberId)
+                .orElseThrow(() -> new NoAccessCommentException(
+                        "commentId: " + commentId +
+                                " 에 대해 접근 권환이 없습니다.")
+                );
+
+        comment.changeContent(content);
     }
 }

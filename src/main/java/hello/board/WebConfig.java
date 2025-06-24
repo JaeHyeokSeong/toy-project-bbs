@@ -20,15 +20,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoggedInInterceptor())
-                .order(1)
                 .addPathPatterns("/signup", "/login");
 
         registry.addInterceptor(new LoginInterceptor(memberService))
-                .order(2)
-                .addPathPatterns("/account", "/bbs/write", "/bbs/edit/*");
+                .addPathPatterns("/account", "/bbs/write", "/bbs/edit/*", "/bbs/delete/*");
 
         registry.addInterceptor(new ApiLoginInterceptor(objectMapper, memberService))
-                .order(3)
                 .addPathPatterns("/api/board-reaction/*", "/api/comment-parent/*");
     }
 }
