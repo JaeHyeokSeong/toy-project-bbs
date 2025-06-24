@@ -58,6 +58,23 @@
     font-size: 0.9rem;
     text-align: center;
 }
+/*답변 정렬*/
+.comment-toolbar {
+    display: inline-flex;
+    align-items: center;
+}
+
+.comment-toolbar #comment-count {
+    margin: 0;
+    font-weight: 500;
+}
+
+.comment-toolbar #search-sort {
+    margin-left: 8px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 /* 답변 */
 .add-comment-parent {
     position: relative;

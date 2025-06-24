@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class AddCommentParentResponseDto {
+public class AddCommentResultDto {
     //답변 정보
     private Long commentId;
     private String content;
@@ -18,7 +18,7 @@ public class AddCommentParentResponseDto {
     //사용자 정보
     private Long memberId;
 
-    public AddCommentParentResponseDto(Comment comment) {
+    public AddCommentResultDto(Comment comment) {
         commentId = comment.getId();
         content = comment.getContent();
         createdDate = comment.getCreatedDate();

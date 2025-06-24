@@ -2,6 +2,7 @@ package hello.board.api.comment;
 
 import hello.board.api.comment.dto.*;
 import hello.board.domain.repository.comment.query.dto.CommentDto;
+import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
 import hello.board.domain.service.comment.CommentService;
 import hello.board.domain.service.comment.dto.UpdateCommentResultDto;
 import hello.board.domain.service.comment.query.CommentQueryService;
@@ -32,34 +33,42 @@ public class CommentApiController {
     private final CommentQueryService commentQueryService;
 
     @GetMapping("/comments-total-count/{boardId}")
-    public CommentParentTotalCountDto commentParentTotalCount(@RequestParam(required = false) Long parentCommentId,
-                                                              @PathVariable Long boardId) {
+    public CommentTotalCountDto commentTotalCount(@RequestParam(required = false) Long parentCommentId,
+                                                  @PathVariable Long boardId) {
 
         Long count = commentQueryService.totalCount(boardId, parentCommentId);
-        return new CommentParentTotalCountDto(boardId, count);
+        return new CommentTotalCountDto(boardId, count);
     }
 
     @GetMapping("/comments/{boardId}")
-    public Slice<CommentDto> commentParentDtoList(@RequestParam(required = false) Long parentCommentId,
-                                                  @PathVariable Long boardId,
-                                                  @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
-                                                  Pageable pageable) {
+    public Slice<CommentDto> findCommentDtoList(@Valid @ModelAttribute CommentSearchDto searchDto,
+                                                BindingResult bindingResult,
+                                                @PathVariable Long boardId,
+                                                @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
+                                                Pageable pageable) {
 
-        return commentQueryService.findAllComments(boardId, parentCommentId, memberId, pageable);
+        log.info("comment 검색 전달되어진 값={}", searchDto);
+
+        if (bindingResult.hasErrors()) {
+            log.info("comment 검색 errors={}", bindingResult);
+            throw new BindingResultException(bindingResult.getAllErrors());
+        }
+
+        return commentQueryService.findAllComments(boardId, memberId, searchDto, pageable);
     }
 
     @PostMapping("/comment/{boardId}")
-    public ResponseEntity<AddCommentParentResponseDto> commentParent(@Valid @RequestBody AddCommentDto dto,
-                                                                     BindingResult bindingResult,
-                                                                     @PathVariable Long boardId,
-                                                                     @SessionAttribute(MEMBER_ID) Long memberId) {
+    public ResponseEntity<AddCommentResultDto> addComment(@Valid @RequestBody AddCommentDto dto,
+                                                          BindingResult bindingResult,
+                                                          @PathVariable Long boardId,
+                                                          @SessionAttribute(MEMBER_ID) Long memberId) {
 
         if (bindingResult.hasErrors()) {
             throw new BindingResultException(bindingResult.getAllErrors());
         }
 
         Comment comment = commentService.addComment(boardId, memberId, dto.getContent(), dto.getParentCommentId());
-        return new ResponseEntity<>(new AddCommentParentResponseDto(comment), HttpStatus.CREATED);
+        return new ResponseEntity<>(new AddCommentResultDto(comment), HttpStatus.CREATED);
     }
 
     @PutMapping("/comment/{commentId}")

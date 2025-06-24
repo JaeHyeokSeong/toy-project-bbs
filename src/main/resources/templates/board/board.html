@@ -97,9 +97,13 @@
 
     <!-- 답변 -->
     <div>
-        <!-- 총 답변 수 -->
-        <div>
+        <!-- 총 답변 수 & 정렬 기준 -->
+        <div class="comment-toolbar mt-4 mb-3">
             <p id="comment-count"></p>
+            <select id="search-sort">
+                <option th:each="cs : ${commentSearchSorts}"
+                        th:value="${cs}" th:text="${cs.description}"></option>
+            </select>
         </div>
 
         <!-- 답변 등록 -->
@@ -113,6 +117,11 @@
         ></textarea>
             <button id="submit-comment-parent" class="reply-btn" style="display: none;">답변 등록</button>
             <button id="cancel-comment-parent" class="cancel-btn" style="display: none;">취소</button>
+            <!-- 인라인 스타일로 폭·여백만 재정의 -->
+            <div id="submit-spinner"
+                 class="spinner"
+                 style="display: none; margin-left: 8px; width: 24px; height: 24px;">
+            </div>
         </div>
 
         <!-- 답변 조회하기 -->

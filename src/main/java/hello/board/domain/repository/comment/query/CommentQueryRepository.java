@@ -1,9 +1,13 @@
 package hello.board.domain.repository.comment.query;
 
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hello.board.domain.repository.comment.query.dto.CommentDto;
+import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
+import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Pageable;
@@ -26,8 +30,8 @@ public class CommentQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Slice<CommentDto> findAllComments(Long boardId, @Nullable Long parentCommentId,
-                                             @Nullable Long memberId, Pageable pageable) {
+    public Slice<CommentDto> findAllComments(Long boardId, @Nullable Long memberId,
+                                             CommentSearchDto searchDto, Pageable pageable) {
 
         List<CommentDto> content = queryFactory.select(Projections.constructor(CommentDto.class,
                         comment.id,
@@ -38,10 +42,9 @@ public class CommentQueryRepository {
                         memberId == null ? Expressions.asBoolean(false) : member.id.eq(memberId)
                 ))
                 .from(comment)
-                .where(comment.board.id.eq(boardId), parentCommentId == null ? comment.parentComment.isNull() :
-                        comment.parentComment.id.eq(parentCommentId))
+                .where(comment.board.id.eq(boardId), parentCommentIdEq(searchDto.getParentCommentId()))
                 .join(comment.member, member)
-                .orderBy(comment.createdDate.asc())
+                .orderBy(commentSearchSortEq(searchDto.getSearchSort()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -66,5 +69,17 @@ public class CommentQueryRepository {
                 .where(comment.board.id.eq(boardId), parentCommentId == null ? comment.parentComment.isNull() :
                         comment.parentComment.id.eq(parentCommentId))
                 .fetchOne();
+    }
+
+    private BooleanExpression parentCommentIdEq(Long parentCommentId) {
+        return parentCommentId == null ? comment.parentComment.isNull() : comment.parentComment.id.eq(parentCommentId);
+    }
+
+    private OrderSpecifier<?> commentSearchSortEq(CommentSearchSort searchSort) {
+        if (searchSort == CommentSearchSort.NEWEST) {
+            return comment.createdDate.desc();
+        } else {
+            return comment.createdDate.asc();
+        }
     }
 }

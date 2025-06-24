@@ -1,6 +1,8 @@
 package hello.board.domain.service.comment.query;
 
 import hello.board.domain.repository.comment.query.dto.CommentDto;
+import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
+import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.comment.CommentService;
 import hello.board.domain.service.member.MemberService;
@@ -49,8 +51,10 @@ class CommentQueryServiceTest {
         }
 
         //when
+        CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
+
         Slice<CommentDto> result = commentQueryService
-                .findAllComments(board.getId(), null, null, PageRequest.of(0, 5));
+                .findAllComments(board.getId(), null, searchDto, PageRequest.of(0, 5));
 
         //then
         assertThat(result.getContent().size()).isEqualTo(5);
@@ -77,8 +81,10 @@ class CommentQueryServiceTest {
         }
 
         //when
+        CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
+
         Slice<CommentDto> result = commentQueryService
-                .findAllComments(board.getId(), null, null, PageRequest.of(1, 5));
+                .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 5));
 
         //then
         assertThat(result.getContent().size()).isEqualTo(5);
@@ -105,8 +111,10 @@ class CommentQueryServiceTest {
         }
 
         //when
+        CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
+
         Slice<CommentDto> result = commentQueryService
-                .findAllComments(board.getId(), null, null, PageRequest.of(1, 15));
+                .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 15));
 
         //then
         assertThat(result.getContent().size()).isEqualTo(5);
@@ -147,8 +155,10 @@ class CommentQueryServiceTest {
         }
 
         //when
-        Slice<CommentDto> result = commentQueryService.findAllComments(board1.getId(), comment1.getId(),
-                null, PageRequest.of(0, 3));
+        CommentSearchDto searchDto = new CommentSearchDto(comment1.getId(), CommentSearchSort.OLDEST);
+
+        Slice<CommentDto> result = commentQueryService.findAllComments(board1.getId(), null,
+                searchDto, PageRequest.of(0, 3));
 
         //then
         assertThat(result.getNumberOfElements()).isEqualTo(3);

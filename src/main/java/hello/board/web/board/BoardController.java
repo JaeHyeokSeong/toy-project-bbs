@@ -4,6 +4,7 @@ import hello.board.SessionConst;
 import hello.board.domain.repository.board.query.dto.BoardSearchCondition;
 import hello.board.domain.repository.board.query.dto.SearchSort;
 import hello.board.domain.repository.board.query.dto.SearchTarget;
+import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.board.query.BoardQueryService;
 import hello.board.domain.service.board.query.dto.BoardDto;
@@ -72,6 +73,9 @@ public class BoardController {
             Member member = memberService.findById(memberId).orElseThrow();
             model.addAttribute("memberName", member.getName());
         }
+
+        //comment 정렬 조건
+        model.addAttribute("commentSearchSorts", CommentSearchSort.values());
 
         return "board/board";
     }

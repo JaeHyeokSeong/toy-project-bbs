@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class CommentParentTotalCountDto {
+public class CommentTotalCountDto {
     Long boardId;
     Long totalCount;
 }
