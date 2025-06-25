@@ -45,7 +45,7 @@
     </span>
     </div>
 
-    <hr>
+    <hr th:if="${boardDto.uploadedFiles.size() > 0}">
 
     <div class="uploaded-files mt-3" th:if="${boardDto.uploadedFiles.size() > 0}">
         <h6><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 (총 [[${boardDto.uploadedFiles.size()}]]개)</h6>

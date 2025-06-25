@@ -161,8 +161,24 @@ $(document).ready(function () {
 
     // 3) textarea 자동 높이
     function autoResizeTextarea(el) {
+        // 1) 높이 리셋
         el.style.height = 'auto';
-        el.style.height = el.scrollHeight + 'px';
+
+        // 2) 실제 컨텐츠가 필요로 하는 높이
+        const desiredHeight = el.scrollHeight;
+
+        // 3) 최대 허용 높이 (px 단위)
+        const maxHeight = 400;
+
+        if (desiredHeight > maxHeight) {
+            // 컨텐츠가 400px보다 크면, 텍스트 에어리어 높이는 400px로 고정하고 내부 스크롤 허용
+            el.style.height    = maxHeight + 'px';
+            el.style.overflowY = 'auto';
+        } else {
+            // 그렇지 않으면 컨텐츠 높이에 맞춰 늘리고 스크롤 숨김
+            el.style.height    = desiredHeight + 'px';
+            el.style.overflowY = 'hidden';
+        }
     }
 
     // 4) 답변 등록용 textarea 이벤트
@@ -206,6 +222,10 @@ $(document).ready(function () {
                 $('#add-comment-parent')
                     .val('')
                     .attr('rows', 1)
+                    .css({
+                        height: 'auto',
+                        overflowY: 'hidden'
+                    })
                     .blur();
             })
             .fail(err => {
@@ -310,7 +330,7 @@ $(document).ready(function () {
         const $deleteBtn = $actions.find('.delete-btn');
         const $spin = $actions.find('.inline-spinner');
 
-        if (!confirm('정말 삭제하시겠습니까?')) return;
+        if (!confirm('답변을 정말 삭제하시겠습니까?')) return;
 
         $.ajax({
             url: `/api/comment/${id}`,
