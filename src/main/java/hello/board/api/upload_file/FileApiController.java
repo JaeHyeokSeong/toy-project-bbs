@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 
 @RestController
@@ -42,12 +46,24 @@ public class FileApiController {
     }
 
     @GetMapping("/files/{storeFileName}")
-    public ResponseEntity<Resource> file(@PathVariable String storeFileName) throws MalformedURLException {
+    public ResponseEntity<Resource> file(@PathVariable String storeFileName) throws IOException {
         UploadFileDto uploadFileDto = uploadFileService.findUploadFileDto(storeFileName);
         UrlResource urlResource = new UrlResource("file:" + fileStore.getFullPath(uploadFileDto.getStoreFileName()));
 
         String encodedUploadedOriginalFileName = UriUtils.encode(uploadFileDto.getOriginalFileName(), StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadedOriginalFileName + "\"";
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition).body(urlResource);
+
+        //content-type 설정
+        String contentType = Files.probeContentType(Paths.get(fileStore.getFullPath(uploadFileDto.getStoreFileName())));
+
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+
+        if (contentType != null) {
+            builder = builder.contentType(MediaType.parseMediaType(contentType));
+        }
+
+        return builder
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(urlResource);
     }
 }
