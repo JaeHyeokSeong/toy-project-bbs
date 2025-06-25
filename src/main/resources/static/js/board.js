@@ -126,7 +126,7 @@ $(document).ready(function () {
                 }
 
                 data.content.forEach(c => {
-                    const created = new Date(c.createdDate).toLocaleString();
+                    const created = formatDate(new Date(c.createdDate));
                     const safeContent = $('<div>').text(c.content).html();
 
                     const html = `
@@ -134,7 +134,9 @@ $(document).ready(function () {
                     <div class="comment-body">
                         <div class="comment-header">
                             <span class="comment-author">${c.name}</span>
+                            <span>·</span>
                             <span class="comment-date">${created}</span>
+                            <span>${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}</span>
                             ${c.owner ? `
                                 <div class="comment-actions-owner">
                                     <button class="edit-btn" data-id="${c.commentId}"><i class="bi bi-pencil"></i>수정</button>
@@ -275,12 +277,11 @@ $(document).ready(function () {
             }
         })
             .done(() => {
-                const escaped = $('<div>').text(raw).html();
-                $item.find('.comment-content')
-                    .html(escaped)
-                    .data('original', escaped)
-                    .show();
-                $item.find('.edit-textarea, .edit-controls').remove();
+                page = 0;
+                hasNext = true;
+                $('#comments-container').empty();
+                loadComments();
+                updateCommentCount();
             })
             .fail(err => {
                 console.error('수정 실패', err);
@@ -353,3 +354,13 @@ $(document).ready(function () {
     loadComments();
     updateCommentCount();
 });
+
+function formatDate(date) {
+    const Y = date.getFullYear();
+    const M = String(date.getMonth() + 1).padStart(2, '0');
+    const D = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const m = String(date.getMinutes()).padStart(2, '0');
+    const s = String(date.getSeconds()).padStart(2, '0');
+    return `${Y}.${M}.${D} ${h}:${m}:${s}`;
+}

@@ -13,6 +13,7 @@ public class CommentDto {
     private Long commentId;
     private String content;
     private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
 
     //게시물 정보
     private Long boardId;

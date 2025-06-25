@@ -16,7 +16,7 @@ public class BoardDto {
     private String title;
     private String content;
     private long views;
-    private String createdDate;
+    private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
     private List<UploadFileDto> uploadedFiles;
     private long totalReactionCount;
@@ -32,7 +32,7 @@ public class BoardDto {
         title = board.getTitle();
         content = board.getContent();
         views = board.getViews();
-        createdDate = board.getCreatedDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        createdDate = board.getCreatedDate();
         lastModifiedDate = board.getLastModifiedDate();
         uploadedFiles = board.getUploadFiles()
                 .stream()

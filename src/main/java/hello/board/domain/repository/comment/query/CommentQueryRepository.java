@@ -37,6 +37,7 @@ public class CommentQueryRepository {
                         comment.id,
                         comment.content,
                         comment.createdDate,
+                        comment.lastModifiedDate,
                         comment.board.id,
                         member.name,
                         memberId == null ? Expressions.asBoolean(false) : member.id.eq(memberId)

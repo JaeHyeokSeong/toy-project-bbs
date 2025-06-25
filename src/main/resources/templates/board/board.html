@@ -22,7 +22,7 @@
     <h2 class="post-title mt-4" th:text="${boardDto.title}">게시물 제목</h2>
 
     <!-- 메타 정보 -->
-    <div class="post-meta">
+    <div class="post-meta mt-3">
 
         <!-- 등록자 -->
         <span class="meta-item meta-writer"
@@ -33,7 +33,8 @@
 
         <!-- 등록일 -->
         <span class="meta-item meta-date"
-              th:text="${boardDto.createdDate} + ' 작성'">2025. 06. 25. 13:46 작성
+              th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성' +
+               ${boardDto.createdDate != boardDto.lastModifiedDate ? ' (수정됨)' : ''}">
         </span>
 
         <span class="meta-separator">·</span>
@@ -41,7 +42,7 @@
         <!-- 조회수 -->
         <span class="meta-item meta-views">
             <i class="bi bi-eye"></i>
-        <span th:text="${boardDto.views}">4</span>
+        <span th:text="${boardDto.views}"></span>
     </span>
     </div>
 
