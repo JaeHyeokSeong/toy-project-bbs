@@ -131,20 +131,38 @@ $(document).ready(function () {
 
                     const html = `
                 <div class="comment-item" data-id="${c.commentId}">
+                    
+                    <div class="comment-avatar">
+                        <img
+                            src="${c.profileImageUrl || '/images/default-profile.svg'}"
+                            alt="${c.name} 프로필 사진"
+                            class="avatar-img"
+                        />
+                    </div>
+                
                     <div class="comment-body">
                         <div class="comment-header">
                             <span class="comment-author">${c.name}</span>
-                            <span>·</span>
-                            <span class="comment-date">${created}</span>
-                            <span>${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}</span>
                             ${c.owner ? `
-                                <div class="comment-actions-owner">
-                                    <button class="edit-btn" data-id="${c.commentId}"><i class="bi bi-pencil"></i>수정</button>
-                                    <button class="delete-btn" data-id="${c.commentId}"><i class="bi bi-trash3"></i>삭제</button>
-                                    <div class="inline-spinner spinner" style="display:none; width:16px; height:16px; margin-left:4px;"></div>
-                                </div>` : ''}
+                                <div class="comment-menu">
+                                    <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
+                                    <div class="comment-actions-owner">
+                                        <button class="edit-btn"   data-id="${c.commentId}">
+                                            <i class="bi bi-pencil"></i> 수정
+                                        </button>
+                                        <button class="delete-btn" data-id="${c.commentId}">
+                                            <i class="bi bi-trash3"></i> 삭제
+                                        </button>
+                                    </div>
+                              </div>` : ''}
                         </div>
-                        <div class="comment-content" data-original="${safeContent}">${safeContent}</div>
+                        
+                        <div class="comment-date">
+                            ${created} ${c.createdDate !== c.lastModifiedDate ? '(수정됨)' : ''}
+                        </div>
+                        
+                        <div class="comment-content mt-3" data-original="${safeContent}">${safeContent}</div>
+                        
                         <button class="reply-comment-child-btn">답글</button>
                     </div>
                 </div>`;
@@ -234,7 +252,7 @@ $(document).ready(function () {
 
         // 에디트 모드
         const orig = $cnt.data('original');
-        const $ta = $(`<textarea class="edit-textarea" rows="10"></textarea>`)
+        const $ta = $(`<textarea class="edit-textarea mt-3" rows="10"></textarea>`)
             .val(orig)
             .insertAfter($cnt);
         $cnt.hide();
@@ -364,3 +382,15 @@ function formatDate(date) {
     const s = String(date.getSeconds()).padStart(2, '0');
     return `${Y}.${M}.${D} ${h}:${m}:${s}`;
 }
+
+$(document).on('click', '.menu-toggle', function(e) {
+    e.stopPropagation();  // 외부 클릭 이벤트 막기
+    const $menu = $(this).closest('.comment-menu');
+    $('.comment-menu.open').not($menu).removeClass('open');
+    $menu.toggleClass('open');
+});
+
+// 빈 공간 클릭 시 닫기
+$(document).on('click', function() {
+    $('.comment-menu.open').removeClass('open');
+});

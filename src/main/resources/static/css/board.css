@@ -134,16 +134,47 @@
     background: #fff;
 }
 .comment-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
     margin-bottom: 24px;
 }
+/* 아바타 컨테이너 (이미지 크기 고정) */
+.board-avatar {
+    flex-shrink: 0;           /* 축소되지 않도록 */
+}
+/* 아바타 이미지 */
+.board-avatar .avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;       /* 원형 */
+    object-fit: cover;        /* 이미지 비율 유지하며 채움 */
+    border: 1px solid #eee;   /* 살짝 테두리 */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-right: 10px;
+}
+/* 아바타 컨테이너 (이미지 크기 고정) */
+.comment-avatar {
+    flex-shrink: 0;           /* 축소되지 않도록 */
+}
+/* 아바타 이미지 */
+.comment-avatar .avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;       /* 원형 */
+    object-fit: cover;        /* 이미지 비율 유지하며 채움 */
+    border: 1px solid #eee;   /* 살짝 테두리 */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 .comment-body {
+    flex: 1;
     border-bottom: 1px solid #eee;
     padding-bottom: 16px;
+    position: relative;
 }
-.comment-header {
+.comment-header, .comment-date {
     font-size: 0.875rem;
     color: #555;
-    margin-bottom: 4px;
 }
 .comment-content {
     font-size: 1rem;
@@ -255,4 +286,56 @@
     white-space: normal;        /* 공백에서 줄바꿈 허용 */
     overflow-wrap: break-word;  /* 긴 단어도 단어 단위로 줄바꿈 */
     word-break: break-all;      /* 공백 없는 긴 문자열은 임의 위치에서 줄바꿈 */
+}
+/* comment-menu 래퍼 */
+.comment-menu {
+    position: absolute;
+    top: 8px;      /* 필요에 따라 조절 */
+    right: 8px;    /* comment-body 우측 패딩 만큼 띄우기 */
+    display: inline-block;
+}
+
+/* 쩜3 버튼 */
+.menu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1.25rem;
+    color: #555;
+}
+
+/* 드롭다운 메뉴 숨기기 */
+.comment-actions-owner {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* 메뉴 열렸을 때 */
+.comment-menu.open .comment-actions-owner {
+    display: block;
+}
+
+/* 드롭다운 내부 버튼 스타일 */
+.comment-actions-owner button {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.comment-actions-owner button:hover {
+    background: #f5f5f5;
 }

@@ -24,6 +24,14 @@
     <!-- 메타 정보 -->
     <div class="post-meta mt-3">
 
+        <div class="board-avatar mr">
+            <img
+                    th:src="@{/images/default-profile.svg}"
+                    th:alt="|${boardDto.name} 프로필 사진|"
+                    class="avatar-img"
+            />
+        </div>
+
         <!-- 등록자 -->
         <span class="meta-item meta-writer"
               th:text="${boardDto.name}">
