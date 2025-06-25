@@ -84,7 +84,7 @@ $(document).ready(function () {
     const boardId = $("#board-id").text().trim();
     let page = 0, size = 10, loading = false, hasNext = true;
 
-    // 1) 총 답변 개수 조회 및 업데이트
+    //총 답변 개수 조회 및 업데이트
     function updateCommentCount() {
         $.ajax({
             url: `/api/comments-total-count/${boardId}`,
@@ -96,7 +96,7 @@ $(document).ready(function () {
             .fail(err => console.error("총 댓글 개수 로드 실패", err));
     }
 
-    // 2) 답변 불러오기 (페이징 + 무한 스크롤)
+    //답변 불러오기 (페이징 + 무한 스크롤)
     function loadComments() {
         if (!hasNext || loading) return;
         loading = true;
@@ -159,35 +159,13 @@ $(document).ready(function () {
             });
     }
 
-    // 3) textarea 자동 높이
-    function autoResizeTextarea(el) {
-        // 1) 높이 리셋
-        el.style.height = 'auto';
-
-        // 2) 실제 컨텐츠가 필요로 하는 높이
-        const desiredHeight = el.scrollHeight;
-
-        // 3) 최대 허용 높이 (px 단위)
-        const maxHeight = 400;
-
-        if (desiredHeight > maxHeight) {
-            // 컨텐츠가 400px보다 크면, 텍스트 에어리어 높이는 400px로 고정하고 내부 스크롤 허용
-            el.style.height    = maxHeight + 'px';
-            el.style.overflowY = 'auto';
-        } else {
-            // 그렇지 않으면 컨텐츠 높이에 맞춰 늘리고 스크롤 숨김
-            el.style.height    = desiredHeight + 'px';
-            el.style.overflowY = 'hidden';
-        }
-    }
-
-    // 4) 답변 등록용 textarea 이벤트
+    //답변 등록용 textarea 이벤트
     $('#add-comment-parent').on('focus click input', function () {
+        $('#add-comment-parent').attr('rows', 10);
         $('#submit-comment-parent, #cancel-comment-parent').show();
-        autoResizeTextarea(this);
     });
 
-    // 5) 등록 취소
+    //등록 취소
     $('#cancel-comment-parent').on('click', function () {
         $('#add-comment-parent')
             .val('')
@@ -196,7 +174,7 @@ $(document).ready(function () {
         $('#submit-comment-parent, #cancel-comment-parent').hide();
     });
 
-    // 6) 답변 등록
+    //답변 등록
     $('#submit-comment-parent').on('click', function () {
         const raw = $('#add-comment-parent').val();
         if (!raw.trim()) return alert('답변 내용을 입력해주세요.');
@@ -235,11 +213,11 @@ $(document).ready(function () {
             .always(function () {
                 // 요청 완료 후 스피너 숨기고 버튼 복귀
                 $('#submit-spinner').hide();
-                $('#submit-comment-parent, #cancel-comment-parent').show();
+                $('#submit-comment-parent, #cancel-comment-parent').hide();
             });
     });
 
-    // 7) 수정 토글 및 에디트 모드 진입/취소
+    //수정 토글 및 에디트 모드 진입/취소
     $(document).on('click', '.edit-btn', function () {
         const id = $(this).data('id');
         const $item = $(`.comment-item[data-id="${id}"]`);
@@ -254,10 +232,9 @@ $(document).ready(function () {
 
         // 에디트 모드
         const orig = $cnt.data('original');
-        const $ta = $(`<textarea class="edit-textarea" rows="1"></textarea>`)
+        const $ta = $(`<textarea class="edit-textarea" rows="10"></textarea>`)
             .val(orig)
             .insertAfter($cnt);
-        autoResizeTextarea($ta[0]);
         $cnt.hide();
         $(`<div class="edit-controls">
                 <button class="save-edit-btn" data-id="${id}">저장</button>
@@ -266,12 +243,7 @@ $(document).ready(function () {
           </div>`).insertAfter($ta);
     });
 
-    // 8) 에디트 textarea 입력 시 자동 높이
-    $(document).on('input keydown', '.edit-textarea', function () {
-        autoResizeTextarea(this);
-    });
-
-    // 9) 에디트 취소 버튼
+    //에디트 취소 버튼
     $(document).on('click', '.cancel-edit-btn', function () {
         const id = $(this).data('id');
         const $item = $(`.comment-item[data-id="${id}"]`);
@@ -279,7 +251,7 @@ $(document).ready(function () {
         $item.find('.comment-content').show();
     });
 
-    // 10) 에디트 저장 → PUT
+    //에디트 저장 → PUT
     $(document).on('click', '.save-edit-btn', function () {
         const id = $(this).data('id');
         const $item = $(`.comment-item[data-id="${id}"]`);
@@ -321,7 +293,7 @@ $(document).ready(function () {
             });
     });
 
-    // 11) 삭제 → DELETE
+    //삭제 → DELETE
     $(document).on('click', '.delete-btn', function () {
         const $btn = $(this);
         const id = $(this).data('id');
@@ -342,7 +314,10 @@ $(document).ready(function () {
             }
         })
             .done(() => {
-                $(`.comment-item[data-id="${id}"]`).remove();
+                page = 0;
+                hasNext = true;
+                $('#comments-container').empty();
+                loadComments();
                 updateCommentCount();
             })
             .fail(err => {
@@ -356,14 +331,14 @@ $(document).ready(function () {
             });
     });
 
-    // 12) 페이지 전체 스크롤 → 추가 로드
+    //페이지 전체 스크롤 → 추가 로드
     $(window).on('scroll', function () {
         if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
             loadComments();
         }
     });
 
-    // 13) 정렬 조건이 바뀌는 경우
+    //정렬 조건이 바뀌는 경우
     $('#search-sort').on('change', function () {
         // 페이지 초기화
         page = 0;
@@ -374,7 +349,7 @@ $(document).ready(function () {
         updateCommentCount();
     });
 
-    // 초기 로드
+    //초기 로드
     loadComments();
     updateCommentCount();
 });

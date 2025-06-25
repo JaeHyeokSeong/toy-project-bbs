@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -89,5 +90,15 @@ public class CommentApiController {
                 dto.getContent());
 
         return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<DeleteCommentResultDto> deleteComment(@PathVariable Long commentId,
+                                                @SessionAttribute(MEMBER_ID) Long memberId) {
+
+        commentService.deleteComment(commentId, memberId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new DeleteCommentResultDto(commentId, "deleted"));
     }
 }

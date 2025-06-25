@@ -89,7 +89,7 @@
     border-radius: 8px;
     font-size: 0.95rem;
     resize: none;
-    overflow: hidden;
+    overflow: auto;
     min-height: 1.5em;
     line-height: 1.4;
 }
@@ -203,9 +203,7 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 0.95rem;
-    resize: none;
-    overflow: hidden;
-    min-height: 1.5em;
+    overflow-y: auto;
     line-height: 1.4;
 }
 /*답변 수정결과 저장, 취소 버튼*/

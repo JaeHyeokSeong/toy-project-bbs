@@ -56,4 +56,20 @@ public class CommentService {
         comment.changeContent(content);
         return new UpdateCommentResultDto(comment);
     }
+
+    /**
+     * comment 삭제
+     * @throws NoAccessCommentException 접근권환이 없는 경우
+     */
+    public void deleteComment(Long commentId, Long memberId) {
+        //권환 확인
+        commentRepository.findComment(commentId, memberId)
+                .orElseThrow(() -> new NoAccessCommentException(
+                        "commentId: " + commentId + " 에 대해 접근 권환이 없습니다.")
+                );
+
+        //현재 답변에 달린 모둔 답글들 지우기
+        commentRepository.deleteAllChildComments(commentId);
+        commentRepository.deleteAllByCommentId(commentId);
+    }
 }

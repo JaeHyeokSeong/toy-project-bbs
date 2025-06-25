@@ -143,4 +143,27 @@ class CommentServiceTest {
                 .changeContent(savedComment.getId() + 1, memberA.getId(), newContent))
                 .isInstanceOf(NoAccessCommentException.class);
     }
+
+    @Test
+    void 답변1개_답글2개가있는_comment_삭제() {
+        //given
+        Member memberA = new Member("memberA", "emailA", "passwordA");
+        memberService.join(memberA);
+
+        Board savedBoard = boardService
+                .saveBoard(memberA.getId(), "titleA", "contentA", new ArrayList<>());
+
+        Comment savedComment = commentService
+                .addComment(savedBoard.getId(), memberA.getId(), "답변1", null);
+
+        commentService.addComment(savedBoard.getId(), memberA.getId(), "답변1-답글1", savedComment.getId());
+        commentService.addComment(savedBoard.getId(), memberA.getId(), "답변1-답글2", savedComment.getId());
+
+        //when
+        commentService.deleteComment(savedComment.getId(), memberA.getId());
+
+        //then
+        List<Comment> comments = commentRepository.findAll();
+        assertThat(comments.size()).isEqualTo(0);
+    }
 }
