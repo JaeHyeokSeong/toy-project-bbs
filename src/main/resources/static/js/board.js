@@ -162,7 +162,7 @@ $(document).ready(function () {
     // 3) textarea 자동 높이
     function autoResizeTextarea(el) {
         el.style.height = 'auto';
-        el.rows = Math.max(1, el.value.split('\n').length);
+        el.style.height = el.scrollHeight + 'px';
     }
 
     // 4) 답변 등록용 textarea 이벤트

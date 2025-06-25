@@ -1,59 +1,61 @@
-.board-view table {
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
+/* 게시물 헤더 전체 래퍼 */
+.post-header {
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+    max-width: 800px;
 }
-.board-view hr {
-    margin: 0;
-    border: 0;
-    /* 더 진한 회색 구분선 */
-    border-top: 1px solid #adb5bd;
+
+/* 제목 */
+.post-title {
+    font-size: 1.75rem;      /* 크게 */
+    font-weight: 600;        /* 반굵게 */
+    margin: 0;               /* 위아래 마진 리셋 */
+    color: #212529;          /* 어두운 색상 */
 }
-/* 제목 영역 */
-.board-view .table-title th {
-    background-color: #f8f9fa;
-    padding: .75rem 1rem;
-    font-weight: 500;
-    text-align: left;
-    border: none;
-    border-top: 1px solid #dee2e6;
-    border-bottom: 1px solid #dee2e6;
+
+/* 메타 정보 (등록일 · 조회수) */
+.post-meta {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;       /* 작게 */
+    color: #6c757d;          /* 중간 회색 톤 */
+    margin-top: 0.25rem;     /* 제목과 약간의 간격 */
 }
-/* 메타 정보 테이블 */
-.board-view .meta-table th,
-.board-view .meta-table td {
-    padding: .75rem 1rem;
-    border: none;
-    border-right: 1px solid #dee2e6;
+
+/* 메타 항목 (등록일, 조회수) */
+.post-meta .meta-item {
+    display: flex;
+    align-items: center;
 }
-.board-view .meta-table th {
-    background-color: #f8f9fa;
-    font-weight: 400;
-    color: #495057;
+
+/* 구분자 “·” */
+.post-meta .meta-separator {
+    margin: 0 0.5rem;
 }
-.board-view .meta-table th:last-child,
-.board-view .meta-table td:last-child {
-    border-right: none;
-}
-.board-view .meta-table tr + tr th,
-.board-view .meta-table tr + tr td {
-    border-top: 1px solid #dee2e6;
+
+/* 눈 아이콘과 숫자 간 간격 */
+.post-meta .meta-views i {
+    margin-right: 0.25rem;
+    font-size: 1rem;         /* 아이콘 크기 */
 }
 /* 본문 */
-.board-view .content {
+.content {
     padding: 1rem;
     white-space: pre-wrap;
     font-size: .95rem;
     line-height: 1.6;
+
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 /* 게시물 좋아요, 싫어요 버튼 */
-.board-view .action-buttons {
+.action-buttons {
     flex-shrink: 0;
 }
-.board-view .action-buttons button {
+.action-buttons button {
     width: 48px;
 }
-.board-view .action-buttons p {
+.action-buttons p {
     margin: 0;
     font-size: 0.9rem;
     text-align: center;
@@ -157,6 +159,8 @@
     margin-bottom: 8px;
     line-height: 1.4;
     white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-all;
 }
 .no-comments {
     text-align: center;
@@ -201,6 +205,7 @@
     padding: 8px;
     resize: none;
     margin-top: 8px;
+    overflow: hidden;
 }
 
 /*답변 수정결과 저장, 취소 버튼*/
@@ -238,8 +243,9 @@
 /* 썸네일 이미지 */
 .uploaded-files ul li .thumb-img {
     display: block;
-    max-width: 300px;
+    max-width: 100%;
     height: auto;
+    width: auto;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -252,4 +258,11 @@
 }
 .uploaded-files ul li .download-link:hover {
     text-decoration: underline;
+}
+.uploaded-files ul li .download-link {
+    display: inline-block;      /* 블록 요소처럼 동작시키면서 인라인 흐름 유지 */
+    max-width: 100%;            /* 컨테이너를 넘지 않도록 */
+    white-space: normal;        /* 공백에서 줄바꿈 허용 */
+    overflow-wrap: break-word;  /* 긴 단어도 단어 단위로 줄바꿈 */
+    word-break: break-all;      /* 공백 없는 긴 문자열은 임의 위치에서 줄바꿈 */
 }
