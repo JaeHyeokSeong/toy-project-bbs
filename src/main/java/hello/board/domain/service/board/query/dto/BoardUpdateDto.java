@@ -1,7 +1,7 @@
 package hello.board.domain.service.board.query.dto;
 
 import hello.board.domain.service.upload_file.dto.UploadFileDto;
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -18,8 +18,9 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static hello.board.entity.QComment.comment;
-import static hello.board.entity.QMember.member;
+import static hello.board.entity.comment.QComment.*;
+import static hello.board.entity.member.QMember.member;
+
 
 @Repository
 public class CommentQueryRepository {

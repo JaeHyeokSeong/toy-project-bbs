@@ -6,7 +6,7 @@ import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
 import hello.board.domain.service.comment.CommentService;
 import hello.board.domain.service.comment.dto.UpdateCommentResultDto;
 import hello.board.domain.service.comment.query.CommentQueryService;
-import hello.board.entity.Comment;
+import hello.board.entity.comment.Comment;
 import hello.board.exception.BindingResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

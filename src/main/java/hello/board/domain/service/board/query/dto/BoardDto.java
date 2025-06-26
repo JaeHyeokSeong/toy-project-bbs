@@ -1,12 +1,11 @@
 package hello.board.domain.service.board.query.dto;
 
 import hello.board.domain.service.upload_file.dto.UploadFileDto;
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import hello.board.entity.ReactionType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data

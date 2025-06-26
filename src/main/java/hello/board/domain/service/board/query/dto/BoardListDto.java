@@ -1,6 +1,6 @@
 package hello.board.domain.service.board.query.dto;
 
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import lombok.Data;
 
 import java.time.format.DateTimeFormatter;

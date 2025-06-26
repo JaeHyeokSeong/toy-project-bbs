@@ -1,5 +1,7 @@
-package hello.board.entity;
+package hello.board.entity.member;
 
+import hello.board.entity.BaseEntity;
+import hello.board.entity.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

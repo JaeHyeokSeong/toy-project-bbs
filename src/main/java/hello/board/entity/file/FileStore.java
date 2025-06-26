@@ -1,4 +1,4 @@
-package hello.board.entity;
+package hello.board.entity.file;
 
 import hello.board.exception.SaveFileException;
 import org.springframework.beans.factory.annotation.Value;

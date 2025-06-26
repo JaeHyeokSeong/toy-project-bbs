@@ -2,7 +2,7 @@ package hello.board.domain.service.upload_file;
 
 import hello.board.domain.repository.upload_file.UploadFileRepository;
 import hello.board.domain.service.upload_file.dto.UploadFileDto;
-import hello.board.entity.UploadFile;
+import hello.board.entity.file.UploadFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,8 +1,8 @@
 package hello.board.domain.repository.board_reaction;
 
-import hello.board.entity.Board;
-import hello.board.entity.BoardReaction;
-import hello.board.entity.Member;
+import hello.board.entity.board.Board;
+import hello.board.entity.board.BoardReaction;
+import hello.board.entity.member.Member;
 import hello.board.entity.ReactionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

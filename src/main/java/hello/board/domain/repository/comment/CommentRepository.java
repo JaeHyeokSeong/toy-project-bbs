@@ -1,6 +1,6 @@
 package hello.board.domain.repository.comment;
 
-import hello.board.entity.Comment;
+import hello.board.entity.comment.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

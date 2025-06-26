@@ -1,4 +1,4 @@
-package hello.board.entity;
+package hello.board.entity.board;
 
 import lombok.extern.slf4j.Slf4j;
 

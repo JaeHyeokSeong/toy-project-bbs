@@ -1,6 +1,6 @@
 package hello.board.domain.service.board;
 
-import hello.board.entity.Slug;
+import hello.board.entity.board.Slug;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

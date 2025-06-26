@@ -1,6 +1,6 @@
 package hello.board.domain.repository.member;
 
-import hello.board.entity.Member;
+import hello.board.entity.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,6 +1,6 @@
 package hello.board.domain.repository.board;
 
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

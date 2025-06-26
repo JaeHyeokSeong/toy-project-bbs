@@ -2,8 +2,8 @@ package hello.board.domain.service.board_reaction;
 
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.member.MemberService;
-import hello.board.entity.Board;
-import hello.board.entity.Member;
+import hello.board.entity.board.Board;
+import hello.board.entity.member.Member;
 import hello.board.entity.ReactionType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

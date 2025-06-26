@@ -2,7 +2,7 @@ package hello.board.web.signup;
 
 import hello.board.SessionConst;
 import hello.board.domain.service.member.MemberService;
-import hello.board.entity.Member;
+import hello.board.entity.member.Member;
 import hello.board.exception.DuplicateEmailException;
 import hello.board.web.signup.dto.SignupDto;
 import jakarta.servlet.http.HttpServletRequest;

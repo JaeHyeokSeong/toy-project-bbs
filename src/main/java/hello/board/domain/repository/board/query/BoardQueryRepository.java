@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import hello.board.domain.repository.board.query.dto.BoardSearchCondition;
 import hello.board.domain.repository.board.query.dto.SearchSort;
 import hello.board.domain.repository.board.query.dto.SearchTarget;
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,8 +17,8 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static hello.board.entity.QBoard.board;
-import static hello.board.entity.QMember.member;
+import static hello.board.entity.board.QBoard.*;
+import static hello.board.entity.member.QMember.member;
 
 
 @Repository

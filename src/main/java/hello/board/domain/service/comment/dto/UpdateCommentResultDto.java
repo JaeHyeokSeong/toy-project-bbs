@@ -1,6 +1,6 @@
 package hello.board.domain.service.comment.dto;
 
-import hello.board.entity.Comment;
+import hello.board.entity.comment.Comment;
 import lombok.Data;
 
 import java.time.LocalDateTime;

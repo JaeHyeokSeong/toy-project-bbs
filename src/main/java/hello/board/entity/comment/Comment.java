@@ -1,5 +1,8 @@
-package hello.board.entity;
+package hello.board.entity.comment;
 
+import hello.board.entity.BaseEntity;
+import hello.board.entity.member.Member;
+import hello.board.entity.board.Board;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

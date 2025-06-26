@@ -2,8 +2,8 @@ package hello.board;
 
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.member.MemberService;
-import hello.board.entity.Member;
-import hello.board.entity.UploadFile;
+import hello.board.entity.member.Member;
+import hello.board.entity.file.UploadFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Profile;

@@ -7,7 +7,7 @@ import hello.board.domain.service.board.query.dto.BoardDto;
 import hello.board.domain.service.board.query.dto.BoardListDto;
 import hello.board.domain.service.board.query.dto.BoardUpdateDto;
 import hello.board.domain.service.board_reaction.BoardReactionService;
-import hello.board.entity.Board;
+import hello.board.entity.board.Board;
 import hello.board.entity.ReactionType;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package hello.board.domain.service.member;
 
 import hello.board.domain.repository.member.MemberRepository;
-import hello.board.entity.Member;
+import hello.board.entity.member.Member;
 import hello.board.exception.DuplicateEmailException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
