@@ -138,6 +138,7 @@
     align-items: flex-start;
     gap: 0.75rem;
     margin-bottom: 24px;
+    border-bottom: 1px solid #eee;
 }
 /* 아바타 컨테이너 (이미지 크기 고정) */
 .board-avatar {
@@ -168,7 +169,6 @@
 }
 .comment-body {
     flex: 1;
-    border-bottom: 1px solid #eee;
     padding-bottom: 16px;
     position: relative;
 }
