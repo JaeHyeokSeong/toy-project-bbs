@@ -7,19 +7,19 @@
 
 /* 제목 */
 .post-title {
-    font-size: 1.75rem;      /* 크게 */
-    font-weight: 600;        /* 반굵게 */
-    margin: 0;               /* 위아래 마진 리셋 */
-    color: #212529;          /* 어두운 색상 */
+    font-size: 1.75rem; /* 크게 */
+    font-weight: 600; /* 반굵게 */
+    margin: 0; /* 위아래 마진 리셋 */
+    color: #212529; /* 어두운 색상 */
 }
 
 /* 메타 정보 (등록일 · 조회수) */
 .post-meta {
     display: flex;
-    align-items: center;
-    font-size: 0.9rem;       /* 작게 */
-    color: #6c757d;          /* 중간 회색 톤 */
-    margin-top: 0.25rem;     /* 제목과 약간의 간격 */
+    align-items: flex-start;
+    font-size: 0.9rem; /* 작게 */
+    color: #6c757d; /* 중간 회색 톤 */
+    margin-top: 0.25rem; /* 제목과 약간의 간격 */
 }
 
 /* 메타 항목 (등록일, 조회수) */
@@ -36,30 +36,34 @@
 /* 눈 아이콘과 숫자 간 간격 */
 .post-meta .meta-views i {
     margin-right: 0.25rem;
-    font-size: 1rem;         /* 아이콘 크기 */
+    font-size: 1rem; /* 아이콘 크기 */
 }
+
 /* 본문 */
 .content {
-    padding: 1rem;
+    padding: 1rem 1rem 1rem 0;
     white-space: pre-wrap;
     font-size: .95rem;
     line-height: 1.6;
-
     overflow-wrap: break-word;
     word-break: break-all;
 }
+
 /* 게시물 좋아요, 싫어요 버튼 */
 .action-buttons {
     flex-shrink: 0;
 }
+
 .action-buttons button {
     width: 48px;
 }
+
 .action-buttons p {
     margin: 0;
     font-size: 0.9rem;
     text-align: center;
 }
+
 /*답변 정렬*/
 .comment-toolbar {
     display: inline-flex;
@@ -77,11 +81,13 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 /* 답변 */
 .add-comment-parent {
     position: relative;
     width: 100%;
 }
+
 .add-comment-input {
     width: 100%;
     padding: 8px 12px;
@@ -93,6 +99,7 @@
     min-height: 1.5em;
     line-height: 1.4;
 }
+
 .reply-btn, .cancel-btn {
     display: none;
     margin-top: 6px;
@@ -102,19 +109,24 @@
     font-size: 0.9rem;
     padding: 4px 8px;
 }
+
 .reply-btn {
     color: #065fd4;
 }
+
 .cancel-btn {
     color: #888;
     margin-left: 4px;
 }
+
 .reply-btn:hover {
     text-decoration: underline;
 }
+
 .cancel-btn:hover {
     text-decoration: underline;
 }
+
 .reply-comment-child-btn {
     color: #065fd4;
     margin-top: 4px;
@@ -123,16 +135,20 @@
     cursor: pointer;
     font-size: 0.9rem;
     padding-left: 0;
+    margin-left: 3px;
 }
+
 .reply-comment-child-btn:hover {
     text-decoration: underline;
 }
+
 .comments-container {
     width: 100%;
     margin-top: 24px;
-    padding: 0 16px;
+    padding: 0 0;
     background: #fff;
 }
+
 .comment-item {
     display: flex;
     align-items: flex-start;
@@ -140,42 +156,49 @@
     margin-bottom: 24px;
     border-bottom: 1px solid #eee;
 }
+
 /* 아바타 컨테이너 (이미지 크기 고정) */
 .board-avatar {
-    flex-shrink: 0;           /* 축소되지 않도록 */
+    flex-shrink: 0; /* 축소되지 않도록 */
 }
+
 /* 아바타 이미지 */
 .board-avatar .avatar-img {
     width: 40px;
     height: 40px;
-    border-radius: 50%;       /* 원형 */
-    object-fit: cover;        /* 이미지 비율 유지하며 채움 */
-    border: 1px solid #eee;   /* 살짝 테두리 */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 50%; /* 원형 */
+    object-fit: cover; /* 이미지 비율 유지하며 채움 */
+    border: 1px solid #eee; /* 살짝 테두리 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     margin-right: 10px;
 }
+
 /* 아바타 컨테이너 (이미지 크기 고정) */
 .comment-avatar {
-    flex-shrink: 0;           /* 축소되지 않도록 */
+    flex-shrink: 0; /* 축소되지 않도록 */
 }
+
 /* 아바타 이미지 */
 .comment-avatar .avatar-img {
     width: 40px;
     height: 40px;
-    border-radius: 50%;       /* 원형 */
-    object-fit: cover;        /* 이미지 비율 유지하며 채움 */
-    border: 1px solid #eee;   /* 살짝 테두리 */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 50%; /* 원형 */
+    object-fit: cover; /* 이미지 비율 유지하며 채움 */
+    border: 1px solid #eee; /* 살짝 테두리 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
+
 .comment-body {
     flex: 1;
     padding-bottom: 16px;
     position: relative;
 }
+
 .comment-header, .comment-date {
     font-size: 0.875rem;
     color: #555;
 }
+
 .comment-content {
     font-size: 1rem;
     color: #333;
@@ -184,13 +207,16 @@
     white-space: pre-wrap;
     overflow-wrap: break-word;
     word-break: break-all;
+    margin-left: 3px;
 }
+
 .no-comments {
     text-align: center;
     color: #888;
     padding: 60px 0;
     font-size: 1rem;
 }
+
 .spinner {
     margin: 24px auto;
     width: 32px;
@@ -200,14 +226,18 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* 답변 수정, 삭제 버튼 */
 .comment-actions-owner {
     display: inline-flex;
 }
+
 .comment-actions-owner .edit-btn,
 .comment-actions-owner .delete-btn {
     background: none;
@@ -215,10 +245,12 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
 .comment-actions-owner .edit-btn:hover,
 .comment-actions-owner .delete-btn:hover {
     text-decoration: underline;
 }
+
 /* 답변 수정 textarea */
 .edit-textarea {
     width: 100%;
@@ -229,11 +261,13 @@
     overflow-y: auto;
     line-height: 1.4;
 }
+
 /*답변 수정결과 저장, 취소 버튼*/
 .edit-controls {
     margin-top: 6px;
     text-align: right;
 }
+
 .save-edit-btn, .cancel-edit-btn {
     margin-top: 4px;
     background: none;
@@ -242,18 +276,21 @@
     font-size: 0.9rem;
     padding-left: 0;
 }
+
 .save-edit-btn:hover, .cancel-edit-btn:hover {
     text-decoration: underline;
 }
+
 /* 첨부파일 리스트: 한 줄에 하나씩 */
 .uploaded-files ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    flex-direction: column;  /* 세로 방향으로 한 줄씩 */
-    gap: 1rem;               /* 아이템 간 간격 */
+    flex-direction: column; /* 세로 방향으로 한 줄씩 */
+    gap: 1rem; /* 아이템 간 간격 */
 }
+
 /* 개별 아이템 */
 .uploaded-files ul li .thumb-wrapper {
     display: flex;
@@ -261,6 +298,7 @@
     align-items: flex-start;
     margin-bottom: 27px;
 }
+
 /* 썸네일 이미지 */
 .uploaded-files ul li .thumb-img {
     display: block;
@@ -268,8 +306,9 @@
     height: auto;
     width: auto;
     border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 /* 다운로드 링크 */
 .uploaded-files ul li .download-link {
     margin-top: 0.5rem;
@@ -277,21 +316,24 @@
     color: #007bff;
     text-decoration: none;
 }
+
 .uploaded-files ul li .download-link:hover {
     text-decoration: underline;
 }
+
 .uploaded-files ul li .download-link {
-    display: inline-block;      /* 블록 요소처럼 동작시키면서 인라인 흐름 유지 */
-    max-width: 100%;            /* 컨테이너를 넘지 않도록 */
-    white-space: normal;        /* 공백에서 줄바꿈 허용 */
-    overflow-wrap: break-word;  /* 긴 단어도 단어 단위로 줄바꿈 */
-    word-break: break-all;      /* 공백 없는 긴 문자열은 임의 위치에서 줄바꿈 */
+    display: inline-block; /* 블록 요소처럼 동작시키면서 인라인 흐름 유지 */
+    max-width: 100%; /* 컨테이너를 넘지 않도록 */
+    white-space: normal; /* 공백에서 줄바꿈 허용 */
+    overflow-wrap: break-word; /* 긴 단어도 단어 단위로 줄바꿈 */
+    word-break: break-all; /* 공백 없는 긴 문자열은 임의 위치에서 줄바꿈 */
 }
+
 /* comment-menu 래퍼 */
 .comment-menu {
     position: absolute;
-    top: 8px;      /* 필요에 따라 조절 */
-    right: 8px;    /* comment-body 우측 패딩 만큼 띄우기 */
+    top: 8px; /* 필요에 따라 조절 */
+    right: 8px; /* comment-body 우측 패딩 만큼 띄우기 */
     display: inline-block;
 }
 
@@ -314,7 +356,7 @@
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
     z-index: 10;
 }
@@ -338,4 +380,65 @@
 
 .comment-actions-owner button:hover {
     background: #f5f5f5;
+}
+
+/* comment 좋아요, 싫어요 버튼 */
+.comment-action-buttons {
+    flex-shrink: 0;
+}
+
+.comment-action-buttons button {
+    width: 48px;
+}
+
+.comment-action-buttons p {
+    margin: 0;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.comment-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 메타 정보 묶음에 header + date */
+.comment-meta-info {
+    display: flex;
+    flex-direction: column; /* ← 여기만 추가/변경 */
+    align-items: flex-start; /* 이름·날짜 왼쪽 정렬 */
+}
+
+/* comment-header에는 flex 없이 inline 처리 */
+.comment-header {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* 날짜 스타일 */
+.comment-date {
+    color: #6c757d;
+}
+
+/* ① 등록자·등록일 세로 스택 */
+.meta-user-info {
+    display: flex;
+    flex-direction: column;
+    /* avatar 옆에 붙도록 flex-shrink 방지 */
+    flex-shrink: 0;
+}
+
+/* 작성일 + 조회수를 한 줄에 나란히 */
+.meta-date-views {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 조회수 아이콘·숫자 정렬 */
+.meta-views {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 }

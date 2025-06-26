@@ -1,5 +1,6 @@
 package hello.board.entity.comment;
 
+import hello.board.entity.BaseEntity;
 import hello.board.entity.ReactionType;
 import hello.board.entity.member.Member;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommentReaction {
+public class CommentReaction extends BaseEntity {
 
     @Id @GeneratedValue
     private Long id;

@@ -111,6 +111,7 @@ $(document).ready(function () {
             data: {
                 page,
                 size,
+                parentCommentId: null,
                 searchSort: searchSort
             }
         })
@@ -126,39 +127,66 @@ $(document).ready(function () {
                 }
 
                 data.content.forEach(c => {
-                    const created = formatDate(new Date(c.createdDate));
                     const safeContent = $('<div>').text(c.content).html();
+                    const totalReaction = Number(c.totalLikes) - Number(c.totalDislikes);
+
+                    // ← 여기를 추가!
+                    const upIconClass = c.reactionType === 'LIKE'
+                        ? 'bi bi-hand-thumbs-up-fill'
+                        : 'bi bi-hand-thumbs-up';
+                    const downIconClass = c.reactionType === 'DISLIKE'
+                        ? 'bi bi-hand-thumbs-down-fill'
+                        : 'bi bi-hand-thumbs-down';
 
                     const html = `
                 <div class="comment-item" data-id="${c.commentId}">
-                    
-                    <div class="comment-avatar">
-                        <img
-                            src="${c.profileImageUrl || '/images/default-profile.svg'}"
-                            alt="${c.name} 프로필 사진"
-                            class="avatar-img"
-                        />
+                
+                    <div class="comment-action-buttons d-flex flex-column align-items-center">
+                        <button class="btn" id="comment-thumbs-up">
+                            <i id="thumbs-up-class"  class="${upIconClass}"></i>
+                        </button>
+                        <p id="total-reaction-ct">${totalReaction}</p>
+                        <button class="btn" id="comment-thumbs-down">
+                            <i id="thumbs-down-class" class="${downIconClass}"></i>
+                        </button>
                     </div>
                 
                     <div class="comment-body">
-                        <div class="comment-header">
-                            <span class="comment-author">${c.name}</span>
-                            ${c.owner ? `
-                                <div class="comment-menu">
-                                    <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
-                                    <div class="comment-actions-owner">
-                                        <button class="edit-btn"   data-id="${c.commentId}">
-                                            <i class="bi bi-pencil"></i> 수정
-                                        </button>
-                                        <button class="delete-btn" data-id="${c.commentId}">
-                                            <i class="bi bi-trash3"></i> 삭제
-                                        </button>
-                                    </div>
-                              </div>` : ''}
-                        </div>
-                        
-                        <div class="comment-date">
-                            ${created} ${c.createdDate !== c.lastModifiedDate ? '(수정됨)' : ''}
+                        <div class="comment-meta-row">
+                            <div class="comment-avatar">
+                                <img
+                                    src="${c.profileImageUrl || '/images/default-profile.svg'}"
+                                    alt="${c.writerName} 프로필 사진"
+                                    class="avatar-img"
+                                />
+                            </div>
+                            <div class="comment-meta-info">
+                            
+                            <!-- ② 여기에 comment-header 살려두기 -->
+                            <div class="comment-header">
+                            <span class="comment-author">${c.writerName}</span>
+                            
+                            ${c.isEditable ? `
+                            <div class="comment-menu">
+                                <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
+                                <div class="comment-actions-owner">
+                                   <button class="edit-btn"   data-id="${c.commentId}">
+                                     <i class="bi bi-pencil"></i> 수정
+                                   </button>
+                                   <button class="delete-btn" data-id="${c.commentId}">
+                                     <i class="bi bi-trash3"></i> 삭제
+                                   </button>
+                                </div>
+                            </div>` : ''}
+                            
+                            </div>
+                            
+                            <!-- ③ 날짜는 header 바로 옆으로 -->
+                            <span class="comment-date">
+                                ${formatDate(new Date(c.createdDate))}
+                                ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
+                            </span>
+                            </div>
                         </div>
                         
                         <div class="comment-content mt-3" data-original="${safeContent}">${safeContent}</div>
@@ -393,4 +421,82 @@ $(document).on('click', '.menu-toggle', function(e) {
 // 빈 공간 클릭 시 닫기
 $(document).on('click', function() {
     $('.comment-menu.open').removeClass('open');
+});
+
+$(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function(e) {
+    e.preventDefault();
+
+    const isUp = $(this).is('#comment-thumbs-up');
+    const commentItem = $(this).closest('.comment-item');
+    const commentId   = commentItem.data('id');
+    const upIcon      = commentItem.find('#thumbs-up-class');
+    const downIcon    = commentItem.find('#thumbs-down-class');
+    const wasUpFilled   = upIcon.hasClass('bi-hand-thumbs-up-fill');
+    const wasDownFilled = downIcon.hasClass('bi-hand-thumbs-down-fill');
+    const reactionType = isUp
+        ? (wasUpFilled ? 'LIKE' : 'LIKE')
+        : (wasDownFilled ? 'DISLIKE' : 'DISLIKE');
+
+    // 로그인 확인
+    $.getJSON('/api/member/profile')
+        .done(profileRes => {
+            if (!profileRes.data) {
+                return alert('로그인이 필요합니다.');
+            }
+
+            // 리액션 요청 (same endpoint, toggle on server)
+            $.ajax({
+                url: `/api/comment-reaction/${commentId}`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ reactionType }),
+                dataType: 'json'
+            })
+                .done(resultDto => {
+                    // 1) 카운트 갱신
+                    commentItem.find('#total-reaction-ct')
+                        .text(resultDto.totalReactionCounts);
+
+                    // 2) 아이콘 토글
+                    if (isUp) {
+                        if (wasUpFilled) {
+                            // 이미 좋아요 상태 → 다시 누르면 좋아요 해제
+                            upIcon
+                                .removeClass('bi-hand-thumbs-up-fill')
+                                .addClass('bi-hand-thumbs-up');
+                        } else {
+                            // 좋아요 적용, 싫어요 해제
+                            upIcon
+                                .removeClass('bi-hand-thumbs-up')
+                                .addClass('bi-hand-thumbs-up-fill');
+                            downIcon
+                                .removeClass('bi-hand-thumbs-down-fill')
+                                .addClass('bi-hand-thumbs-down');
+                        }
+                    } else {
+                        if (wasDownFilled) {
+                            // 이미 싫어요 상태 → 다시 누르면 싫어요 해제
+                            downIcon
+                                .removeClass('bi-hand-thumbs-down-fill')
+                                .addClass('bi-hand-thumbs-down');
+                        } else {
+                            // 싫어요 적용, 좋아요 해제
+                            downIcon
+                                .removeClass('bi-hand-thumbs-down')
+                                .addClass('bi-hand-thumbs-down-fill');
+                            upIcon
+                                .removeClass('bi-hand-thumbs-up-fill')
+                                .addClass('bi-hand-thumbs-up');
+                        }
+                    }
+                })
+                .fail(() => {
+                    console.error('리액션 적용 실패');
+                    alert('리액션 요청 중 오류가 발생했습니다.');
+                });
+        })
+        .fail(() => {
+            console.error('로그인 상태 확인 실패');
+            alert('로그인 상태를 확인할 수 없습니다.');
+        });
 });

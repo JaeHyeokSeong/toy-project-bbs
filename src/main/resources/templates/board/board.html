@@ -22,9 +22,10 @@
     <h2 class="post-title mt-4" th:text="${boardDto.title}">게시물 제목</h2>
 
     <!-- 메타 정보 -->
+    <!-- 메타 정보 -->
     <div class="post-meta mt-3">
 
-        <div class="board-avatar mr">
+        <div class="board-avatar">
             <img
                     th:src="@{/images/default-profile.svg}"
                     th:alt="|${boardDto.name} 프로필 사진|"
@@ -32,26 +33,27 @@
             />
         </div>
 
-        <!-- 등록자 -->
-        <span class="meta-item meta-writer"
-              th:text="${boardDto.name}">
-        </span>
+        <div class="meta-user-info">
+            <!-- ① 작성자 -->
+            <span class="meta-item meta-writer"
+                  th:text="${boardDto.name}">
+            </span>
 
-        <span class="meta-separator">·</span>
+            <!-- ② 작성일 + 조회수 묶음 -->
+            <div class="meta-date-views">
+                <!-- 작성일 -->
+                <span class="meta-item meta-date"
+                      th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성' +
+                      ${boardDto.createdDate != boardDto.lastModifiedDate ? ' (수정됨)' : ''}">
+                </span>
 
-        <!-- 등록일 -->
-        <span class="meta-item meta-date"
-              th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성' +
-               ${boardDto.createdDate != boardDto.lastModifiedDate ? ' (수정됨)' : ''}">
-        </span>
-
-        <span class="meta-separator">·</span>
-
-        <!-- 조회수 -->
-        <span class="meta-item meta-views">
-            <i class="bi bi-eye"></i>
-        <span th:text="${boardDto.views}"></span>
-    </span>
+                <!-- 조회수 -->
+                <span class="meta-item meta-views">
+                    <i class="bi bi-eye"></i>
+                    <span th:text="${boardDto.views}"></span>
+                </span>
+            </div>
+        </div>
     </div>
 
     <hr>
