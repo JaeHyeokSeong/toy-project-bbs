@@ -43,8 +43,7 @@
             <div class="meta-date-views">
                 <!-- 작성일 -->
                 <span class="meta-item meta-date"
-                      th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성' +
-                      ${boardDto.createdDate != boardDto.lastModifiedDate ? ' (수정됨)' : ''}">
+                      th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성'">
                 </span>
 
                 <!-- 조회수 -->

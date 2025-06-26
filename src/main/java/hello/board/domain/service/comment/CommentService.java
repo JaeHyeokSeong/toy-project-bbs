@@ -1,6 +1,7 @@
 package hello.board.domain.service.comment;
 
 import hello.board.domain.repository.comment.CommentRepository;
+import hello.board.domain.repository.comment_reaction.CommentReactionRepository;
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.comment.dto.UpdateCommentResultDto;
 import hello.board.domain.service.member.MemberService;
@@ -23,6 +24,7 @@ public class CommentService {
     private final BoardService boardService;
     private final MemberService memberService;
     private final CommentRepository commentRepository;
+    private final CommentReactionRepository commentReactionRepository;
 
     public Comment addComment(Long boardId, Long memberId, String content, @Nullable Long parentCommentId) {
         Board board = boardService.findById(boardId)
@@ -68,8 +70,12 @@ public class CommentService {
                         "commentId: " + commentId + " 에 대해 접근 권환이 없습니다.")
                 );
 
+        //현재 답변에 달린 모든 reaction들 지우기
+        commentReactionRepository.deleteAllParentCommentReactionsByCommentId(commentId);
+        commentReactionRepository.deleteAllChildCommentReactionsByCommentId(commentId);
+
         //현재 답변에 달린 모둔 답글들 지우기
         commentRepository.deleteAllChildComments(commentId);
-        commentRepository.deleteAllByCommentId(commentId);
+        commentRepository.deleteByCommentId(commentId);
     }
 }
