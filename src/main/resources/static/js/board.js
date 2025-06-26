@@ -423,80 +423,78 @@ $(document).on('click', function() {
     $('.comment-menu.open').removeClass('open');
 });
 
-$(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function(e) {
-    e.preventDefault();
+$(document).ready(function () {
+    let isLoggedIn = false;
 
-    const isUp = $(this).is('#comment-thumbs-up');
-    const commentItem = $(this).closest('.comment-item');
-    const commentId   = commentItem.data('id');
-    const upIcon      = commentItem.find('#thumbs-up-class');
-    const downIcon    = commentItem.find('#thumbs-down-class');
-    const wasUpFilled   = upIcon.hasClass('bi-hand-thumbs-up-fill');
-    const wasDownFilled = downIcon.hasClass('bi-hand-thumbs-down-fill');
-    const reactionType = isUp
-        ? (wasUpFilled ? 'LIKE' : 'LIKE')
-        : (wasDownFilled ? 'DISLIKE' : 'DISLIKE');
-
-    // 로그인 확인
+    // 1) 페이지 로드 시 로그인 여부 확인
     $.getJSON('/api/member/profile')
-        .done(profileRes => {
-            if (!profileRes.data) {
-                return alert('로그인이 필요합니다.');
-            }
-
-            // 리액션 요청 (same endpoint, toggle on server)
-            $.ajax({
-                url: `/api/comment-reaction/${commentId}`,
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ reactionType }),
-                dataType: 'json'
-            })
-                .done(resultDto => {
-                    // 1) 카운트 갱신
-                    commentItem.find('#total-reaction-ct')
-                        .text(resultDto.totalReactionCounts);
-
-                    // 2) 아이콘 토글
-                    if (isUp) {
-                        if (wasUpFilled) {
-                            // 이미 좋아요 상태 → 다시 누르면 좋아요 해제
-                            upIcon
-                                .removeClass('bi-hand-thumbs-up-fill')
-                                .addClass('bi-hand-thumbs-up');
-                        } else {
-                            // 좋아요 적용, 싫어요 해제
-                            upIcon
-                                .removeClass('bi-hand-thumbs-up')
-                                .addClass('bi-hand-thumbs-up-fill');
-                            downIcon
-                                .removeClass('bi-hand-thumbs-down-fill')
-                                .addClass('bi-hand-thumbs-down');
-                        }
-                    } else {
-                        if (wasDownFilled) {
-                            // 이미 싫어요 상태 → 다시 누르면 싫어요 해제
-                            downIcon
-                                .removeClass('bi-hand-thumbs-down-fill')
-                                .addClass('bi-hand-thumbs-down');
-                        } else {
-                            // 싫어요 적용, 좋아요 해제
-                            downIcon
-                                .removeClass('bi-hand-thumbs-down')
-                                .addClass('bi-hand-thumbs-down-fill');
-                            upIcon
-                                .removeClass('bi-hand-thumbs-up-fill')
-                                .addClass('bi-hand-thumbs-up');
-                        }
-                    }
-                })
-                .fail(() => {
-                    console.error('리액션 적용 실패');
-                    alert('리액션 요청 중 오류가 발생했습니다.');
-                });
+        .done(res => {
+            // data가 null 이면 비로그인, 아닐 때만 로그인
+            isLoggedIn = !!res.data;
         })
         .fail(() => {
-            console.error('로그인 상태 확인 실패');
-            alert('로그인 상태를 확인할 수 없습니다.');
+            // 네트워크 오류라도 일단 비로그인으로 처리
+            isLoggedIn = false;
         });
+
+    // 2) 댓글 리액션 클릭 핸들러
+    $(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function(e) {
+        e.preventDefault();
+
+        // 비로그인 시 바로 경고
+        if (!isLoggedIn) {
+            return alert('로그인이 필요합니다.');
+        }
+
+        const isUp       = $(this).is('#comment-thumbs-up');
+        const commentItem= $(this).closest('.comment-item');
+        const commentId  = commentItem.data('id');
+        const upIcon     = commentItem.find('#thumbs-up-class');
+        const downIcon   = commentItem.find('#thumbs-down-class');
+        const wasUp      = upIcon.hasClass('bi-hand-thumbs-up-fill');
+        const wasDown    = downIcon.hasClass('bi-hand-thumbs-down-fill');
+        const reactionType = isUp
+            ? 'LIKE'
+            : 'DISLIKE';
+
+        // 3) 리액션 요청 (401 → 로그인 필요)
+        $.ajax({
+            url: `/api/comment-reaction/${commentId}`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ reactionType }),
+            dataType: 'json'
+        })
+            .done(resultDto => {
+                // 카운트 업데이트
+                commentItem.find('#total-reaction-ct')
+                    .text(resultDto.totalReactionCounts);
+
+                // 아이콘 토글
+                if (isUp) {
+                    if (wasUp) {
+                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                    } else {
+                        upIcon.removeClass('bi-hand-thumbs-up').addClass('bi-hand-thumbs-up-fill');
+                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                    }
+                } else {
+                    if (wasDown) {
+                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                    } else {
+                        downIcon.removeClass('bi-hand-thumbs-down').addClass('bi-hand-thumbs-down-fill');
+                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                    }
+                }
+            })
+            .fail((xhr) => {
+                // 401 Unauthorized → 로그인 필요
+                if (xhr.status === 401) {
+                    alert('로그인이 필요합니다.');
+                } else {
+                    console.error('리액션 적용 실패', xhr);
+                    alert('리액션 요청 중 오류가 발생했습니다.');
+                }
+            });
+    });
 });
