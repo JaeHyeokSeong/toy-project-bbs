@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
-@ControllerAdvice("hello.board.web.board")
+@ControllerAdvice("hello.board.controller.board")
 public class BoardExControllerAdvice {
 
     @ExceptionHandler

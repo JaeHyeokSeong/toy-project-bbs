@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice("hello.board.api.comment")
+@RestControllerAdvice("hello.board.controller.api.comment")
 public class CommentExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice("hello.board.api.comment_reaction")
+@RestControllerAdvice("hello.board.controller.api.comment_reaction")
 public class CommentReactionExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

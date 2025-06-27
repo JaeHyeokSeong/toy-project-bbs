@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestControllerAdvice("hello.board.api.board_reaction")
+@RestControllerAdvice("hello.board.controller.api.board_reaction")
 public class BoardReactionExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
