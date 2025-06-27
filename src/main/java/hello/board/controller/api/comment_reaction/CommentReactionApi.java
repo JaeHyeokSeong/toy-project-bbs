@@ -1,8 +1,8 @@
-package hello.board.api.comment_reaction;
+package hello.board.controller.api.comment_reaction;
 
 import hello.board.SessionConst;
-import hello.board.api.comment_reaction.dto.AddCommentReactionDto;
-import hello.board.api.comment_reaction.dto.AddCommentReactionResultDto;
+import hello.board.controller.api.comment_reaction.dto.AddCommentReactionDto;
+import hello.board.controller.api.comment_reaction.dto.AddCommentReactionResultDto;
 import hello.board.service.comment_reaction.CommentReactionService;
 import hello.board.exception.BindingResultException;
 import jakarta.validation.Valid;

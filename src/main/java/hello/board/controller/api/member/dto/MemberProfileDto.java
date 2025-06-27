@@ -1,4 +1,4 @@
-package hello.board.api.member.dto;
+package hello.board.controller.api.member.dto;
 
 import hello.board.repository.member.query.dto.MemberQueryDto;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package hello.board.api.comment_reaction;
+package hello.board.controller.api.comment_reaction;
 
 import hello.board.exception.CommentNotFoundException;
 import hello.board.controller.dto.ErrorResult;

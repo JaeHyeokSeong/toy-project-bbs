@@ -1,11 +1,11 @@
-package hello.board.api.comment_reaction.dto;
+package hello.board.controller.api.board_reaction.dto;
 
 import hello.board.entity.ReactionType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AddCommentReactionDto {
+public class AddBoardReactionDto {
 
     @NotNull
     private ReactionType reactionType;

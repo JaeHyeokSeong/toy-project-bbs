@@ -1,9 +1,9 @@
-package hello.board.api.comment;
+package hello.board.controller.api.comment;
 
-import hello.board.api.comment.dto.AddCommentDto;
-import hello.board.api.comment.dto.AddCommentResultDto;
-import hello.board.api.comment.dto.DeleteCommentResultDto;
-import hello.board.api.comment.dto.UpdateCommentDto;
+import hello.board.controller.api.comment.dto.AddCommentDto;
+import hello.board.controller.api.comment.dto.AddCommentResultDto;
+import hello.board.controller.api.comment.dto.DeleteCommentResultDto;
+import hello.board.controller.api.comment.dto.UpdateCommentDto;
 import hello.board.repository.comment.query.dto.CommentDto;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
 import hello.board.service.comment.CommentService;

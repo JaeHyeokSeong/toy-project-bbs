@@ -1,4 +1,4 @@
-package hello.board.api.comment_reaction.dto;
+package hello.board.controller.api.comment_reaction.dto;
 
 import lombok.Data;
 

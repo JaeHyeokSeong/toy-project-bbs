@@ -1,4 +1,4 @@
-package hello.board.api.comment.dto;
+package hello.board.controller.api.comment.dto;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;

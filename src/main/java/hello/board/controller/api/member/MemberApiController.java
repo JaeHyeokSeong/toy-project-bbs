@@ -1,7 +1,7 @@
-package hello.board.api.member;
+package hello.board.controller.api.member;
 
 import hello.board.SessionConst;
-import hello.board.api.member.dto.MemberProfileDto;
+import hello.board.controller.api.member.dto.MemberProfileDto;
 import hello.board.repository.member.query.dto.MemberQueryDto;
 import hello.board.service.member.query.MemberQueryService;
 import jakarta.servlet.http.HttpServletRequest;

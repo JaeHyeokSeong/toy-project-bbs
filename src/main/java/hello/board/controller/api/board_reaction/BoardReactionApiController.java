@@ -1,8 +1,8 @@
-package hello.board.api.board_reaction;
+package hello.board.controller.api.board_reaction;
 
 import hello.board.SessionConst;
-import hello.board.api.board_reaction.dto.AddBoardReactionDto;
-import hello.board.api.board_reaction.dto.AddBoardReactionResultDto;
+import hello.board.controller.api.board_reaction.dto.AddBoardReactionDto;
+import hello.board.controller.api.board_reaction.dto.AddBoardReactionResultDto;
 import hello.board.exception.BindingResultException;
 import hello.board.service.board_reaction.BoardReactionService;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-package hello.board.api.upload_file;
+package hello.board.controller.api.upload_file;
 
 import hello.board.service.upload_file.UploadFileService;
 import hello.board.repository.upload_file.dto.UploadFileDto;

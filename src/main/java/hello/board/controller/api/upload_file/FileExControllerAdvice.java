@@ -1,4 +1,4 @@
-package hello.board.api.upload_file;
+package hello.board.controller.api.upload_file;
 
 import hello.board.controller.dto.ErrorResult;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package hello.board.api;
+package hello.board.controller.api;
 
 import hello.board.exception.BindingResultException;
 import hello.board.controller.dto.ErrorResult;
