@@ -2,7 +2,7 @@ package hello.board.api.member;
 
 import hello.board.SessionConst;
 import hello.board.api.member.dto.MemberProfileDto;
-import hello.board.domain.repository.member.query.dto.MemberDto;
+import hello.board.domain.repository.member.query.dto.MemberQueryDto;
 import hello.board.domain.service.member.query.MemberQueryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -30,7 +30,7 @@ public class MemberApiController {
             return new MemberProfileDto("비로그인 회원", null);
         }
 
-        Optional<MemberDto> findMember = memberQueryService.findMember(memberId);
+        Optional<MemberQueryDto> findMember = memberQueryService.findMember(memberId);
 
         if (findMember.isEmpty()) {
             HttpSession session = request.getSession(false);

@@ -1,15 +1,15 @@
 package hello.board.api.member.dto;
 
-import hello.board.domain.repository.member.query.dto.MemberDto;
+import hello.board.domain.repository.member.query.dto.MemberQueryDto;
 import lombok.Data;
 
 @Data
 public class MemberProfileDto {
 
     private String message;
-    private MemberDto data;
+    private MemberQueryDto data;
 
-    public MemberProfileDto(String message, MemberDto data) {
+    public MemberProfileDto(String message, MemberQueryDto data) {
         this.message = message;
         this.data = data;
     }

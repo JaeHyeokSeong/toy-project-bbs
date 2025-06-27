@@ -1,19 +1,20 @@
 package hello.board.web.board;
 
 import hello.board.SessionConst;
+import hello.board.domain.repository.board.query.dto.BoardQueryDto;
 import hello.board.domain.repository.board.query.dto.BoardSearchCondition;
 import hello.board.domain.repository.board.query.dto.SearchSort;
 import hello.board.domain.repository.board.query.dto.SearchTarget;
 import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
 import hello.board.domain.service.board.BoardService;
 import hello.board.domain.service.board.query.BoardQueryService;
-import hello.board.domain.service.board.query.dto.BoardDto;
 import hello.board.domain.service.board.query.dto.BoardListDto;
 import hello.board.domain.service.board.query.dto.BoardUpdateDto;
 import hello.board.domain.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.file.FileStore;
 import hello.board.entity.member.Member;
+import hello.board.exception.BoardNotFoundException;
 import hello.board.web.board.dto.AddBoardDto;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +31,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -65,14 +68,10 @@ public class BoardController {
         //따라서 조회수를 증가하지 않는다, 반대로 조회가 안되어진 경우에는 새로운 게시물이란 의미.
         int count = getCount(id, request, response);
         log.info("조회수 증가되어질 count={}", count);
-        BoardDto boardDto = boardQueryService.findBoardDto(id, slug, count, memberId);
-        model.addAttribute("boardDto", boardDto);
 
-        //로그인한 사용자 이름가지고 오기 - 답변 등록에서 사용
-        if (memberId != null) {
-            Member member = memberService.findById(memberId).orElseThrow();
-            model.addAttribute("memberName", member.getName());
-        }
+        BoardQueryDto boardQueryDto = boardQueryService.findBoardQueryDto(id, slug, count, memberId)
+                .orElseThrow(BoardNotFoundException::new);
+        model.addAttribute("dto", boardQueryDto);
 
         //comment 정렬 조건
         model.addAttribute("commentSearchSorts", CommentSearchSort.values());

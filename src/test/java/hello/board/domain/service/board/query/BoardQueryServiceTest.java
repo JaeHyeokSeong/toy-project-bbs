@@ -1,15 +1,16 @@
 package hello.board.domain.service.board.query;
 
+import hello.board.domain.repository.board.query.dto.BoardQueryDto;
 import hello.board.domain.repository.board.query.dto.BoardSearchCondition;
 import hello.board.domain.repository.board.query.dto.SearchSort;
 import hello.board.domain.repository.board.query.dto.SearchTarget;
 import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.board.query.dto.BoardDto;
 import hello.board.domain.service.board.query.dto.BoardListDto;
 import hello.board.domain.service.board.query.dto.BoardUpdateDto;
 import hello.board.domain.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.member.Member;
+import hello.board.exception.BoardNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -47,16 +49,19 @@ class BoardQueryServiceTest {
         Board board = boardService.saveBoard(member.getId(), title, content, new ArrayList<>());
 
         //when
-        BoardDto boardDto = boardQueryService.findBoardDto(board.getId(), board.getSlug(), 1, null);
+        Optional<BoardQueryDto> findBoardQueryDto = boardQueryService
+                .findBoardQueryDto(board.getId(), board.getSlug(), 1, null);
 
         //then
-        assertThat(boardDto.getId()).isEqualTo(board.getId());
-        assertThat(boardDto.getTitle()).isEqualTo(title);
-        assertThat(boardDto.getContent()).isEqualTo(content);
-        assertThat(boardDto.getCreatedDate()).isNotNull();
-        assertThat(boardDto.getLastModifiedDate()).isNotNull();
-        assertThat(boardDto.getUploadedFiles().size()).isEqualTo(0);
-        assertThat(boardDto.getName()).isEqualTo(name);
+        assertThat(findBoardQueryDto.isPresent()).isTrue();
+        BoardQueryDto boardQueryDto = findBoardQueryDto.get();
+        assertThat(boardQueryDto.getBoardId()).isEqualTo(board.getId());
+        assertThat(boardQueryDto.getBoardTitle()).isEqualTo(title);
+        assertThat(boardQueryDto.getBoardContent()).isEqualTo(content);
+        assertThat(boardQueryDto.getCreatedDate()).isNotNull();
+        assertThat(boardQueryDto.getLastModifiedDate()).isNotNull();
+        assertThat(boardQueryDto.getUploadedFiles().size()).isEqualTo(0);
+        assertThat(boardQueryDto.getWriterName()).isEqualTo(name);
     }
 
     @Test
@@ -70,8 +75,9 @@ class BoardQueryServiceTest {
         Board board = boardService.saveBoard(member.getId(), title, content, new ArrayList<>());
 
         //when then
-        assertThatThrownBy(() -> boardQueryService.findBoardDto(board.getId() + 1, board.getSlug(), 1, null))
-                .isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> boardQueryService
+                .findBoardQueryDto(board.getId() + 1, board.getSlug(), 1, null))
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test

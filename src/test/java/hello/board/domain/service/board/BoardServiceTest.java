@@ -1,15 +1,15 @@
 package hello.board.domain.service.board;
 
 import hello.board.domain.repository.board.BoardRepository;
+import hello.board.domain.repository.board.query.dto.BoardQueryDto;
 import hello.board.domain.repository.comment.CommentRepository;
 import hello.board.domain.repository.upload_file.UploadFileRepository;
 import hello.board.domain.service.board.query.BoardQueryService;
-import hello.board.domain.service.board.query.dto.BoardDto;
 import hello.board.domain.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.comment.Comment;
-import hello.board.entity.member.Member;
 import hello.board.entity.file.UploadFile;
+import hello.board.entity.member.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,13 +97,17 @@ class BoardServiceTest {
         );
 
         //then
-        BoardDto result = boardQueryService.findBoardDto(savedBoard.getId(), slug, 0, null);
-        assertThat(result.getTitle()).isEqualTo("newTitle");
-        assertThat(result.getContent()).isEqualTo("newContent");
-        assertThat(result.getUploadedFiles().size()).isEqualTo(1);
-        assertThat(result.getUploadedFiles()).extracting("originalFileName")
+        Optional<BoardQueryDto> findBoardQueryDto = boardQueryService
+                .findBoardQueryDto(savedBoard.getId(), slug, 0, null);
+        assertThat(findBoardQueryDto.isPresent()).isTrue();
+        BoardQueryDto boardQueryDto = findBoardQueryDto.get();
+
+        assertThat(boardQueryDto.getBoardTitle()).isEqualTo("newTitle");
+        assertThat(boardQueryDto.getBoardContent()).isEqualTo("newContent");
+        assertThat(boardQueryDto.getUploadedFiles().size()).isEqualTo(1);
+        assertThat(boardQueryDto.getUploadedFiles()).extracting("originalFileName")
                 .containsExactly("newOFN");
-        assertThat(result.getUploadedFiles()).extracting("storeFileName")
+        assertThat(boardQueryDto.getUploadedFiles()).extracting("storeFileName")
                 .containsExactly("newSFN");
     }
 

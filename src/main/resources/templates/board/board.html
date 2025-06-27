@@ -3,7 +3,7 @@
       th:replace="~{ layout/basicLayout :: basicLayout (~{::title}, ~{::link}, ~{::script}, ~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title th:text="|${boardDto.title} - 자유게시판|">자유게시판 - 게시물 보기</title>
+    <title th:text="|${dto.boardTitle} - 자유게시판|">자유게시판 - 게시물 보기</title>
     <link rel="stylesheet" href="/css/board.css">
     <script type="text/javascript" src="/js/board.js"></script>
 </head>
@@ -19,16 +19,15 @@
     </h5>
 
     <!-- 제목 -->
-    <h2 class="post-title mt-4" th:text="${boardDto.title}">게시물 제목</h2>
+    <h2 class="post-title mt-4" th:text="${dto.boardTitle}">게시물 제목</h2>
 
-    <!-- 메타 정보 -->
     <!-- 메타 정보 -->
     <div class="post-meta mt-3">
 
         <div class="board-avatar">
             <img
                     th:src="@{/images/default-profile.svg}"
-                    th:alt="|${boardDto.name} 프로필 사진|"
+                    th:alt="|${dto.writerName} 프로필 사진|"
                     class="avatar-img"
             />
         </div>
@@ -36,20 +35,20 @@
         <div class="meta-user-info">
             <!-- ① 작성자 -->
             <span class="meta-item meta-writer"
-                  th:text="${boardDto.name}">
+                  th:text="${dto.writerName}">
             </span>
 
             <!-- ② 작성일 + 조회수 묶음 -->
             <div class="meta-date-views">
                 <!-- 작성일 -->
                 <span class="meta-item meta-date"
-                      th:text="${#temporals.format(boardDto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성'">
+                      th:text="${#temporals.format(dto.createdDate, 'yyyy.MM.dd HH:mm:ss')} + ' 작성'">
                 </span>
 
                 <!-- 조회수 -->
                 <span class="meta-item meta-views">
                     <i class="bi bi-eye"></i>
-                    <span th:text="${boardDto.views}"></span>
+                    <span th:text="${dto.boardViews}"></span>
                 </span>
             </div>
         </div>
@@ -57,10 +56,10 @@
 
     <hr>
 
-    <div class="uploaded-files mt-3" th:if="${boardDto.uploadedFiles.size() > 0}">
-        <h6><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 (총 [[${boardDto.uploadedFiles.size()}]]개)</h6>
+    <div class="uploaded-files mt-3" th:if="${dto.uploadedFiles.size() > 0}">
+        <h6><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 (총 [[${dto.uploadedFiles.size()}]]개)</h6>
         <ul>
-            <li th:each="attachedFile : ${boardDto.uploadedFiles}">
+            <li th:each="attachedFile : ${dto.uploadedFiles}">
                 <div class="thumb-wrapper">
                     <img
                             th:src="|/api/images/${attachedFile.storeFileName}|"
@@ -78,30 +77,30 @@
     </div>
 
     <div class="d-flex align-items-start mt-4 mb-3">
-        <div id="board-id" hidden th:text="${boardDto.id}"></div>
+        <div id="board-id" hidden th:text="${dto.boardId}"></div>
         <!-- 좋아요 싫어요 버튼 및 갯수 -->
         <div th:if="${session.memberId == null}" class="action-buttons d-flex flex-column align-items-center me-4">
             <button class="btn" th:onclick="|alert('로그인이 필요합니다.');|">
                 <i class="bi bi-hand-thumbs-up"></i>
             </button>
-            <p th:text="${boardDto.totalReactionCount}">0</p>
+            <p th:text="${dto.totalLikesCount} - ${dto.totalDislikesCount}">0</p>
             <button class="btn" th:onclick="|alert('로그인이 필요합니다.');|">
                 <i class="bi bi-hand-thumbs-down"></i>
             </button>
         </div>
         <div th:if="${session.memberId != null}" class="action-buttons d-flex flex-column align-items-center me-4">
             <button class="btn" id="thumbs-up">
-                <i id="thumbs-up-class" th:class="${boardDto.reactionType?.name()} == 'LIKE'
+                <i id="thumbs-up-class" th:class="${dto.viewerReactionType?.name()} == 'LIKE'
                  ? 'bi bi-hand-thumbs-up-fill' : 'bi bi-hand-thumbs-up'"></i>
             </button>
-            <p id="total-reaction-ct" th:text="${boardDto.totalReactionCount}">0</p>
+            <p id="total-reaction-ct" th:text="${dto.totalLikesCount} - ${dto.totalDislikesCount}">0</p>
             <button class="btn" id="thumbs-down">
-                <i id="thumbs-down-class" th:class="${boardDto.reactionType?.name()} == 'DISLIKE'
+                <i id="thumbs-down-class" th:class="${dto.viewerReactionType?.name()} == 'DISLIKE'
                  ? 'bi bi-hand-thumbs-down-fill' : 'bi bi-hand-thumbs-down'"></i>
             </button>
         </div>
         <!-- 본문 영역 -->
-        <div class="content flex-grow-1" th:text="${boardDto.content}">
+        <div class="content flex-grow-1" th:text="${dto.boardContent}">
             본문 내용이 여기에 표시됩니다.
         </div>
     </div>
@@ -110,15 +109,15 @@
 
     <!-- 수정/삭제 -->
     <div class="d-flex justify-content-end gap-2 mt-4">
-        <a th:href="@{/bbs/edit/{id}(id=${boardDto.id})}"
+        <a th:href="@{/bbs/edit/{id}(id=${dto.boardId})}"
            class="btn btn-secondary"
-           th:if="${session.memberId} == ${boardDto.memberId}"
+           th:if="${session.memberId} == ${dto.writerId}"
         >
             수정
         </a>
 
-        <form th:if="${session.memberId} == ${boardDto.memberId}"
-              th:action="@{/bbs/delete/{id}(id=${boardDto.id})}"
+        <form th:if="${session.memberId} == ${dto.writerId}"
+              th:action="@{/bbs/delete/{id}(id=${dto.boardId})}"
               method="post">
             <button type="submit" id="delete-btn" class="btn btn-warning">
                 삭제
@@ -143,7 +142,7 @@
                   class="add-comment-input"
                   rows="1"
                   th:placeholder="${session.memberId} != null
-                      ? ${memberName} + '님, 답변을 작성해보세요.' : '로그인 후 답변을 작성해 주세요.'"
+                      ? ${dto.viewerName} + '님, 답변을 작성해보세요.' : '로그인 후 답변을 작성해 주세요.'"
                   th:disabled="${session.memberId == null}"
         ></textarea>
             <button id="submit-comment-parent" class="reply-btn" style="display: none;">답변 등록</button>

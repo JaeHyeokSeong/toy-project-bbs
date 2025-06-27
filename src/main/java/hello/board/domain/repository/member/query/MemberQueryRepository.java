@@ -2,7 +2,7 @@ package hello.board.domain.repository.member.query;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import hello.board.domain.repository.member.query.dto.MemberDto;
+import hello.board.domain.repository.member.query.dto.MemberQueryDto;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +19,9 @@ public class MemberQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Optional<MemberDto> findMember(Long memberId) {
-        MemberDto memberDto = queryFactory
-                .select(Projections.constructor(MemberDto.class,
+    public Optional<MemberQueryDto> findMember(Long memberId) {
+        MemberQueryDto memberQueryDto = queryFactory
+                .select(Projections.constructor(MemberQueryDto.class,
                         member.id,
                         member.name,
                         member.email,
@@ -31,6 +31,6 @@ public class MemberQueryRepository {
                 .where(member.id.eq(memberId))
                 .fetchOne();
 
-        return Optional.ofNullable(memberDto);
+        return Optional.ofNullable(memberQueryDto);
     }
 }

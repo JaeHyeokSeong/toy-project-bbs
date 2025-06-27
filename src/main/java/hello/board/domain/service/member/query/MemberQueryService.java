@@ -1,7 +1,7 @@
 package hello.board.domain.service.member.query;
 
 import hello.board.domain.repository.member.query.MemberQueryRepository;
-import hello.board.domain.repository.member.query.dto.MemberDto;
+import hello.board.domain.repository.member.query.dto.MemberQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ public class MemberQueryService {
 
     private final MemberQueryRepository memberQueryRepository;
 
-    public Optional<MemberDto> findMember(Long memberId) {
+    public Optional<MemberQueryDto> findMember(Long memberId) {
         return memberQueryRepository.findMember(memberId);
     }
 }

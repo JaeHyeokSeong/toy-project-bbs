@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-public class MemberDto {
+public class MemberQueryDto {
 
     private Long memberId;
     private String name;

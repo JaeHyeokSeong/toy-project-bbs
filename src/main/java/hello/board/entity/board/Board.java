@@ -33,6 +33,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
     private List<UploadFile> uploadFiles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board")
+    private List<BoardReaction> boardReactions = new ArrayList<>();
+
     //==연관관계 메서드==//
     public void addUploadFile(UploadFile uploadFile) {
         uploadFiles.add(uploadFile);

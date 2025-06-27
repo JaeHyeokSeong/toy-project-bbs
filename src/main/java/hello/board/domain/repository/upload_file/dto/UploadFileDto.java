@@ -1,4 +1,4 @@
-package hello.board.domain.service.upload_file.dto;
+package hello.board.domain.repository.upload_file.dto;
 
 import hello.board.entity.file.UploadFile;
 import lombok.Data;

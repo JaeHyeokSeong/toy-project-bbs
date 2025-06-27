@@ -9,6 +9,8 @@ import hello.board.domain.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.member.Member;
 import hello.board.entity.file.UploadFile;
+import hello.board.exception.BoardNotFoundException;
+import hello.board.exception.MemberNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +39,7 @@ public class BoardService {
     public Board saveBoard(Long memberId, String title,
                           String content, @NotNull List<UploadFile> uploadFiles) {
 
-        Member findMember = memberService.findById(memberId).orElseThrow();
+        Member findMember = memberService.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Board board = Board.createBoard(title, content, findMember, uploadFiles);
         return boardRepository.save(board);
     }
@@ -49,7 +51,7 @@ public class BoardService {
                             List<UploadFile> newUploadFiles, boolean updateFile) {
 
         //접근 권한 확인
-        boardRepository.findBoard(boardId, memberId).orElseThrow();
+        boardRepository.findBoard(boardId, memberId).orElseThrow(BoardNotFoundException::new);
 
         if (updateFile) {
             //현재 등록되어진 모든 첨부 파일들 삭제 (벌크연산)
@@ -77,7 +79,7 @@ public class BoardService {
     public void deleteBoard(Long boardId, Long memberId) {
 
         //권한 체크
-        boardRepository.findBoard(boardId, memberId).orElseThrow();
+        boardRepository.findBoard(boardId, memberId).orElseThrow(BoardNotFoundException::new);
 
         //파일 모두 삭제하기 (벌크연산)
         uploadFileRepository.deleteAllUploadFiles(boardId);
