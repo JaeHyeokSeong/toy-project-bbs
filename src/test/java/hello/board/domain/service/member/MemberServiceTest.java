@@ -2,6 +2,7 @@ package hello.board.domain.service.member;
 
 import hello.board.entity.member.Member;
 import hello.board.exception.DuplicateEmailException;
+import hello.board.service.member.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

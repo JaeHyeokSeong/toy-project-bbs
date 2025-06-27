@@ -1,11 +1,12 @@
 package hello.board.domain.service.comment.query;
 
-import hello.board.domain.repository.comment.query.dto.CommentDto;
-import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
-import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
-import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.comment.CommentService;
-import hello.board.domain.service.member.MemberService;
+import hello.board.repository.comment.query.dto.CommentDto;
+import hello.board.repository.comment.query.dto.CommentSearchDto;
+import hello.board.repository.comment.query.dto.CommentSearchSort;
+import hello.board.service.board.BoardService;
+import hello.board.service.comment.CommentService;
+import hello.board.service.comment.query.CommentQueryService;
+import hello.board.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.comment.Comment;
 import hello.board.entity.member.Member;

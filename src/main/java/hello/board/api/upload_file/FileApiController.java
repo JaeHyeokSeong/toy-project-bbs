@@ -1,7 +1,7 @@
 package hello.board.api.upload_file;
 
-import hello.board.domain.service.upload_file.UploadFileService;
-import hello.board.domain.repository.upload_file.dto.UploadFileDto;
+import hello.board.service.upload_file.UploadFileService;
+import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.entity.file.FileStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;

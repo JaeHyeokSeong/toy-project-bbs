@@ -1,13 +1,14 @@
 package hello.board.domain.service.board.query;
 
-import hello.board.domain.repository.board.query.dto.BoardQueryDto;
-import hello.board.domain.repository.board.query.dto.BoardSearchCondition;
-import hello.board.domain.repository.board.query.dto.SearchSort;
-import hello.board.domain.repository.board.query.dto.SearchTarget;
-import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.board.query.dto.BoardListDto;
-import hello.board.domain.service.board.query.dto.BoardUpdateDto;
-import hello.board.domain.service.member.MemberService;
+import hello.board.repository.board.query.dto.BoardQueryDto;
+import hello.board.repository.board.query.dto.BoardSearchCondition;
+import hello.board.repository.board.query.dto.SearchSort;
+import hello.board.repository.board.query.dto.SearchTarget;
+import hello.board.service.board.BoardService;
+import hello.board.service.board.query.BoardQueryService;
+import hello.board.service.board.query.dto.BoardListDto;
+import hello.board.service.board.query.dto.BoardUpdateDto;
+import hello.board.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.member.Member;
 import hello.board.exception.BoardNotFoundException;
@@ -435,7 +436,7 @@ class BoardQueryServiceTest {
 
         //when then
         assertThatThrownBy(() -> boardQueryService.findBoardUpdateDto(savedBoard.getId(), member2.getId()))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test
@@ -449,12 +450,10 @@ class BoardQueryServiceTest {
 
         Board savedBoard1 = boardService
                 .saveBoard(member1.getId(), "title1", "content1", new ArrayList<>());
-        Board savedBoard2 = boardService
-                .saveBoard(member2.getId(), "title2", "content2", new ArrayList<>());
 
         //when then
-        assertThatThrownBy(() -> boardQueryService.findBoardUpdateDto(savedBoard2.getId(), member1.getId()))
-                .isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> boardQueryService.findBoardUpdateDto(savedBoard1.getId(), member2.getId()))
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test
@@ -468,12 +467,10 @@ class BoardQueryServiceTest {
 
         Board savedBoard1 = boardService
                 .saveBoard(member1.getId(), "title1", "content1", new ArrayList<>());
-        Board savedBoard2 = boardService
-                .saveBoard(member2.getId(), "title2", "content2", new ArrayList<>());
 
         //when then
-        assertThatThrownBy(() -> boardQueryService.findBoardUpdateDto(savedBoard2.getId() + 1, member1.getId()))
-                .isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> boardQueryService.findBoardUpdateDto(savedBoard1.getId() + 1, member1.getId()))
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test

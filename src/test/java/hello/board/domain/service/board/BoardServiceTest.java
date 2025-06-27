@@ -1,11 +1,13 @@
 package hello.board.domain.service.board;
 
-import hello.board.domain.repository.board.BoardRepository;
-import hello.board.domain.repository.board.query.dto.BoardQueryDto;
-import hello.board.domain.repository.comment.CommentRepository;
-import hello.board.domain.repository.upload_file.UploadFileRepository;
-import hello.board.domain.service.board.query.BoardQueryService;
-import hello.board.domain.service.member.MemberService;
+import hello.board.exception.BoardNotFoundException;
+import hello.board.repository.board.BoardRepository;
+import hello.board.repository.board.query.dto.BoardQueryDto;
+import hello.board.repository.comment.CommentRepository;
+import hello.board.repository.upload_file.UploadFileRepository;
+import hello.board.service.board.BoardService;
+import hello.board.service.board.query.BoardQueryService;
+import hello.board.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.comment.Comment;
 import hello.board.entity.file.UploadFile;
@@ -137,7 +139,7 @@ class BoardServiceTest {
                 "newContent",
                 newUploadFiles,
                 true
-        )).isInstanceOf(NoSuchElementException.class);
+        )).isInstanceOf(BoardNotFoundException.class);
     }
 
 

@@ -1,6 +1,6 @@
 package hello.board.api.member.dto;
 
-import hello.board.domain.repository.member.query.dto.MemberQueryDto;
+import hello.board.repository.member.query.dto.MemberQueryDto;
 import lombok.Data;
 
 @Data

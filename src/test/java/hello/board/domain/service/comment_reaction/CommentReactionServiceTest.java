@@ -1,9 +1,10 @@
 package hello.board.domain.service.comment_reaction;
 
-import hello.board.domain.repository.comment_reaction.CommentReactionRepository;
-import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.comment.CommentService;
-import hello.board.domain.service.member.MemberService;
+import hello.board.repository.comment_reaction.CommentReactionRepository;
+import hello.board.service.board.BoardService;
+import hello.board.service.comment.CommentService;
+import hello.board.service.comment_reaction.CommentReactionService;
+import hello.board.service.member.MemberService;
 import hello.board.entity.ReactionType;
 import hello.board.entity.board.Board;
 import hello.board.entity.comment.Comment;

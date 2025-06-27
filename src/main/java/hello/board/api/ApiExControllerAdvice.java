@@ -1,7 +1,7 @@
 package hello.board.api;
 
 import hello.board.exception.BindingResultException;
-import hello.board.web.dto.ErrorResult;
+import hello.board.controller.dto.ErrorResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;

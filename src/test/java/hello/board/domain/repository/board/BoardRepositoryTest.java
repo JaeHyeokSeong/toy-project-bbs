@@ -1,9 +1,10 @@
 package hello.board.domain.repository.board;
 
-import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.member.MemberService;
+import hello.board.service.board.BoardService;
+import hello.board.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.member.Member;
+import hello.board.repository.board.BoardRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

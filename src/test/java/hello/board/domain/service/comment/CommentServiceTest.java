@@ -1,12 +1,13 @@
 package hello.board.domain.service.comment;
 
-import hello.board.domain.repository.comment.CommentRepository;
-import hello.board.domain.service.board.BoardService;
-import hello.board.domain.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.comment.Comment;
 import hello.board.entity.member.Member;
-import hello.board.exception.NoAccessCommentException;
+import hello.board.exception.CommentNotFoundException;
+import hello.board.repository.comment.CommentRepository;
+import hello.board.service.board.BoardService;
+import hello.board.service.comment.CommentService;
+import hello.board.service.member.MemberService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -121,7 +122,7 @@ class CommentServiceTest {
 
         //when then
         assertThatThrownBy(() -> commentService.changeContent(savedComment.getId(), memberB.getId(), newContent))
-                .isInstanceOf(NoAccessCommentException.class);
+                .isInstanceOf(CommentNotFoundException.class);
     }
 
     @Test
@@ -141,7 +142,7 @@ class CommentServiceTest {
         //when then
         assertThatThrownBy(() -> commentService
                 .changeContent(savedComment.getId() + 1, memberA.getId(), newContent))
-                .isInstanceOf(NoAccessCommentException.class);
+                .isInstanceOf(CommentNotFoundException.class);
     }
 
     @Test

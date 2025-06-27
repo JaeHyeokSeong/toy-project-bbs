@@ -1,9 +1,10 @@
 package hello.board.api.board_reaction;
 
 import hello.board.SessionConst;
-import hello.board.api.board_reaction.dto.BoardReactionDto;
-import hello.board.api.board_reaction.dto.BoardReactionResultDto;
-import hello.board.domain.service.board_reaction.BoardReactionService;
+import hello.board.api.board_reaction.dto.AddBoardReactionDto;
+import hello.board.api.board_reaction.dto.AddBoardReactionResultDto;
+import hello.board.exception.BindingResultException;
+import hello.board.service.board_reaction.BoardReactionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -17,18 +18,18 @@ public class BoardReactionApiController {
     private final BoardReactionService boardReactionService;
 
     @PostMapping("/{boardId}")
-    public BoardReactionResultDto boardReactionDto(
-            @Valid @RequestBody BoardReactionDto boardReactionDto, BindingResult bindingResult,
+    public AddBoardReactionResultDto boardReactionDto(
+            @Valid @RequestBody AddBoardReactionDto addBoardReactionDto, BindingResult bindingResult,
             @PathVariable Long boardId,
             @SessionAttribute(SessionConst.MEMBER_ID) Long memberId) {
 
         if (bindingResult.hasErrors()) {
-            throw new IllegalArgumentException("전달된 ReactionType이 없습니다.");
+            throw new BindingResultException(bindingResult.getAllErrors());
         }
 
-        boardReactionService.reflectReaction(boardId, memberId, boardReactionDto.getReactionType());
+        boardReactionService.reflectReaction(boardId, memberId, addBoardReactionDto.getReactionType());
 
         long count = boardReactionService.totalReactionCount(boardId);
-        return new BoardReactionResultDto(boardId, count);
+        return new AddBoardReactionResultDto(boardId, count);
     }
 }

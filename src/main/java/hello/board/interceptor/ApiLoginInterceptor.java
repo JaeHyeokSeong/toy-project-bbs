@@ -2,8 +2,8 @@ package hello.board.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.board.SessionConst;
-import hello.board.domain.service.member.MemberService;
-import hello.board.web.dto.ErrorResult;
+import hello.board.service.member.MemberService;
+import hello.board.controller.dto.ErrorResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

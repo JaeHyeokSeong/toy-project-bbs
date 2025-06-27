@@ -1,7 +1,7 @@
 package hello.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hello.board.domain.service.member.MemberService;
+import hello.board.service.member.MemberService;
 import hello.board.interceptor.ApiLoginInterceptor;
 import hello.board.interceptor.LoggedInInterceptor;
 import hello.board.interceptor.LoginInterceptor;

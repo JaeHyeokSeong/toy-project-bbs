@@ -1,7 +1,7 @@
 package hello.board.interceptor;
 
 import hello.board.SessionConst;
-import hello.board.domain.service.member.MemberService;
+import hello.board.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

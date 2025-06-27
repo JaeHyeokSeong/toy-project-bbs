@@ -1,6 +1,6 @@
 package hello.board.api.board_reaction;
 
-import hello.board.web.dto.ErrorResult;
+import hello.board.controller.dto.ErrorResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
