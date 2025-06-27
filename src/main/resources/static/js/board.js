@@ -82,23 +82,11 @@ $(document).ready(function () {
 //답변
 $(document).ready(function () {
     const boardId = $("#board-id").text().trim();
-    let page = 0, size = 10, loading = false, hasNext = true;
-
-    //총 답변 개수 조회 및 업데이트
-    function updateCommentCount() {
-        $.ajax({
-            url: `/api/comments-total-count/${boardId}`,
-            method: 'GET'
-        })
-            .done(dto => {
-                $("#comment-count").text(`답변 ${dto.totalCount}개`);
-            })
-            .fail(err => console.error("총 댓글 개수 로드 실패", err));
-    }
+    let page = 0, size = 10, loading = false, isLast = false;
 
     //답변 불러오기 (페이징 + 무한 스크롤)
     function loadComments() {
-        if (!hasNext || loading) return;
+        if (isLast || loading) return;
         loading = true;
         $("#loading-spinner").show();
 
@@ -116,13 +104,16 @@ $(document).ready(function () {
             }
         })
             .done(data => {
+
+                $("#comment-count").text(`답변 ${data.numberOfElements}개`);
+                isLast = data.last;
+
                 if (page === 0 && data.content.length === 0) {
                     $("#comments-container").html(`
                 <div class="no-comments">
                     답변을 기다리고 있는 게시물이에요<br>
                     첫번째 답변을 남겨보세요!
                 </div>`);
-                    hasNext = false;
                     return;
                 }
 
@@ -197,7 +188,6 @@ $(document).ready(function () {
                     $("#comments-container").append(html);
                 });
 
-                hasNext = !data.last;
                 page++;
             })
             .fail(err => console.error("답변 로드 실패", err))
@@ -241,10 +231,9 @@ $(document).ready(function () {
         })
             .done(() => {
                 page = 0;
-                hasNext = true;
+                isLast = false;
                 $('#comments-container').empty();
                 loadComments();
-                updateCommentCount();
                 $('#add-comment-parent')
                     .val('')
                     .attr('rows', 1)
@@ -324,10 +313,9 @@ $(document).ready(function () {
         })
             .done(() => {
                 page = 0;
-                hasNext = true;
+                isLast = false;
                 $('#comments-container').empty();
                 loadComments();
-                updateCommentCount();
             })
             .fail(err => {
                 console.error('수정 실패', err);
@@ -362,10 +350,9 @@ $(document).ready(function () {
         })
             .done(() => {
                 page = 0;
-                hasNext = true;
+                isLast = false;
                 $('#comments-container').empty();
                 loadComments();
-                updateCommentCount();
             })
             .fail(err => {
                 console.error('삭제 실패', err);
@@ -389,16 +376,14 @@ $(document).ready(function () {
     $('#search-sort').on('change', function () {
         // 페이지 초기화
         page = 0;
-        hasNext = true;
+        isLast = false;
         // 기존 댓글 지우기
         $('#comments-container').empty();
         loadComments();
-        updateCommentCount();
     });
 
     //초기 로드
     loadComments();
-    updateCommentCount();
 });
 
 function formatDate(date) {

@@ -1,6 +1,9 @@
 package hello.board.api.comment;
 
-import hello.board.api.comment.dto.*;
+import hello.board.api.comment.dto.AddCommentDto;
+import hello.board.api.comment.dto.AddCommentResultDto;
+import hello.board.api.comment.dto.DeleteCommentResultDto;
+import hello.board.api.comment.dto.UpdateCommentDto;
 import hello.board.domain.repository.comment.query.dto.CommentDto;
 import hello.board.domain.repository.comment.query.dto.CommentSearchDto;
 import hello.board.domain.service.comment.CommentService;
@@ -11,8 +14,8 @@ import hello.board.exception.BindingResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,20 +36,12 @@ public class CommentApiController {
     private final CommentService commentService;
     private final CommentQueryService commentQueryService;
 
-    @GetMapping("/comments-total-count/{boardId}")
-    public CommentTotalCountDto commentTotalCount(@RequestParam(required = false) Long parentCommentId,
-                                                  @PathVariable Long boardId) {
-
-        Long count = commentQueryService.totalCount(boardId, parentCommentId);
-        return new CommentTotalCountDto(boardId, count);
-    }
-
     @GetMapping("/comments/{boardId}")
-    public Slice<CommentDto> findCommentDtoList(@Valid @ModelAttribute CommentSearchDto searchDto,
-                                                BindingResult bindingResult,
-                                                @PathVariable Long boardId,
-                                                @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
-                                                Pageable pageable) {
+    public Page<CommentDto> findCommentDtoList(@Valid @ModelAttribute CommentSearchDto searchDto,
+                                               BindingResult bindingResult,
+                                               @PathVariable Long boardId,
+                                               @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
+                                               Pageable pageable) {
 
         log.info("comment 검색 전달되어진 값={}", searchDto);
 
@@ -94,7 +89,7 @@ public class CommentApiController {
 
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<DeleteCommentResultDto> deleteComment(@PathVariable Long commentId,
-                                                @SessionAttribute(MEMBER_ID) Long memberId) {
+                                                                @SessionAttribute(MEMBER_ID) Long memberId) {
 
         commentService.deleteComment(commentId, memberId);
         return ResponseEntity.ok()

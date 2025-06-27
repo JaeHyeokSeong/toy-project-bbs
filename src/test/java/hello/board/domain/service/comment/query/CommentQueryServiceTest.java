@@ -13,8 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Slice<CommentDto> result = commentQueryService
+        Page<CommentDto> result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(0, 5));
 
         //then
@@ -83,7 +83,7 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Slice<CommentDto> result = commentQueryService
+        Page<CommentDto> result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 5));
 
         //then
@@ -113,7 +113,7 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Slice<CommentDto> result = commentQueryService
+        Page<CommentDto> result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 15));
 
         //then
@@ -157,7 +157,7 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(comment1.getId(), CommentSearchSort.OLDEST);
 
-        Slice<CommentDto> result = commentQueryService.findAllComments(board1.getId(), null,
+        Page<CommentDto> result = commentQueryService.findAllComments(board1.getId(), null,
                 searchDto, PageRequest.of(0, 3));
 
         //then

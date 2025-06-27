@@ -12,9 +12,9 @@ import hello.board.domain.repository.comment.query.dto.CommentSearchSort;
 import hello.board.entity.ReactionType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -34,8 +34,8 @@ public class CommentQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Slice<CommentDto> findAllComments(Long boardId, @Nullable Long memberId,
-                                             CommentSearchDto searchDto, Pageable pageable) {
+    public Page<CommentDto> findAllComments(Long boardId, @Nullable Long memberId,
+                                            CommentSearchDto searchDto, Pageable pageable) {
 
         List<CommentDto> content = queryFactory.select(Projections.constructor(CommentDto.class,
                         comment.board.id,
@@ -69,26 +69,20 @@ public class CommentQueryRepository {
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        boolean hasNext = false;
-        if (content.size() > pageable.getPageSize()) {
-            hasNext = true;
+        Long count = queryFactory.select(comment.count())
+                .from(comment)
+                .where(comment.board.id.eq(boardId), parentCommentIdEq(searchDto.getParentCommentId()))
+                .fetchOne();
 
+        if (content.size() > pageable.getPageSize()) {
             List<CommentDto> recreatedContent = new ArrayList<>();
             for (int i = 0; i < pageable.getPageSize(); i++) {
                 recreatedContent.add(content.get(i));
             }
-            return new SliceImpl<>(recreatedContent, pageable, hasNext);
+            return new PageImpl<>(recreatedContent, pageable, count);
         }
 
-        return new SliceImpl<>(content, pageable, hasNext);
-    }
-
-    public Long totalCount(Long boardId, @Nullable Long parentCommentId) {
-        return queryFactory.select(comment.count())
-                .from(comment)
-                .where(comment.board.id.eq(boardId), parentCommentId == null ? comment.parentComment.isNull() :
-                        comment.parentComment.id.eq(parentCommentId))
-                .fetchOne();
+        return new PageImpl<>(content, pageable, count);
     }
 
     private BooleanExpression parentCommentIdEq(Long parentCommentId) {

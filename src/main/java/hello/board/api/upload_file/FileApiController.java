@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,14 +31,23 @@ public class FileApiController {
     private final FileStore fileStore;
 
     @GetMapping("/images/{storeFileName}")
-    public ResponseEntity<Resource> image(@PathVariable String storeFileName) throws MalformedURLException {
+    public ResponseEntity<Resource> image(@PathVariable String storeFileName) throws IOException {
         UploadFileDto uploadFileDto = uploadFileService.findUploadFileDto(storeFileName);
         UrlResource content = new UrlResource("file:" + fileStore.getFullPath(uploadFileDto.getStoreFileName()));
 
         CacheControl cacheControl = CacheControl.noCache();
 
-        return ResponseEntity
-                .ok()
+        //content-type 찾기
+        String contentType = Files.probeContentType(Paths.get(fileStore.getFullPath(uploadFileDto.getStoreFileName())));
+
+        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
+
+        //content-type 설정하기
+        if (contentType != null) {
+            builder.contentType(MediaType.valueOf(contentType));
+        }
+
+        return builder
                 .cacheControl(cacheControl)
                 .lastModified(uploadFileDto.getLastModifiedDate().atZone(ZoneId.of("Asia/Seoul")))
                 .body(content);
@@ -53,13 +61,14 @@ public class FileApiController {
         String encodedUploadedOriginalFileName = UriUtils.encode(uploadFileDto.getOriginalFileName(), StandardCharsets.UTF_8);
         String contentDisposition = "attachment; filename=\"" + encodedUploadedOriginalFileName + "\"";
 
-        //content-type 설정
+        //content-type 찾기
         String contentType = Files.probeContentType(Paths.get(fileStore.getFullPath(uploadFileDto.getStoreFileName())));
 
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
 
+        //content-type 설정하기
         if (contentType != null) {
-            builder = builder.contentType(MediaType.parseMediaType(contentType));
+            builder.contentType(MediaType.parseMediaType(contentType));
         }
 
         return builder
