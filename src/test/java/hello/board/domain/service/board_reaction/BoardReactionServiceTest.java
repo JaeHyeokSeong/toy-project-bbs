@@ -1,5 +1,7 @@
 package hello.board.domain.service.board_reaction;
 
+import hello.board.exception.BoardNotFoundException;
+import hello.board.exception.MemberNotFoundException;
 import hello.board.service.board.BoardService;
 import hello.board.service.board_reaction.BoardReactionService;
 import hello.board.service.member.MemberService;
@@ -130,7 +132,7 @@ class BoardReactionServiceTest {
         //when then
         assertThatThrownBy(() -> boardReactionService
                 .reflectReaction(board.getId() + 1, memberA.getId(), ReactionType.LIKE))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test
@@ -144,7 +146,7 @@ class BoardReactionServiceTest {
         //when then
         assertThatThrownBy(() -> boardReactionService
                 .reflectReaction(board.getId(), memberA.getId() + 1, ReactionType.LIKE))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
@@ -158,7 +160,7 @@ class BoardReactionServiceTest {
         //when then
         assertThatThrownBy(() -> boardReactionService
                 .reflectReaction(board.getId() + 1, memberA.getId() + 1, ReactionType.LIKE))
-                .isInstanceOf(NoSuchElementException.class);
+                .isInstanceOf(BoardNotFoundException.class);
     }
 
     @Test

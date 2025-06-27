@@ -1,17 +1,18 @@
 package hello.board.service.board_reaction;
 
-import hello.board.repository.board.BoardRepository;
-import hello.board.repository.board_reaction.BoardReactionRepository;
-import hello.board.repository.member.MemberRepository;
+import hello.board.entity.ReactionType;
 import hello.board.entity.board.Board;
 import hello.board.entity.board.BoardReaction;
 import hello.board.entity.member.Member;
-import hello.board.entity.ReactionType;
+import hello.board.exception.BoardNotFoundException;
+import hello.board.exception.MemberNotFoundException;
+import hello.board.repository.board.BoardRepository;
+import hello.board.repository.board_reaction.BoardReactionRepository;
+import hello.board.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -34,9 +35,9 @@ public class BoardReactionService {
      */
     public void reflectReaction(Long boardId, Long memberId, ReactionType reactionType) {
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
-                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
+                new BoardNotFoundException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
         Member member = memberRepository.findById(memberId).orElseThrow(() ->
-                new NoSuchElementException("존재하지 않는 memberId 입니다. 전달된 memberId: " + memberId));
+                new MemberNotFoundException("존재하지 않는 memberId 입니다. 전달된 memberId: " + memberId));
         Optional<BoardReaction> findBoardReaction = boardReactionRepository.findByBoardAndMember(board, member);
 
         //사용자가 해당 게시물에 어떠한 반응도 안한경우
@@ -57,25 +58,16 @@ public class BoardReactionService {
         }
     }
 
-    public ReactionType findReaction(Long boardId, Long memberId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() ->
-                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
-        Member member = memberRepository.findById(memberId).orElseThrow(() ->
-                new NoSuchElementException("존재하지 않는 memberId 입니다. 전달된 memberId: " + memberId));
-        Optional<BoardReaction> findBoardReaction = boardReactionRepository.findByBoardAndMember(board, member);
-
-        return findBoardReaction.map(BoardReaction::getReactionType).orElse(null);
-    }
-
     /**
      * boardId에 해당하는 게시물의 전체 (좋아요 수 - 싫어요 수) 결과를 반환 합니다.
-     * @throws java.util.NoSuchElementException boardId를 이용해서 Board를 못찾은 경우
+     *
+     * @throws BoardNotFoundException boardId를 이용해서 Board를 못찾은 경우
      */
     @Transactional(readOnly = true)
     public long totalReactionCount(Long boardId) {
         //존재하는 게시물인지 확인하기
         boardRepository.findById(boardId).orElseThrow(() ->
-                new NoSuchElementException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
+                new BoardNotFoundException("존재하지 않는 boardId 입니다. 전달된 boardId: " + boardId));
 
         //해당 게시물의 전체 좋아요 수
         long totalLikeCount = boardReactionRepository
