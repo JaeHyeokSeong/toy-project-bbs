@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 import java.util.Locale;
 
-@RestControllerAdvice("hello.board.api")
+@RestControllerAdvice("hello.board.controller.api")
 @RequiredArgsConstructor
 public class ApiExControllerAdvice {
 

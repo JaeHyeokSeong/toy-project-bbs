@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CommentSearchSort {
 
-    NEWEST("최신순"), OLDEST("오래된순"), LIKES("좋아요순");
+    LIKES("좋아요순"), NEWEST("최신순"), OLDEST("오래된순");
 
     private final String description;
 

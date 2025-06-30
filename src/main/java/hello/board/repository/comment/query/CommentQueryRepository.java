@@ -4,12 +4,14 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import hello.board.entity.ReactionType;
+import hello.board.entity.comment.QCommentReaction;
 import hello.board.repository.comment.query.dto.CommentDto;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
 import hello.board.repository.comment.query.dto.CommentSearchSort;
-import hello.board.entity.ReactionType;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.domain.Page;
@@ -37,6 +39,9 @@ public class CommentQueryRepository {
     public Page<CommentDto> findAllComments(Long boardId, @Nullable Long memberId,
                                             CommentSearchDto searchDto, Pageable pageable) {
 
+        StringPath totalLikesPlusTotalDislikes = Expressions.stringPath("totalLikesPlusTotalDislikes");
+        QCommentReaction subCommentReaction = new QCommentReaction("subCommentReaction");
+
         List<CommentDto> content = queryFactory.select(Projections.constructor(CommentDto.class,
                         comment.board.id,
                         comment.id,
@@ -53,6 +58,18 @@ public class CommentQueryRepository {
                                 .from(commentReaction)
                                 .where(commentReaction.comment.id.eq(comment.id),
                                         commentReaction.reactionType.eq(ReactionType.DISLIKE)),
+                        Expressions.as(JPAExpressions.select(
+                                        commentReaction.count().subtract(
+                                                JPAExpressions.select(
+                                                                subCommentReaction.count())
+                                                        .from(subCommentReaction)
+                                                        .where(subCommentReaction.comment.id.eq(comment.id),
+                                                                subCommentReaction.reactionType.eq(ReactionType.DISLIKE))
+                                        )
+                                )
+                                .from(commentReaction)
+                                .where(commentReaction.comment.id.eq(comment.id),
+                                        commentReaction.reactionType.eq(ReactionType.LIKE)), "totalLikesPlusTotalDislikes"),
                         memberId == null ? Expressions.constantAs(null, commentReaction.reactionType) :
                                 JPAExpressions.select(commentReaction.reactionType)
                                         .from(commentReaction)
@@ -64,7 +81,7 @@ public class CommentQueryRepository {
                 .from(comment)
                 .where(comment.board.id.eq(boardId), parentCommentIdEq(searchDto.getParentCommentId()))
                 .join(comment.member, member)
-                .orderBy(commentSearchSortEq(searchDto.getSearchSort()))
+                .orderBy(commentSearchSortEq(searchDto.getSearchSort(), totalLikesPlusTotalDislikes), comment.createdDate.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
@@ -89,9 +106,11 @@ public class CommentQueryRepository {
         return parentCommentId == null ? comment.parentComment.isNull() : comment.parentComment.id.eq(parentCommentId);
     }
 
-    private OrderSpecifier<?> commentSearchSortEq(CommentSearchSort searchSort) {
+    private OrderSpecifier<?> commentSearchSortEq(CommentSearchSort searchSort, StringPath totalLikesPlusTotalDislikes) {
         if (searchSort == CommentSearchSort.NEWEST) {
             return comment.createdDate.desc();
+        } else if (searchSort == CommentSearchSort.LIKES) {
+            return totalLikesPlusTotalDislikes.desc();
         } else {
             return comment.createdDate.asc();
         }

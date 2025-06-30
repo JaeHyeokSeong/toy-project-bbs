@@ -105,7 +105,7 @@ $(document).ready(function () {
         })
             .done(data => {
 
-                $("#comment-count").text(`답변 ${data.numberOfElements}개`);
+                $("#comment-count").text(`답변 ${data.totalElements}개`);
                 isLast = data.last;
 
                 if (page === 0 && data.content.length === 0) {

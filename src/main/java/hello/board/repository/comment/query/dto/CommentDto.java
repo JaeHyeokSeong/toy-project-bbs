@@ -23,6 +23,7 @@ public class CommentDto {
     private Boolean isEditable; //수정/삭제 권환
     private long totalLikes;
     private long totalDislikes;
+    private long totalLikesPlusTotalDislikes;
     private ReactionType reactionType;
 
     //작성자 정보
