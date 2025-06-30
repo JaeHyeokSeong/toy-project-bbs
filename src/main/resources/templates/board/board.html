@@ -128,12 +128,14 @@
     <!-- 답변 -->
     <div>
         <!-- 총 답변 수 & 정렬 기준 -->
-        <div class="comment-toolbar mt-4 mb-3">
+        <div class="comment-toolbar d-flex align-items-center justify-content-start mt-4 mb-3">
             <p id="comment-count"></p>
             <select id="search-sort">
                 <option th:each="cs : ${commentSearchSorts}"
                         th:value="${cs}" th:text="${cs.description}"></option>
             </select>
+            <img class="ms-auto" id="comment-refresh-btn" style="cursor: pointer" title="답변 목록을 새로고침합니다."
+                 src="/images/refresh.svg" alt="답변 목록 새로고침 아이콘입니다.">
         </div>
 
         <!-- 답변 등록 -->

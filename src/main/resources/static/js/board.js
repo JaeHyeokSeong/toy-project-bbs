@@ -382,6 +382,16 @@ $(document).ready(function () {
         loadComments();
     });
 
+    //답변 새로고침 아이콘이 클릭된 경우
+    $('#comment-refresh-btn').click(function () {
+        // 페이지 초기화
+        page = 0;
+        isLast = false;
+        // 기존 댓글 지우기
+        $('#comments-container').empty();
+        loadComments();
+    });
+
     //초기 로드
     loadComments();
 });
