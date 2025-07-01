@@ -5,58 +5,63 @@
     <meta charset="UTF-8">
     <title>게시물 수정하기 - 자유게시판</title>
     <link rel="stylesheet" href="/css/board-add.css">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
     <script type="text/javascript" src="/js/file.js"></script>
 </head>
 <body>
 
 <section class="write-section" tabindex="0">
-    <h2>게시물 작성</h2>
+    <h2>게시물 수정</h2>
     <p>자유게시판에 게시될 글의 제목과 내용을 입력해 주세요.</p>
 
-    <form th:action="@{/bbs/edit/{id}(id=${boardUpdateDto.getBoardId()})}"
+    <form id="postForm" th:action
           th:object="${boardUpdateDto}" method="post" enctype="multipart/form-data">
         <ul class="write-list">
             <li>
                 <label for="title">제목<span class="required-star">*</span></label>
-                <input id="title" type="text" th:field="*{title}" style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;">
+                <input id="title" type="text" th:field="*{title}"
+                       style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;">
                 <p class="field-error" th:errors="*{title}"></p>
             </li>
             <li>
-                <label for="content">내용<span class="required-star">*</span></label>
-                <textarea id="content" th:field="*{content}" rows="10" style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;"></textarea>
-                <p class="field-error" th:errors="*{content}"></p>
-            </li>
-            <li>
-                <div class="file-edit-div" style="display: none">
-                    <div style="display: flex">
-                        <label for="files" class="file-label"><i class="bi bi-file-earmark-arrow-up"></i>
-                            첨부파일 (<span id="total-file-size">0MB</span> / 200MB)
-                        </label>
-                        <div style="display: inline-block;">&nbsp;-&nbsp;
-                            <span class="file-label file-edit-cancel-btn"
-                                  style="text-decoration-line: underline; text-decoration-color: #6c757d;">
-                                수정 취소하기
-                            </span>
-                        </div>
-                    </div>
-                    <input type="file" id="files" th:field="*{multipartFiles}" multiple>
-                    <input type="checkbox" id="updateFile" th:field="*{updateFile}" hidden>
-                    <span id="file-info"></span>
+                <label for="editor">내용<span class="required-star">*</span></label>
+                <div id="toolbar">
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-strike"></button>
+                        <button class="ql-link"></button>
+                        <select class="ql-color"></select>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-code"></button>
+                        <button class="ql-code-block"></button>
+                        <button class="ql-blockquote"></button>
+                        <button class="ql-image"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-header" value="1"></button>
+                        <button class="ql-header" value="2"></button>
+                        <button class="ql-header" value="3"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
                 </div>
 
-                <div class="file-div">
-                    <label><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 -
-                        <span class="file-label file-edit-btn" style="text-decoration-line: underline;
-                         text-decoration-color: #6c757d">수정하기</span>
-                    </label>
-                    <ul>
-                        <li th:each="file : *{uploadedFiles}">
-                            <a th:text="${file.originalFileName}" th:href="|/api/files/${file.storeFileName}|"></a>
-                        </li>
-                    </ul>
-                </div>
+                <div id="editor" style="height:450px"></div>
+                <p class="field-error mt-2" th:errors="*{content}"></p>
+                <p class="field-error mt-2" th:errors="*{storeFileNames}"></p>
 
-
+                <input type="hidden" th:field="*{content}" id="hidden-content"/>
+                <div id="storeFileNamesContainer"></div>
+                <div id="deleteFileNamesContainer"></div>
             </li>
 
             <hr>
@@ -64,13 +69,18 @@
             <li class="button-group">
                 <button id="submit" type="submit"
                         style="padding: .5rem 1rem; border: none; background: #0d6efd; color: #fff;"
-                >등록</button>
+                >등록
+                </button>
                 <a th:href="|/bbs/${boardUpdateDto.getBoardId()}/${boardUpdateDto.getSlug()}|"
                    style="margin-left: 1rem; color: #0d6efd; text-decoration: none;">취소</a>
             </li>
         </ul>
     </form>
 </section>
+
+<script th:inline="javascript">
+    window.board_content = /*[[${boardUpdateDto.content}]]*/ '';
+</script>
 
 </body>
 </html>

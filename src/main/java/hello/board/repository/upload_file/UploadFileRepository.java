@@ -19,4 +19,8 @@ public interface UploadFileRepository extends JpaRepository<UploadFile, Long> {
 
     @Query("select uf from UploadFile uf where uf.storeFileName in :storeFileNames")
     List<UploadFile> findAllByStoreFileNames(@Param("storeFileNames") List<String> storeFileNames);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("delete from UploadFile uf where uf.storeFileName in :storeFileNames")
+    void deleteAllByStoreFileNames(@Param("storeFileNames") List<String> storeFileNames);
 }

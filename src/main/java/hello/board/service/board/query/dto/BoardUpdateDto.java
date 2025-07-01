@@ -1,12 +1,11 @@
 package hello.board.service.board.query.dto;
 
-import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.entity.board.Board;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,18 +19,14 @@ public class BoardUpdateDto {
     private String title;
     @NotBlank
     private String content;
-    private List<UploadFileDto> uploadedFiles;
-    private List<MultipartFile> multipartFiles;
-    private boolean updateFile;
+    @Size(max = 20)
+    private List<String> storeFileNames;
+    private List<String> deleteFileNames;
 
     public BoardUpdateDto(Board board) {
         boardId = board.getId();
         slug = board.getSlug();
         title = board.getTitle();
         content = board.getContent();
-        uploadedFiles = board.getUploadFiles()
-                .stream()
-                .map(UploadFileDto::new)
-                .toList();
     }
 }

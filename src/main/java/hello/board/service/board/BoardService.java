@@ -51,27 +51,28 @@ public class BoardService {
      *  게시물 수정
      */
     public String updateBoard(Long boardId, Long memberId, String title, String content,
-                            List<UploadFile> newUploadFiles, boolean updateFile) {
+                            List<String> storeFileNames, List<String> deleteFileNames) {
 
         //접근 권한 확인
-        boardRepository.findBoard(boardId, memberId).orElseThrow(BoardNotFoundException::new);
+        boardRepository.findBoard(boardId, memberId).orElseThrow(
+                () -> new BoardNotFoundException("존재하지 않는 게시물 입니다. 전달된 boardId=" + boardId));
 
-        if (updateFile) {
-            //현재 등록되어진 모든 첨부 파일들 삭제 (벌크연산)
-            uploadFileRepository.deleteAllUploadFiles(boardId);
+        if (!deleteFileNames.isEmpty()) {
+            uploadFileRepository.deleteAllByStoreFileNames(deleteFileNames);
         }
 
         //새로운 영속성 컨텍스트 시작
         Board board = boardRepository.findById(boardId).orElseThrow();
 
-        board.changeTitle(title);
-        board.changeContent(content);
-        if (updateFile) {
-            //새로운 첨부 파일들 등록
-            for (UploadFile newFile : newUploadFiles) {
-                board.addUploadFile(newFile);
+        if (!storeFileNames.isEmpty()) {
+            List<UploadFile> uploadFileList = uploadFileRepository.findAllByStoreFileNames(storeFileNames);
+            for (UploadFile uploadFile : uploadFileList) {
+                uploadFile.setBoard(board);
             }
         }
+
+        board.changeTitle(title);
+        board.changeContent(content);
 
         return board.getSlug();
     }

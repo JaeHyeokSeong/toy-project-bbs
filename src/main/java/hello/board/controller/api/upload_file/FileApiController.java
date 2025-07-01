@@ -29,7 +29,7 @@ public class FileApiController {
     private final UploadFileService uploadFileService;
     private final FileStore fileStore;
 
-    @PostMapping("/image")
+    @PostMapping("/file")
     public ResponseEntity<UploadFileDto> uploadImage(@RequestParam MultipartFile multipartFile) {
         UploadFile uploadFile = fileStore.storeFile(multipartFile);
         UploadFileDto uploadFileDto = uploadFileService.saveUploadFile(uploadFile);
@@ -41,7 +41,7 @@ public class FileApiController {
                 .body(uploadFileDto);
     }
 
-    @DeleteMapping("/image/{storeFileName}")
+    @DeleteMapping("/file/{storeFileName}")
     public ResponseEntity<Map<String, UploadFileDto>> deleteImage(@PathVariable String storeFileName) {
         UploadFileDto uploadFileDto = uploadFileService.deleteByStoreFileName(storeFileName);
 
@@ -51,7 +51,7 @@ public class FileApiController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("/images/{storeFileName}")
+    @GetMapping("/files/{storeFileName}")
     public ResponseEntity<Resource> image(@PathVariable String storeFileName) throws IOException {
         UploadFileDto uploadFileDto = uploadFileService.findUploadFileDto(storeFileName);
         UrlResource content = new UrlResource("file:" + fileStore.getFullPath(uploadFileDto.getStoreFileName()));

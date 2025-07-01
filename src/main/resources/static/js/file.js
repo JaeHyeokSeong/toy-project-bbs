@@ -5,122 +5,185 @@ $(document).ready(function () {
     const submitBtn = document.getElementById('submit');
     const hiddenContent = document.getElementById('hidden-content');
     const storeFileNamesContainer = document.getElementById('storeFileNamesContainer');
+    const deleteFileNamesContainer = document.getElementById('deleteFileNamesContainer');
 
-    // 2) 업로드된 파일명들을 저장할 배열
+    // 2) 업로드된 파일명들을 저장할 배열 (신규 업로드 전용)
     const storeFileNames = [];
+    // 3) 수정 모드일 때만 사용할, 기존 로드된 파일명 저장
+    const existingFileNames = [];
+    // 4) 수정 모드에서 삭제할 파일명을 모아둘 배열
+    const pendingDelete = [];
 
-    // 3) 이미지 업로드 + 에디터 삽입 공통 로직
+    // 5) create vs edit 모드 판별 (URL에 '/edit/' 포함 여부)
+    const isEditMode = form.action.includes('/edit/');
+
+    // 6) 이미지 즉시 삭제 (Create 모드 전용)
+    function deleteImageImmediately(name) {
+        fetch(`/api/file/${name}`, { method: 'DELETE' })
+            .catch(err => console.error('Image delete failed', err));
+    }
+
+    // 7) 이미지 업로드 + 삽입
     function uploadImage(file) {
-        // 최대 20개 제한
         if (storeFileNames.length >= 20) {
             alert('이미지는 최대 20개까지만 업로드할 수 있습니다.');
             return;
         }
-
-        const formData = new FormData();
-        formData.append('multipartFile', file);
-
-        fetch('/api/image', { method: 'POST', body: formData })
+        const fd = new FormData();
+        fd.append('multipartFile', file);
+        fetch('/api/file', { method: 'POST', body: fd })
             .then(res => {
                 if (!res.ok) {
-                    if (res.status === 413) {
-                        alert('파일의 용량이 너무 큽니다.');
-                    } else {
-                        alert(`이미지 업로드에 실패했습니다. (상태코드: ${res.status})`);
-                    }
-                    throw new Error(`Upload failed with status ${res.status}`);
+                    if (res.status === 413) alert('파일 용량이 너무 큽니다.');
+                    else alert(`업로드 실패 (상태코드: ${res.status})`);
+                    throw new Error(`Upload failed ${res.status}`);
                 }
                 return res.json();
             })
             .then(dto => {
-                // 삽입 위치 구하고 서버 URL로 이미지 삽입
-                const url = '/api/images/' + dto.storeFileName;
+                const url = '/api/files/' + dto.storeFileName;
                 const range = quill.getSelection(true);
                 quill.insertEmbed(range.index, 'image', url);
                 quill.setSelection(range.index + 1);
-                // 배열에 파일명 기록
+                // 신규 업로드만 storeFileNames에 기록
                 storeFileNames.push(dto.storeFileName);
             })
-            .catch(err => console.error('Image upload failed', err));
+            .catch(console.error);
     }
 
-    // 4) Quill 에디터 초기화
+    // 8) Quill 초기화
     const quill = new Quill('#editor', {
         modules: {
-            toolbar: {
-                container: '#toolbar',
-                handlers: { image: imageHandler }
-            }
+            toolbar: { container: '#toolbar', handlers: { image: imageHandler } }
         },
-        placeholder: '서로 예의를 지키며 존중하는 문화를 만들가요.',
+        placeholder: '내용을 입력해 주세요.',
         theme: 'snow'
     });
 
-    // 5) 툴바 이미지 버튼 핸들러
+    // 9) 수정 모드일 때 기존 컨텐츠 로드 & existingFileNames 채우기
+    if (window.board_content) {
+        const clean = DOMPurify.sanitize(window.board_content);
+        quill.clipboard.dangerouslyPasteHTML(clean);
+        quill.root.querySelectorAll('img').forEach(img => {
+            const name = img.getAttribute('src').split('/').pop();
+            if (name && !existingFileNames.includes(name)) {
+                existingFileNames.push(name);
+            }
+        });
+    }
+
+    // 10) 툴바 이미지 버튼 핸들러
     function imageHandler() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.click();
-        input.onchange = () => {
-            const file = input.files[0];
+        const inp = document.createElement('input');
+        inp.type = 'file';
+        inp.accept = 'image/*';
+        inp.click();
+        inp.onchange = () => {
+            const file = inp.files[0];
             if (file) uploadImage(file);
         };
     }
 
-    // 6) Base64 인라인 삽입 막기 (캡처 단계)
-    const container = quill.root.parentNode; // .ql-container
-    ['dragover', 'drop', 'past'].forEach(evt =>
+    // 11) Base64 인라인 차단 (캡처 단계)
+    const container = quill.root.parentNode;
+    ['dragover','drop','paste'].forEach(evt =>
         container.addEventListener(evt, e => {
-            if (e.dataTransfer && e.dataTransfer.types.includes('Files')) {
-                e.preventDefault();
-                e.stopPropagation();
+            if ((e.dataTransfer && e.dataTransfer.types.includes('Files')) ||
+                (e.clipboardData && Array.from(e.clipboardData.items).some(i=>i.kind==='file'))) {
+                e.preventDefault(); e.stopPropagation();
             }
         }, { capture: true })
     );
 
-    // 7) 이미지 제거 시 DELETE 호출 및 배열 정리
-    quill.on('text-change', function () {
-        const currentNames = Array.from(quill.root.querySelectorAll('img'))
+    // 12) 이미지 삭제 감지
+    quill.on('text-change', () => {
+        const current = Array.from(quill.root.querySelectorAll('img'))
             .map(img => img.getAttribute('src').split('/').pop());
 
+        // Undo 복구: 에디터에 다시 나타난 이미지는 pendingDelete에서 제거
+        pendingDelete.slice().forEach(name => {
+            if (current.includes(name)) {
+                pendingDelete.splice(pendingDelete.indexOf(name), 1);
+                if (!existingFileNames.includes(name)) {
+                    existingFileNames.push(name);
+                }
+            }
+        });
+
+        // ── 기존 이미지 삭제 (edit 모드) ──
+        existingFileNames.slice().forEach(name => {
+            if (!current.includes(name)) {
+                pendingDelete.push(name);
+                existingFileNames.splice(existingFileNames.indexOf(name), 1);
+            }
+        });
+
+        // ── 신규 업로드 이미지 삭제 감지 ──
         storeFileNames.slice().forEach(name => {
-            if (!currentNames.includes(name)) {
-                fetch(`/api/image/${name}`, { method: 'DELETE' })
-                    .catch(err => console.error('Image delete failed', err));
-                const idx = storeFileNames.indexOf(name);
-                if (idx > -1) storeFileNames.splice(idx, 1);
+            if (!current.includes(name)) {
+                if (!isEditMode) {
+                    deleteImageImmediately(name);
+                } else {
+                    if (!pendingDelete.includes(name)) {
+                        pendingDelete.push(name);
+                    }
+                }
+                storeFileNames.splice(storeFileNames.indexOf(name), 1);
             }
         });
     });
 
-    // 8) 폼 제출 전 히든 필드 업데이트
+    // 13) 폼 제출 전 처리
     form.addEventListener('submit', function () {
-        // 에디터 내용
+        // (1) Quill 내용
         hiddenContent.value = quill.root.innerHTML;
-        // 파일명 히든 필드 생성
+
+        // (2) storeFileNames 히든 필드 (신규 업로드)
         storeFileNamesContainer.innerHTML = '';
-        storeFileNames.forEach(name => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'storeFileNames';
-            input.value = name;
-            storeFileNamesContainer.appendChild(input);
-        });
+        if (storeFileNames.length) {
+            storeFileNames.forEach(name => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'storeFileNames';
+                inp.value = name;
+                storeFileNamesContainer.appendChild(inp);
+            });
+        } else {
+            // 빈 리스트 바인드용 (값 없이 하나라도 보내면 null 대신 빈 리스트로 바인드)
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'storeFileNames';
+            inp.value = '';
+            storeFileNamesContainer.appendChild(inp);
+        }
+
+        // (3) edit 모드에서 삭제할 파일명(deleteFileNames) 전송
+        deleteFileNamesContainer.innerHTML = '';
+        if (isEditMode) {
+            if (pendingDelete.length) {
+                pendingDelete.forEach(name => {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden'; inp.name = 'deleteFileNames'; inp.value = name;
+                    deleteFileNamesContainer.appendChild(inp);
+                });
+            } else {
+                // 빈 리스트 바인드
+                const inp = document.createElement('input');
+                inp.type = 'hidden'; inp.name = 'deleteFileNames'; inp.value = '';
+                deleteFileNamesContainer.appendChild(inp);
+            }
+        }
     });
 
-    submitBtn.disabled = true;  // 초기 상태
-
-    function validateForm() {
-        const titleFilled = titleInput.value.trim().length > 0 && titleInput.value.trim().length <= 100;
-        const contentFilled = quill.getText().trim().length > 0;
-        submitBtn.disabled = !(titleFilled && contentFilled);
+    // 14) 폼 검증 & 버튼 활성화
+    submitBtn.disabled = true;
+    function validate() {
+        const okTitle = titleInput.value.trim().length > 0
+            && titleInput.value.trim().length <= 100;
+        const okContent = quill.getText().trim().length > 0;
+        submitBtn.disabled = !(okTitle && okContent);
     }
-
-    // 제목 입력 변화 감지
-    titleInput.addEventListener('input', validateForm);
-    // 에디터 내용 변화 감지
-    quill.on('text-change', validateForm);
-    // 초기 검증
-    validateForm();
+    titleInput.addEventListener('input', validate);
+    quill.on('text-change', validate);
+    validate();
 });

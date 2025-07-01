@@ -119,14 +119,7 @@ public class BoardController {
             @PathVariable Long boardId, @SessionAttribute(SessionConst.MEMBER_ID) Long memberId,
             RedirectAttributes redirectAttributes) {
 
-        int numberOfFiles = 0;
-        for (MultipartFile multipartFile : boardUpdateDto.getMultipartFiles()) {
-            if (!multipartFile.isEmpty()) {
-                numberOfFiles++;
-            }
-        }
         log.info("게시판 수정 - 전달되어진 값={}", boardUpdateDto);
-        log.info("게시판 수정 - 새롭게 전달되어진 총 첨부파일 수={}", numberOfFiles);
 
         if (bindingResult.hasErrors()) {
             log.info("게시판 수정 - 검증 오류={}", bindingResult);
@@ -138,8 +131,8 @@ public class BoardController {
                 memberId,
                 boardUpdateDto.getTitle(),
                 boardUpdateDto.getContent(),
-                fileStore.storeFiles(boardUpdateDto.getMultipartFiles()),
-                boardUpdateDto.isUpdateFile()
+                boardUpdateDto.getStoreFileNames(),
+                boardUpdateDto.getDeleteFileNames()
         );
 
         redirectAttributes.addAttribute("boardId", boardId);
