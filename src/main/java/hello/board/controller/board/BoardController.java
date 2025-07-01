@@ -96,7 +96,7 @@ public class BoardController {
         Board board = boardService.saveBoard(
                 memberId, dto.getTitle(),
                 dto.getContent(),
-                fileStore.storeFiles(dto.getFiles())
+                dto.getStoreFileNames()
         );
         redirectAttributes.addAttribute("id", board.getId());
         redirectAttributes.addAttribute("slug", board.getSlug());

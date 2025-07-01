@@ -1,5 +1,6 @@
 package hello.board.controller.api.upload_file;
 
+import hello.board.entity.file.UploadFile;
 import hello.board.service.upload_file.UploadFileService;
 import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.entity.file.FileStore;
@@ -10,10 +11,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
@@ -29,6 +28,17 @@ public class FileApiController {
 
     private final UploadFileService uploadFileService;
     private final FileStore fileStore;
+
+    @PostMapping("/image")
+    public ResponseEntity<UploadFileDto> uploadImage(@RequestParam MultipartFile multipartFile) {
+        UploadFile uploadFile = fileStore.storeFile(multipartFile);
+        UploadFileDto uploadFileDto = uploadFileService.saveUploadFile(uploadFile);
+
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .lastModified(uploadFileDto.getLastModifiedDate().atZone(ZoneId.of("Asia/Seoul")))
+                .body(uploadFileDto);
+    }
 
     @GetMapping("/images/{storeFileName}")
     public ResponseEntity<Resource> image(@PathVariable String storeFileName) throws IOException {

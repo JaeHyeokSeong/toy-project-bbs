@@ -30,7 +30,7 @@ public class Board extends BaseEntity {
     private String content;
     private long views;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "board")
     private List<UploadFile> uploadFiles = new ArrayList<>();
 
     @OneToMany(mappedBy = "board")

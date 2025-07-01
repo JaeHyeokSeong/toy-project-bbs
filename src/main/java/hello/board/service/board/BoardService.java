@@ -37,10 +37,13 @@ public class BoardService {
      * 게시물 저장
      */
     public Board saveBoard(Long memberId, String title,
-                          String content, @NotNull List<UploadFile> uploadFiles) {
+                          String content, @NotNull List<String> storeFileNames) {
 
         Member findMember = memberService.findById(memberId).orElseThrow(MemberNotFoundException::new);
-        Board board = Board.createBoard(title, content, findMember, uploadFiles);
+
+        List<UploadFile> uploadFileList = uploadFileRepository.findAllByStoreFileNames(storeFileNames);
+        Board board = Board.createBoard(title, content, findMember, uploadFileList);
+
         return boardRepository.save(board);
     }
 

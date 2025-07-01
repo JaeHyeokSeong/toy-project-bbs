@@ -6,6 +6,8 @@
     <title>게시물 작성 - 자유게시판</title>
     <link rel="stylesheet" href="/css/board-add.css">
     <script type="text/javascript" src="/js/file.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 </head>
 <body>
 
@@ -13,7 +15,7 @@
     <h2>게시물 작성</h2>
     <p>자유게시판에 게시될 글의 제목과 내용을 입력해 주세요.</p>
 
-    <form action="/bbs/write" th:object="${addBoardDto}" method="post" enctype="multipart/form-data">
+    <form action="/bbs/write" id="postForm" th:object="${addBoardDto}" method="post" enctype="multipart/form-data">
         <ul class="write-list">
             <li>
                 <label for="title">제목<span class="required-star">*</span></label>
@@ -24,18 +26,41 @@
                 <p class="field-error" th:errors="*{title}"></p>
             </li>
             <li>
-                <label for="content">내용<span class="required-star">*</span></label>
-                <textarea id="content" th:field="*{content}" rows="10"
-                          style="width: 100%; padding: .5rem; border: 1px solid #dee2e6;"
-                          placeholder="서로 예의를 지키며 존중하는 문화를 만들가요."
-                ></textarea>
-                <p class="field-error" th:errors="*{content}"></p>
-            </li>
-            <li>
-                <label for="files" class="file-label"><i class="bi bi-file-earmark-arrow-up"></i> 첨부파일
-                    (<span id="total-file-size">0MB</span> / 200MB)</label>
-                <input type="file" id="files" th:field="*{files}" multiple>
-                <span id="file-info"></span>
+
+                <label for="editor">내용<span class="required-star">*</span></label>
+                <div id="toolbar">
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-strike"></button>
+                        <button class="ql-link"></button>
+                        <select class="ql-color"></select>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-code"></button>
+                        <button class="ql-code-block"></button>
+                        <button class="ql-blockquote"></button>
+                        <button class="ql-image"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-header" value="1"></button>
+                        <button class="ql-header" value="2"></button>
+                        <button class="ql-header" value="3"></button>
+                    </span>
+
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+                </div>
+
+                <div id="editor" style="height:300px"></div>
+
+                <input type="hidden" th:field="*{content}" id="hidden-content" />
+                <div id="storeFileNamesContainer"></div>
+
             </li>
 
             <hr>
@@ -43,12 +68,89 @@
             <li class="button-group">
                 <button id="submit" type="submit"
                         style="padding: .5rem 1rem; border: none; background: #0d6efd; color: #fff;"
-                >등록</button>
+                >등록
+                </button>
                 <a th:href="@{/bbs}" style="margin-left: 1rem; color: #0d6efd; text-decoration: none;">취소</a>
             </li>
         </ul>
     </form>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('postForm');
+        const hiddenContent = document.getElementById('hidden-content');
+        const storeFileNamesContainer = document.getElementById('storeFileNamesContainer');
+        // 업로드된 파일명들을 저장할 배열
+        const storeFileNames = [];
+
+        // Quill 초기화
+        const quill = new Quill('#editor', {
+            modules: {
+                toolbar: {
+                    container: '#toolbar',
+                    handlers: { image: imageHandler }
+                }
+            },
+            placeholder: '서로 예의를 지키며 존중하는 문화를 만들가요.',
+            theme: 'snow'
+        });
+
+        // 이미지 삽입 핸들러
+        function imageHandler() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.click();
+            input.onchange = () => {
+                const file = input.files[0];
+                if (!file) return;
+                const form = new FormData();
+                form.append('multipartFile', file);
+                fetch('/api/image', { method: 'POST', body: form })
+                    .then(res => res.json())
+                    .then(dto => {
+                        // 에디터에 서버 URL 이미지 삽입
+                        const url = '/api/images/' + dto.storeFileName;
+                        const range = quill.getSelection(true);
+                        quill.insertEmbed(range.index, 'image', url);
+                        quill.setSelection(range.index + 1);
+
+                        //    : 여러 이미지 중 방금 추가된 것만 찾으려면, 에디터 내 모든 img 중
+                        //      src가 방금 URL인 요소를 찾습니다.
+                        const imgs = quill.root.querySelectorAll('img');
+                        imgs.forEach(img => {
+                            if (img.getAttribute('src') === url) {
+                                img.classList.add('thumb-img');
+                            }
+                        });
+
+                        // storeFileNames 배열에 추가
+                        storeFileNames.push(dto.storeFileName);
+                    })
+                    .catch(err => console.error('Image upload failed', err));
+            };
+        }
+
+        // 폼 제출 직전 content와 storeFileNames 히든필드 채우기
+        form.addEventListener('submit', function (e) {
+            // Quill HTML
+            hiddenContent.value = document.querySelector('#editor .ql-editor').innerHTML;
+
+            // 이전에 삽입된 히든 필드 제거
+            storeFileNamesContainer.innerHTML = '';
+
+            // storeFileNames 배열을 히든 필드로 생성
+            storeFileNames.forEach(name => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'storeFileNames';    // DTO의 필드명과 동일하게
+                input.value = name;
+                storeFileNamesContainer.appendChild(input);
+            });
+        });
+    });
+</script>
 
 </body>
 </html>

@@ -291,44 +291,6 @@
     gap: 1rem; /* 아이템 간 간격 */
 }
 
-/* 개별 아이템 */
-.uploaded-files ul li .thumb-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 27px;
-}
-
-/* 썸네일 이미지 */
-.uploaded-files ul li .thumb-img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    width: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 다운로드 링크 */
-.uploaded-files ul li .download-link {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #007bff;
-    text-decoration: none;
-}
-
-.uploaded-files ul li .download-link:hover {
-    text-decoration: underline;
-}
-
-.uploaded-files ul li .download-link {
-    display: inline-block; /* 블록 요소처럼 동작시키면서 인라인 흐름 유지 */
-    max-width: 100%; /* 컨테이너를 넘지 않도록 */
-    white-space: normal; /* 공백에서 줄바꿈 허용 */
-    overflow-wrap: break-word; /* 긴 단어도 단어 단위로 줄바꿈 */
-    word-break: break-all; /* 공백 없는 긴 문자열은 임의 위치에서 줄바꿈 */
-}
-
 /* comment-menu 래퍼 */
 .comment-menu {
     position: absolute;

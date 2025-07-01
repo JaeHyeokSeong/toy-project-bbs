@@ -12,7 +12,6 @@ public class AddBoardDto {
     @NotBlank
     @Length(max = 100)
     private String title;
-    @NotBlank
     private String content;
-    private List<MultipartFile> files;
+    private List<String> storeFileNames;
 }

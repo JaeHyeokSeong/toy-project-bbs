@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional
@@ -15,6 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UploadFileService {
 
     private final UploadFileRepository uploadFileRepository;
+
+    public UploadFileDto saveUploadFile(UploadFile uploadFile) {
+        uploadFileRepository.save(uploadFile);
+        return new UploadFileDto(uploadFile);
+    }
 
     /**
      * @throws UploadFileNotFound storeFileName으로 못찾은 경우

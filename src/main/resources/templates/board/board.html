@@ -6,10 +6,12 @@
     <title th:text="|${dto.boardTitle} - 자유게시판|">자유게시판 - 게시물 보기</title>
     <link rel="stylesheet" href="/css/board.css">
     <script type="text/javascript" src="/js/board.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 </head>
 <body>
 
-<!--<section class="container board-view my-5">-->
 <section class="post-header my-5">
 
     <h5>
@@ -56,26 +58,6 @@
 
     <hr>
 
-    <div class="uploaded-files mt-3" th:if="${dto.uploadedFiles.size() > 0}">
-        <h6><i class="bi bi-file-earmark-arrow-down"></i> 첨부파일 (총 [[${dto.uploadedFiles.size()}]]개)</h6>
-        <ul>
-            <li th:each="attachedFile : ${dto.uploadedFiles}">
-                <div class="thumb-wrapper">
-                    <img
-                            th:src="|/api/images/${attachedFile.storeFileName}|"
-                            th:alt="${attachedFile.originalFileName}"
-                            class="thumb-img"
-                    >
-                    <a
-                            th:text="|[${attachedFileStat.count}] ${attachedFile.getOriginalFileName()}|"
-                            th:href="|/api/files/${attachedFile.getStoreFileName()}|"
-                            class="download-link"
-                    ></a>
-                </div>
-            </li>
-        </ul>
-    </div>
-
     <div class="d-flex align-items-start mt-4 mb-3">
         <div id="board-id" hidden th:text="${dto.boardId}"></div>
         <!-- 좋아요 싫어요 버튼 및 갯수 -->
@@ -99,10 +81,9 @@
                  ? 'bi bi-hand-thumbs-down-fill' : 'bi bi-hand-thumbs-down'"></i>
             </button>
         </div>
+
         <!-- 본문 영역 -->
-        <div class="content flex-grow-1" th:text="${dto.boardContent}">
-            본문 내용이 여기에 표시됩니다.
-        </div>
+        <div id="editor" style="border: none; font-size: 18px">본문 내용이 여기에 표시됩니다.</div>
     </div>
 
     <hr>
@@ -165,6 +146,22 @@
     </div>
 
 </section>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const raw = /*[[${dto.boardContent}]]*/ '';
+        const clean = DOMPurify.sanitize(raw);
+
+        const quill = new Quill('#editor', {
+            modules: {toolbar: false},
+            theme: 'snow',
+            readOnly: true
+        });
+
+        quill.clipboard.dangerouslyPasteHTML(clean);
+    });
+</script>
 
 </body>
 </html>

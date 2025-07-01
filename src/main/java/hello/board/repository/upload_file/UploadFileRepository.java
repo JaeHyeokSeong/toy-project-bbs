@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UploadFileRepository extends JpaRepository<UploadFile, Long> {
@@ -15,4 +16,7 @@ public interface UploadFileRepository extends JpaRepository<UploadFile, Long> {
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("delete from UploadFile uf where uf.board.id = :boardId")
     void deleteAllUploadFiles(@Param("boardId") Long boardId);
+
+    @Query("select uf from UploadFile uf where uf.storeFileName in :storeFileNames")
+    List<UploadFile> findAllByStoreFileNames(@Param("storeFileNames") List<String> storeFileNames);
 }
