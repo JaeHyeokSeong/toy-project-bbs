@@ -6,14 +6,13 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import hello.board.entity.ReactionType;
+import hello.board.entity.board.Board;
+import hello.board.entity.member.QMember;
 import hello.board.repository.board.query.dto.BoardQueryDto;
 import hello.board.repository.board.query.dto.BoardSearchCondition;
 import hello.board.repository.board.query.dto.SearchSort;
 import hello.board.repository.board.query.dto.SearchTarget;
-import hello.board.repository.upload_file.query.dto.UploadFileQueryDto;
-import hello.board.entity.ReactionType;
-import hello.board.entity.board.Board;
-import hello.board.entity.member.QMember;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ import java.util.Optional;
 
 import static hello.board.entity.board.QBoard.board;
 import static hello.board.entity.board.QBoardReaction.boardReaction;
-import static hello.board.entity.file.QUploadFile.*;
 import static hello.board.entity.member.QMember.member;
 
 @Slf4j
@@ -85,14 +83,14 @@ public class BoardQueryRepository {
                             member.name.as("writerName"),
                             member.roleType.as("writerRoleType"),
                             Expressions.as(JPAExpressions.select(boardReaction.count())
-                                    .from(boardReaction)
-                                    .where(boardReaction.board.id.eq(boardId),
-                                            boardReaction.reactionType.eq(ReactionType.LIKE)),
+                                            .from(boardReaction)
+                                            .where(boardReaction.board.id.eq(boardId),
+                                                    boardReaction.reactionType.eq(ReactionType.LIKE)),
                                     "totalLikesCount"),
                             Expressions.as(JPAExpressions.select(boardReaction.count())
-                                    .from(boardReaction)
-                                    .where(boardReaction.board.id.eq(boardId),
-                                            boardReaction.reactionType.eq(ReactionType.DISLIKE)),
+                                            .from(boardReaction)
+                                            .where(boardReaction.board.id.eq(boardId),
+                                                    boardReaction.reactionType.eq(ReactionType.DISLIKE)),
                                     "totalDislikesCount"),
                             Expressions.as(JPAExpressions.select(subMember.name)
                                     .from(subMember)
@@ -101,29 +99,14 @@ public class BoardQueryRepository {
                                     .from(subMember)
                                     .where(subMember.id.eq(memberId)), "viewerRoleType"),
                             Expressions.as(JPAExpressions.select(boardReaction.reactionType)
-                                    .from(boardReaction)
-                                    .where(boardReaction.board.id.eq(boardId), boardReaction.member.id.eq(memberId)),
+                                            .from(boardReaction)
+                                            .where(boardReaction.board.id.eq(boardId), boardReaction.member.id.eq(memberId)),
                                     "viewerReactionType")
                     ))
                     .from(board)
                     .join(board.member, member)
                     .where(board.id.eq(boardId), board.slug.eq(slug))
                     .fetchOne();
-        }
-
-        List<UploadFileQueryDto> uploadedFiles = queryFactory.select(Projections.constructor(UploadFileQueryDto.class,
-                        uploadFile.id,
-                        uploadFile.originalFileName,
-                        uploadFile.storeFileName,
-                        uploadFile.createdDate,
-                        uploadFile.lastModifiedDate))
-                .from(uploadFile)
-                .where(uploadFile.board.id.eq(boardId))
-                .fetch();
-
-        //게시물에 있는 모든 파일들 조회
-        if (boardQueryDto != null) {
-            boardQueryDto.setUploadedFiles(uploadedFiles);
         }
 
         return Optional.ofNullable(boardQueryDto);

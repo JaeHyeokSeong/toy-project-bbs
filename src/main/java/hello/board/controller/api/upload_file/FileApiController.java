@@ -8,18 +8,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZoneId;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -34,10 +34,21 @@ public class FileApiController {
         UploadFile uploadFile = fileStore.storeFile(multipartFile);
         UploadFileDto uploadFileDto = uploadFileService.saveUploadFile(uploadFile);
 
-        return ResponseEntity.ok()
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .cacheControl(CacheControl.noCache())
                 .lastModified(uploadFileDto.getLastModifiedDate().atZone(ZoneId.of("Asia/Seoul")))
                 .body(uploadFileDto);
+    }
+
+    @DeleteMapping("/image/{storeFileName}")
+    public ResponseEntity<Map<String, UploadFileDto>> deleteImage(@PathVariable String storeFileName) {
+        UploadFileDto uploadFileDto = uploadFileService.deleteByStoreFileName(storeFileName);
+
+        HashMap<String, UploadFileDto> body = new HashMap<>();
+        body.put("deleted", uploadFileDto);
+
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/images/{storeFileName}")
@@ -61,28 +72,5 @@ public class FileApiController {
                 .cacheControl(cacheControl)
                 .lastModified(uploadFileDto.getLastModifiedDate().atZone(ZoneId.of("Asia/Seoul")))
                 .body(content);
-    }
-
-    @GetMapping("/files/{storeFileName}")
-    public ResponseEntity<Resource> file(@PathVariable String storeFileName) throws IOException {
-        UploadFileDto uploadFileDto = uploadFileService.findUploadFileDto(storeFileName);
-        UrlResource urlResource = new UrlResource("file:" + fileStore.getFullPath(uploadFileDto.getStoreFileName()));
-
-        String encodedUploadedOriginalFileName = UriUtils.encode(uploadFileDto.getOriginalFileName(), StandardCharsets.UTF_8);
-        String contentDisposition = "attachment; filename=\"" + encodedUploadedOriginalFileName + "\"";
-
-        //content-type 찾기
-        String contentType = Files.probeContentType(Paths.get(fileStore.getFullPath(uploadFileDto.getStoreFileName())));
-
-        ResponseEntity.BodyBuilder builder = ResponseEntity.ok();
-
-        //content-type 설정하기
-        if (contentType != null) {
-            builder.contentType(MediaType.parseMediaType(contentType));
-        }
-
-        return builder
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(urlResource);
     }
 }

@@ -26,6 +26,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/account", "/bbs/write", "/bbs/edit/*", "/bbs/delete/*");
 
         registry.addInterceptor(new ApiLoginInterceptor(objectMapper, memberService))
-                .addPathPatterns("/api/board-reaction/*", "/api/comment/*", "/api/comment-reaction/*");
+                .addPathPatterns(
+                        "/api/board-reaction/*",
+                        "/api/comment/*",
+                        "/api/comment-reaction/*",
+                        "/api/image",
+                        "api/image/*"
+                );
     }
 }

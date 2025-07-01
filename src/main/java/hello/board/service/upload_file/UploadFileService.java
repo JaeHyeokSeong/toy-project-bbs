@@ -23,12 +23,21 @@ public class UploadFileService {
         return new UploadFileDto(uploadFile);
     }
 
+    public UploadFileDto deleteByStoreFileName(String storeFileName) {
+        UploadFile uploadFile = uploadFileRepository.findByStoreFileName(storeFileName)
+                .orElseThrow(() -> new UploadFileNotFound("존재하지 않는 파일입니다. 전달된 storeFileName=" + storeFileName));
+
+        uploadFileRepository.delete(uploadFile);
+
+        return new UploadFileDto(uploadFile);
+    }
+
     /**
      * @throws UploadFileNotFound storeFileName으로 못찾은 경우
      */
     public UploadFileDto findUploadFileDto(String storeFileName) {
         UploadFile uploadFile = uploadFileRepository.findByStoreFileName(storeFileName)
-                .orElseThrow(() -> new UploadFileNotFound("존재하지 않는 파일입니다. 전달된 파일명: " + storeFileName));
+                .orElseThrow(() -> new UploadFileNotFound("존재하지 않는 파일입니다. 전달된 파일명=" + storeFileName));
         return new UploadFileDto(uploadFile);
     }
 }

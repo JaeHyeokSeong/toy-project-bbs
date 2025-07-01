@@ -1,59 +1,126 @@
-const MAX_SIZE = 200 * 1024 * 1024; // 200MB
-
 $(document).ready(function () {
-    $("#files").change(function () {
-        let file_info = $("#file-info");
-        let list = [];
-        let total = 0;
-        let display_total_file_size = 0;
+    // 1) 폼 및 히든필드 요소 캐싱
+    const form = document.getElementById('postForm');
+    const titleInput = document.getElementById('title');
+    const submitBtn = document.getElementById('submit');
+    const hiddenContent = document.getElementById('hidden-content');
+    const storeFileNamesContainer = document.getElementById('storeFileNamesContainer');
 
-        const files = this.files;
-        for (let i = 0; i < files.length; i++) {
-            const size = files[i].size;
-            total += size;
-            let file_size = (size / 1024 / 1024).toFixed(2);
-            display_total_file_size += Number(file_size);
-            list.push(files[i].name + ' (' + file_size + ' MB)');
+    // 2) 업로드된 파일명들을 저장할 배열
+    const storeFileNames = [];
+
+    // 3) 이미지 업로드 + 에디터 삽입 공통 로직
+    function uploadImage(file) {
+        // 최대 20개 제한
+        if (storeFileNames.length >= 20) {
+            alert('이미지는 최대 20개까지만 업로드할 수 있습니다.');
+            return;
         }
 
-        let file_info_text = "";
-        for (let i = 0; i < list.length; i++) {
-            file_info_text += "첨부 파일 " + (i + 1) + ": " + list[i] + "<br>"
-        }
-        file_info.html(file_info_text);
-        file_info.css("color", "#6c757d");
+        const formData = new FormData();
+        formData.append('multipartFile', file);
 
-        let total_file_size = $("#total-file-size");
-        total_file_size.text(display_total_file_size.toFixed(2) + "MB");
-        total_file_size.css("color", "#000")
+        fetch('/api/image', { method: 'POST', body: formData })
+            .then(res => {
+                if (!res.ok) {
+                    if (res.status === 413) {
+                        alert('파일의 용량이 너무 큽니다.');
+                    } else {
+                        alert(`이미지 업로드에 실패했습니다. (상태코드: ${res.status})`);
+                    }
+                    throw new Error(`Upload failed with status ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(dto => {
+                // 삽입 위치 구하고 서버 URL로 이미지 삽입
+                const url = '/api/images/' + dto.storeFileName;
+                const range = quill.getSelection(true);
+                quill.insertEmbed(range.index, 'image', url);
+                quill.setSelection(range.index + 1);
+                // 배열에 파일명 기록
+                storeFileNames.push(dto.storeFileName);
+            })
+            .catch(err => console.error('Image upload failed', err));
+    }
 
-        let submit = $("#submit");
-        submit.attr("disabled", false);
-        submit.css("backgroundColor", "#0d6efd");
-        submit.css("color", "#fff");
-
-        if (total > MAX_SIZE) {
-            total_file_size.css("color", "#dc3545")
-            submit.attr("disabled", true);
-            submit.css("backgroundColor", "grey");
-            submit.css("color", "#fff");
-        }
+    // 4) Quill 에디터 초기화
+    const quill = new Quill('#editor', {
+        modules: {
+            toolbar: {
+                container: '#toolbar',
+                handlers: { image: imageHandler }
+            }
+        },
+        placeholder: '서로 예의를 지키며 존중하는 문화를 만들가요.',
+        theme: 'snow'
     });
 
+    // 5) 툴바 이미지 버튼 핸들러
+    function imageHandler() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.click();
+        input.onchange = () => {
+            const file = input.files[0];
+            if (file) uploadImage(file);
+        };
+    }
 
-    //첨부파일 수정 버튼
-    $(".file-edit-btn").click(function () {
-        $(".file-edit-div").css("display", "block");
-        $(".file-div").css("display", "none");
-        $("#updateFile").prop('checked', true);
+    // 6) Base64 인라인 삽입 막기 (캡처 단계)
+    const container = quill.root.parentNode; // .ql-container
+    ['dragover', 'drop', 'past'].forEach(evt =>
+        container.addEventListener(evt, e => {
+            if (e.dataTransfer && e.dataTransfer.types.includes('Files')) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, { capture: true })
+    );
+
+    // 7) 이미지 제거 시 DELETE 호출 및 배열 정리
+    quill.on('text-change', function () {
+        const currentNames = Array.from(quill.root.querySelectorAll('img'))
+            .map(img => img.getAttribute('src').split('/').pop());
+
+        storeFileNames.slice().forEach(name => {
+            if (!currentNames.includes(name)) {
+                fetch(`/api/image/${name}`, { method: 'DELETE' })
+                    .catch(err => console.error('Image delete failed', err));
+                const idx = storeFileNames.indexOf(name);
+                if (idx > -1) storeFileNames.splice(idx, 1);
+            }
+        });
     });
 
-    $(".file-edit-cancel-btn").click(function () {
-        $(".file-edit-div").css("display", "none");
-        $(".file-div").css("display", "block");
-        $("#files").val("");
-        $("#total-file-size").text("0MB");
-        $("#file-info").text("");
-        $("#updateFile").prop('checked', false);
+    // 8) 폼 제출 전 히든 필드 업데이트
+    form.addEventListener('submit', function () {
+        // 에디터 내용
+        hiddenContent.value = quill.root.innerHTML;
+        // 파일명 히든 필드 생성
+        storeFileNamesContainer.innerHTML = '';
+        storeFileNames.forEach(name => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'storeFileNames';
+            input.value = name;
+            storeFileNamesContainer.appendChild(input);
+        });
     });
+
+    submitBtn.disabled = true;  // 초기 상태
+
+    function validateForm() {
+        const titleFilled = titleInput.value.trim().length > 0 && titleInput.value.trim().length <= 100;
+        const contentFilled = quill.getText().trim().length > 0;
+        submitBtn.disabled = !(titleFilled && contentFilled);
+    }
+
+    // 제목 입력 변화 감지
+    titleInput.addEventListener('input', validateForm);
+    // 에디터 내용 변화 감지
+    quill.on('text-change', validateForm);
+    // 초기 검증
+    validateForm();
 });

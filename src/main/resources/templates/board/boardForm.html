@@ -56,7 +56,9 @@
                     </span>
                 </div>
 
-                <div id="editor" style="height:300px"></div>
+                <div id="editor" style="height:450px"></div>
+                <p class="field-error mt-2" th:errors="*{content}"></p>
+                <p class="field-error mt-2" th:errors="*{storeFileNames}"></p>
 
                 <input type="hidden" th:field="*{content}" id="hidden-content" />
                 <div id="storeFileNamesContainer"></div>
@@ -75,82 +77,6 @@
         </ul>
     </form>
 </section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('postForm');
-        const hiddenContent = document.getElementById('hidden-content');
-        const storeFileNamesContainer = document.getElementById('storeFileNamesContainer');
-        // 업로드된 파일명들을 저장할 배열
-        const storeFileNames = [];
-
-        // Quill 초기화
-        const quill = new Quill('#editor', {
-            modules: {
-                toolbar: {
-                    container: '#toolbar',
-                    handlers: { image: imageHandler }
-                }
-            },
-            placeholder: '서로 예의를 지키며 존중하는 문화를 만들가요.',
-            theme: 'snow'
-        });
-
-        // 이미지 삽입 핸들러
-        function imageHandler() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.click();
-            input.onchange = () => {
-                const file = input.files[0];
-                if (!file) return;
-                const form = new FormData();
-                form.append('multipartFile', file);
-                fetch('/api/image', { method: 'POST', body: form })
-                    .then(res => res.json())
-                    .then(dto => {
-                        // 에디터에 서버 URL 이미지 삽입
-                        const url = '/api/images/' + dto.storeFileName;
-                        const range = quill.getSelection(true);
-                        quill.insertEmbed(range.index, 'image', url);
-                        quill.setSelection(range.index + 1);
-
-                        //    : 여러 이미지 중 방금 추가된 것만 찾으려면, 에디터 내 모든 img 중
-                        //      src가 방금 URL인 요소를 찾습니다.
-                        const imgs = quill.root.querySelectorAll('img');
-                        imgs.forEach(img => {
-                            if (img.getAttribute('src') === url) {
-                                img.classList.add('thumb-img');
-                            }
-                        });
-
-                        // storeFileNames 배열에 추가
-                        storeFileNames.push(dto.storeFileName);
-                    })
-                    .catch(err => console.error('Image upload failed', err));
-            };
-        }
-
-        // 폼 제출 직전 content와 storeFileNames 히든필드 채우기
-        form.addEventListener('submit', function (e) {
-            // Quill HTML
-            hiddenContent.value = document.querySelector('#editor .ql-editor').innerHTML;
-
-            // 이전에 삽입된 히든 필드 제거
-            storeFileNamesContainer.innerHTML = '';
-
-            // storeFileNames 배열을 히든 필드로 생성
-            storeFileNames.forEach(name => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'storeFileNames';    // DTO의 필드명과 동일하게
-                input.value = name;
-                storeFileNamesContainer.appendChild(input);
-            });
-        });
-    });
-</script>
 
 </body>
 </html>
