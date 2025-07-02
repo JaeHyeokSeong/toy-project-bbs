@@ -24,4 +24,7 @@ public interface UploadFileRepository extends JpaRepository<UploadFile, Long> {
             " where uf.storeFileName in :storeFileNames and m.id = :memberId")
     List<UploadFile> findAllByStoreFileNamesAndMemberId(@Param("memberId") Long memberId,
                                                         @Param("storeFileNames") List<String> storeFileNames);
+
+    @Query("select uf.storeFileName from UploadFile uf where uf.board.id = :boardId")
+    List<String> findStoreFileNamesByBoardId(@Param("boardId") Long boardId);
 }

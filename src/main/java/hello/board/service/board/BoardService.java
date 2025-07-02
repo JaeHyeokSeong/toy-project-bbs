@@ -1,5 +1,6 @@
 package hello.board.service.board;
 
+import hello.board.entity.file.FileStore;
 import hello.board.repository.board.BoardRepository;
 import hello.board.repository.board_reaction.BoardReactionRepository;
 import hello.board.repository.comment.CommentRepository;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,7 @@ public class BoardService {
     private final UploadFileRepository uploadFileRepository;
     private final BoardReactionRepository boardReactionRepository;
     private final CommentReactionRepository commentReactionRepository;
+    private final FileStore fileStore;
 
     /**
      * 게시물 저장
@@ -74,6 +77,11 @@ public class BoardService {
         board.changeTitle(title);
         board.changeContent(content);
 
+        //local에 저장되어진 이미지들 삭제하기
+        for (UploadFile deletedUploadFile : deletedUploadFiles) {
+            deleteFileOnLocal(deletedUploadFile.getStoreFileName());
+        }
+
         return board.getSlug();
     }
 
@@ -84,6 +92,8 @@ public class BoardService {
 
         //권한 체크
         boardRepository.findBoard(boardId, memberId).orElseThrow(BoardNotFoundException::new);
+
+        List<String> deletedStoreFileNames = uploadFileRepository.findStoreFileNamesByBoardId(boardId);
 
         //파일 모두 삭제하기 (벌크연산)
         uploadFileRepository.deleteAllUploadFiles(boardId);
@@ -99,9 +109,18 @@ public class BoardService {
 
         //게시물 작세하기
         boardRepository.deleteById(boardId);
+
+        for (String deletedStoreFileName : deletedStoreFileNames) {
+            deleteFileOnLocal(deletedStoreFileName);
+        }
     }
 
     public Optional<Board> findById(Long boardId) {
         return boardRepository.findById(boardId);
+    }
+
+    private boolean deleteFileOnLocal(String storeFileName) {
+        File file = new File(fileStore.getFullPath(storeFileName));
+        return file.delete();
     }
 }
