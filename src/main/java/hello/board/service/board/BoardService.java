@@ -54,15 +54,15 @@ public class BoardService {
                             List<String> storeFileNames, List<String> deleteFileNames) {
 
         //접근 권한 확인
-        boardRepository.findBoard(boardId, memberId).orElseThrow(
+        Board board = boardRepository.findBoard(boardId, memberId).orElseThrow(
                 () -> new BoardNotFoundException("존재하지 않는 게시물 입니다. 전달된 boardId=" + boardId));
 
-        if (!deleteFileNames.isEmpty()) {
-            uploadFileRepository.deleteAllByStoreFileNames(deleteFileNames);
-        }
+        List<UploadFile> deletedUploadFiles = uploadFileRepository.findAllByStoreFileNamesAndMemberId(memberId, deleteFileNames);
 
-        //새로운 영속성 컨텍스트 시작
-        Board board = boardRepository.findById(boardId).orElseThrow();
+        //삭제할 파일이 있는 경우
+        if (!deletedUploadFiles.isEmpty()) {
+            uploadFileRepository.deleteAll(deletedUploadFiles);
+        }
 
         if (!storeFileNames.isEmpty()) {
             List<UploadFile> uploadFileList = uploadFileRepository.findAllByStoreFileNames(storeFileNames);

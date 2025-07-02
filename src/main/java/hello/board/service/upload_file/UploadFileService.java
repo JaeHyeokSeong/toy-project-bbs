@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 
 @Service
 @Transactional
@@ -20,15 +18,6 @@ public class UploadFileService {
 
     public UploadFileDto saveUploadFile(UploadFile uploadFile) {
         uploadFileRepository.save(uploadFile);
-        return new UploadFileDto(uploadFile);
-    }
-
-    public UploadFileDto deleteByStoreFileName(String storeFileName) {
-        UploadFile uploadFile = uploadFileRepository.findByStoreFileName(storeFileName)
-                .orElseThrow(() -> new UploadFileNotFound("존재하지 않는 파일입니다. 전달된 storeFileName=" + storeFileName));
-
-        uploadFileRepository.delete(uploadFile);
-
         return new UploadFileDto(uploadFile);
     }
 

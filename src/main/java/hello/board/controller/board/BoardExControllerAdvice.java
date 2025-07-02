@@ -14,14 +14,14 @@ public class BoardExControllerAdvice {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String MethodArgumentTypeMismatchEx(MethodArgumentTypeMismatchException e) {
+    public String methodArgumentTypeMismatchEx(MethodArgumentTypeMismatchException e) {
         log.info("MethodArgumentTypeMismatchEx 호출");
         return "error/404";
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
-    public String NoSuchElementEx(BoardNotFoundException e) {
+    public String boardNotFoundExceptionEx(BoardNotFoundException e) {
         return "error/404";
     }
 }
