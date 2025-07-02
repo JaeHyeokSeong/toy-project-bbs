@@ -21,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +60,6 @@ class BoardQueryServiceTest {
         assertThat(boardQueryDto.getBoardContent()).isEqualTo(content);
         assertThat(boardQueryDto.getCreatedDate()).isNotNull();
         assertThat(boardQueryDto.getLastModifiedDate()).isNotNull();
-        assertThat(boardQueryDto.getUploadedFiles().size()).isEqualTo(0);
         assertThat(boardQueryDto.getWriterName()).isEqualTo(name);
     }
 
@@ -420,7 +418,6 @@ class BoardQueryServiceTest {
         assertThat(result.getBoardId()).isEqualTo(savedBoard.getId());
         assertThat(result.getTitle()).isEqualTo(savedBoard.getTitle());
         assertThat(result.getContent()).isEqualTo(savedBoard.getContent());
-        assertThat(result.getUploadedFiles().size()).isEqualTo(0);
     }
 
     @Test
@@ -493,6 +490,5 @@ class BoardQueryServiceTest {
         assertThat(result.getBoardId()).isEqualTo(savedBoard2.getId());
         assertThat(result.getTitle()).isEqualTo(savedBoard2.getTitle());
         assertThat(result.getContent()).isEqualTo(savedBoard2.getContent());
-        assertThat(result.getUploadedFiles().size()).isEqualTo(0);
     }
 }

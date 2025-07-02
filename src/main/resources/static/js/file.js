@@ -17,13 +17,7 @@ $(document).ready(function () {
     // 5) create vs edit 모드 판별 (URL에 '/edit/' 포함 여부)
     const isEditMode = form.action.includes('/edit/');
 
-    // 6) 이미지 즉시 삭제 (Create 모드 전용)
-    function deleteImageImmediately(name) {
-        fetch(`/api/file/${name}`, { method: 'DELETE' })
-            .catch(err => console.error('Image delete failed', err));
-    }
-
-    // 7) 이미지 업로드 + 삽입
+    // 6) 이미지 업로드 + 삽입
     function uploadImage(file) {
         if (storeFileNames.length >= 20) {
             alert('이미지는 최대 20개까지만 업로드할 수 있습니다.');
@@ -46,12 +40,14 @@ $(document).ready(function () {
                 quill.insertEmbed(range.index, 'image', url);
                 quill.setSelection(range.index + 1);
                 // 신규 업로드만 storeFileNames에 기록
-                storeFileNames.push(dto.storeFileName);
+                if (!storeFileNames.includes(dto.storeFileName)) {
+                    storeFileNames.push(dto.storeFileName);
+                }
             })
             .catch(console.error);
     }
 
-    // 8) Quill 초기화
+    // 7) Quill 초기화
     const quill = new Quill('#editor', {
         modules: {
             toolbar: { container: '#toolbar', handlers: { image: imageHandler } }
@@ -60,7 +56,7 @@ $(document).ready(function () {
         theme: 'snow'
     });
 
-    // 9) 수정 모드일 때 기존 컨텐츠 로드 & existingFileNames 채우기
+    // 8) 수정 모드일 때 기존 컨텐츠 로드 & existingFileNames 채우기
     if (window.board_content) {
         const clean = DOMPurify.sanitize(window.board_content);
         quill.clipboard.dangerouslyPasteHTML(clean);
@@ -72,7 +68,7 @@ $(document).ready(function () {
         });
     }
 
-    // 10) 툴바 이미지 버튼 핸들러
+    // 9) 툴바 이미지 버튼 핸들러
     function imageHandler() {
         const inp = document.createElement('input');
         inp.type = 'file';
@@ -84,7 +80,7 @@ $(document).ready(function () {
         };
     }
 
-    // 11) Base64 인라인 차단 (캡처 단계)
+    // 10) Base64 인라인 차단 (캡처 단계)
     const container = quill.root.parentNode;
     ['dragover','drop','paste'].forEach(evt =>
         container.addEventListener(evt, e => {
@@ -95,10 +91,16 @@ $(document).ready(function () {
         }, { capture: true })
     );
 
-    // 12) 이미지 삭제 감지
+    // 11) 이미지 삭제 감지
     quill.on('text-change', () => {
         const current = Array.from(quill.root.querySelectorAll('img'))
             .map(img => img.getAttribute('src').split('/').pop());
+
+        current.forEach(name => {
+            if (!storeFileNames.includes(name)) {
+                storeFileNames.push(name);
+            }
+        });
 
         // Undo 복구: 에디터에 다시 나타난 이미지는 pendingDelete에서 제거
         pendingDelete.slice().forEach(name => {
@@ -121,9 +123,8 @@ $(document).ready(function () {
         // ── 신규 업로드 이미지 삭제 감지 ──
         storeFileNames.slice().forEach(name => {
             if (!current.includes(name)) {
-                if (!isEditMode) {
-                    deleteImageImmediately(name);
-                } else {
+                if (isEditMode) {
+                    //수정 모드일 때만 삭제 예약
                     if (!pendingDelete.includes(name)) {
                         pendingDelete.push(name);
                     }
@@ -133,7 +134,7 @@ $(document).ready(function () {
         });
     });
 
-    // 13) 폼 제출 전 처리
+    // 12) 폼 제출 전 처리
     form.addEventListener('submit', function () {
         // (1) Quill 내용
         hiddenContent.value = quill.root.innerHTML;
@@ -175,7 +176,7 @@ $(document).ready(function () {
         }
     });
 
-    // 14) 폼 검증 & 버튼 활성화
+    // 13) 폼 검증 & 버튼 활성화
     submitBtn.disabled = true;
     function validate() {
         const okTitle = titleInput.value.trim().length > 0
