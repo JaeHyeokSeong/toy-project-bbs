@@ -17,7 +17,7 @@ public interface UploadFileRepository extends JpaRepository<UploadFile, Long> {
     @Query("delete from UploadFile uf where uf.board.id = :boardId")
     void deleteAllUploadFiles(@Param("boardId") Long boardId);
 
-    @Query("select uf from UploadFile uf where uf.storeFileName in :storeFileNames")
+    @Query("select uf from UploadFile uf where uf.storeFileName in :storeFileNames and uf.board.id is null")
     List<UploadFile> findAllByStoreFileNames(@Param("storeFileNames") List<String> storeFileNames);
 
     @Query("select uf from UploadFile uf join uf.board b join b.member m" +

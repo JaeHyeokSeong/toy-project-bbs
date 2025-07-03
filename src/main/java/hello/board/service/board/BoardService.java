@@ -45,6 +45,8 @@ public class BoardService {
         Member findMember = memberService.findById(memberId).orElseThrow(MemberNotFoundException::new);
 
         List<UploadFile> uploadFileList = uploadFileRepository.findAllByStoreFileNames(storeFileNames);
+        log.info("saveBoard에서 찾은 uploadFileList={}", uploadFileList);
+
         Board board = Board.createBoard(title, content, findMember, uploadFileList);
 
         return boardRepository.save(board);
@@ -70,7 +72,7 @@ public class BoardService {
         if (!storeFileNames.isEmpty()) {
             List<UploadFile> uploadFileList = uploadFileRepository.findAllByStoreFileNames(storeFileNames);
             for (UploadFile uploadFile : uploadFileList) {
-                uploadFile.setBoard(board);
+                board.addUploadFile(uploadFile);
             }
         }
 

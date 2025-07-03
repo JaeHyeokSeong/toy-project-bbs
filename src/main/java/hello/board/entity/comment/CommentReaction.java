@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class CommentReaction extends BaseEntity {
 
     @Id @GeneratedValue
+    @Column(name = "comment_reaction_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

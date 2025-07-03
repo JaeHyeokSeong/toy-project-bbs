@@ -19,7 +19,7 @@ $(document).ready(function () {
 
     // 6) 이미지 업로드 + 삽입
     function uploadImage(file) {
-        if (storeFileNames.length >= 20) {
+        if (existingFileNames.length + storeFileNames.length >= 20) {
             alert('이미지는 최대 20개까지만 업로드할 수 있습니다.');
             return;
         }
@@ -39,10 +39,6 @@ $(document).ready(function () {
                 const range = quill.getSelection(true);
                 quill.insertEmbed(range.index, 'image', url);
                 quill.setSelection(range.index + 1);
-                // 신규 업로드만 storeFileNames에 기록
-                if (!storeFileNames.includes(dto.storeFileName)) {
-                    storeFileNames.push(dto.storeFileName);
-                }
             })
             .catch(console.error);
     }
@@ -97,7 +93,7 @@ $(document).ready(function () {
             .map(img => img.getAttribute('src').split('/').pop());
 
         current.forEach(name => {
-            if (!storeFileNames.includes(name)) {
+            if (!storeFileNames.includes(name) && !existingFileNames.includes(name)) {
                 storeFileNames.push(name);
             }
         });
