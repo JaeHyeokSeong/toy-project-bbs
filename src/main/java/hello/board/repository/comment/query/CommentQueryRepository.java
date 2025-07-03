@@ -50,14 +50,6 @@ public class CommentQueryRepository {
                         comment.createdDate,
                         comment.lastModifiedDate,
                         memberId == null ? Expressions.asBoolean(false) : member.id.eq(memberId),
-                        JPAExpressions.select(commentReaction.count())
-                                .from(commentReaction)
-                                .where(commentReaction.comment.id.eq(comment.id),
-                                        commentReaction.reactionType.eq(ReactionType.LIKE)),
-                        JPAExpressions.select(commentReaction.count())
-                                .from(commentReaction)
-                                .where(commentReaction.comment.id.eq(comment.id),
-                                        commentReaction.reactionType.eq(ReactionType.DISLIKE)),
                         Expressions.as(JPAExpressions.select(
                                         commentReaction.count().subtract(
                                                 JPAExpressions.select(

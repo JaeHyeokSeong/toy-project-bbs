@@ -119,7 +119,6 @@ $(document).ready(function () {
 
                 data.content.forEach(c => {
                     const safeContent = $('<div>').text(c.content).html();
-                    const totalReaction = Number(c.totalLikes) - Number(c.totalDislikes);
 
                     // ← 여기를 추가!
                     const upIconClass = c.reactionType === 'LIKE'
@@ -136,7 +135,7 @@ $(document).ready(function () {
                         <button class="btn" id="comment-thumbs-up">
                             <i id="thumbs-up-class"  class="${upIconClass}"></i>
                         </button>
-                        <p id="total-reaction-ct">${totalReaction}</p>
+                        <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
                         <button class="btn" id="comment-thumbs-down">
                             <i id="thumbs-down-class" class="${downIconClass}"></i>
                         </button>

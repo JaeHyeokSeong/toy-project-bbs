@@ -21,8 +21,6 @@ public class CommentDto {
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
     private Boolean isEditable; //수정/삭제 권환
-    private long totalLikes;
-    private long totalDislikes;
     private long totalLikesPlusTotalDislikes;
     private ReactionType reactionType;
 
