@@ -100,64 +100,62 @@ $(document).ready(function () {
             isLoggedIn = false;
         });
 
-    // 2) 댓글 리액션 클릭 핸들러
-    $(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function (e) {
+    $(document).on('click', '.comment-thumbs-up, .comment-thumbs-down', function(e) {
         e.preventDefault();
+        if (!isLoggedIn) return alert('로그인이 필요합니다.');
 
-        // 비로그인 시 바로 경고
-        if (!isLoggedIn) {
-            return alert('로그인이 필요합니다.');
-        }
+        const $btn      = $(this);
+        const isUp      = $btn.hasClass('comment-thumbs-up');
+        const $action   = $btn.closest('.comment-action-buttons');
+        const $item     = $action.closest('.comment-item');
+        const commentId = $item.data('id');
 
-        const isUp = $(this).is('#comment-thumbs-up');
-        const commentItem = $(this).closest('.comment-item');
-        const commentId = commentItem.data('id');
-        const upIcon = commentItem.find('#thumbs-up-class');
-        const downIcon = commentItem.find('#thumbs-down-class');
-        const wasUp = upIcon.hasClass('bi-hand-thumbs-up-fill');
-        const wasDown = downIcon.hasClass('bi-hand-thumbs-down-fill');
-        const reactionType = isUp
-            ? 'LIKE'
-            : 'DISLIKE';
+        // 이 버튼 바로 옆의 카운트, 그리고 반대 아이콘
+        const $count      = $action.find('.reaction-ct');
+        const $thisIcon   = $btn.find('i');
+        const $otherIcon  = isUp
+            ? $action.find('.comment-thumbs-down i')
+            : $action.find('.comment-thumbs-up i');
 
-        // 3) 리액션 요청 (401 → 로그인 필요)
         $.ajax({
             url: `/api/comment-reaction/${commentId}`,
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({reactionType}),
+            data: JSON.stringify({ reactionType: isUp ? 'LIKE' : 'DISLIKE' }),
             dataType: 'json'
         })
-            .done(resultDto => {
-                // 카운트 업데이트
-                commentItem.find('#total-reaction-ct')
-                    .text(resultDto.totalReactionCounts);
+            .done(dto => {
+                // 1) 이 댓글의 카운트만 갱신
+                $count.text(dto.totalReactionCounts);
 
-                // 아이콘 토글
+                // 2) 이 버튼만 토글, 반대 버튼은 리셋
                 if (isUp) {
-                    if (wasUp) {
-                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                    if ($thisIcon.hasClass('bi-hand-thumbs-up-fill')) {
+                        $thisIcon.toggleClass('bi-hand-thumbs-up-fill bi-hand-thumbs-up');
                     } else {
-                        upIcon.removeClass('bi-hand-thumbs-up').addClass('bi-hand-thumbs-up-fill');
-                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                        $thisIcon
+                            .removeClass('bi-hand-thumbs-up')
+                            .addClass('bi-hand-thumbs-up-fill');
+                        $otherIcon
+                            .removeClass('bi-hand-thumbs-down-fill')
+                            .addClass('bi-hand-thumbs-down');
                     }
                 } else {
-                    if (wasDown) {
-                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                    if ($thisIcon.hasClass('bi-hand-thumbs-down-fill')) {
+                        $thisIcon.toggleClass('bi-hand-thumbs-down-fill bi-hand-thumbs-down');
                     } else {
-                        downIcon.removeClass('bi-hand-thumbs-down').addClass('bi-hand-thumbs-down-fill');
-                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                        $thisIcon
+                            .removeClass('bi-hand-thumbs-down')
+                            .addClass('bi-hand-thumbs-down-fill');
+                        $otherIcon
+                            .removeClass('bi-hand-thumbs-up-fill')
+                            .addClass('bi-hand-thumbs-up');
                     }
                 }
             })
-            .fail((xhr) => {
-                // 401 Unauthorized → 로그인 필요
-                if (xhr.status === 401) {
-                    alert('로그인이 필요합니다.');
-                } else {
-                    console.error('리액션 적용 실패', xhr);
-                    alert('리액션 요청 중 오류가 발생했습니다.');
-                }
+            .fail(xhr => {
+                if (xhr.status === 401) alert('로그인이 필요합니다.');
+                else alert('오류가 발생했습니다.');
             });
     });
 
@@ -218,8 +216,7 @@ $(document).ready(function () {
                                 data-total="${c.totalChildComments}"
                                 style="font-size: 16px"
                             >
-                                답글 ${c.totalChildComments}개
-                                <i class="bi bi-chevron-down ms-1"></i>
+                                <i class="bi bi-chevron-down ms-1"></i>&nbsp&nbsp답글 ${c.totalChildComments}개
                             </button>`;
                     }
 
@@ -227,12 +224,12 @@ $(document).ready(function () {
                     <div class="comment-item" data-id="${c.commentId}">
                     
                         <div class="comment-action-buttons d-flex flex-column align-items-center">
-                            <button class="btn" id="comment-thumbs-up">
-                                <i id="thumbs-up-class" class="${upIconClass}"></i>
+                            <button class="btn comment-thumbs-up">
+                                <i class="${upIconClass}"></i>
                             </button>
-                            <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
-                            <button class="btn" id="comment-thumbs-down">
-                                <i id="thumbs-down-class" class="${downIconClass}"></i>
+                            <p class="reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
+                            <button class="btn comment-thumbs-down">
+                                <i class="${downIconClass}"></i>
                             </button>
                         </div>
                     
@@ -324,7 +321,7 @@ $(document).ready(function () {
             }
         })
             .done(data => {
-                $replyBtn.html(`답글 ${data.totalElements}개 <i class="bi bi-chevron-up ms-1"></i>`);
+                $replyBtn.html(`<i class="bi bi-chevron-up ms-1"></i>&nbsp&nbsp답글 ${data.totalElements}개`);
                 isLast = data.last;
                 data.content.forEach(c => {
                     const safe = $('<div>').text(c.content).html();
@@ -333,12 +330,12 @@ $(document).ready(function () {
                     const childHtml = `
                     <div class="comment-item child mt-3" data-id="${c.commentId}">
                         <div class="comment-action-buttons d-flex flex-column align-items-center">
-                            <button class="btn" id="comment-thumbs-up">
-                                <i id="thumbs-up-class" class="bi ${upCls}"></i>
+                            <button class="btn comment-thumbs-up">
+                                <i class="bi ${upCls}"></i>
                             </button>
-                            <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
-                            <button class="btn" id="comment-thumbs-down">
-                                <i id="thumbs-down-class" class="bi ${downCls}"></i>
+                            <p class="reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
+                            <button class="btn comment-thumbs-down">
+                                <i class="bi ${downCls}"></i>
                             </button>
                         </div>
                         <div class="comment-body">
@@ -384,9 +381,9 @@ $(document).ready(function () {
                     const $more = $(
                         `<button 
                               class="btn btn-sm load-more-child mt-2"
-                              style="font-size: 16px"
+                              style="font-size: 16px; color: #0d6efd"
                          >
-                                    답글 더보기 <i class="bi bi-chevron-down ms-1"></i>
+                                    <i class="bi bi-arrow-return-right"></i>&nbsp&nbsp답글 더보기
                          </button>`
                     );
                     $cont.append($more);
@@ -410,7 +407,7 @@ $(document).ready(function () {
             $cont.empty();
             $cont.find('.load-more-child').remove();
             $btn.data('page', 0)
-                .html(`답글 ${total}개 <i class="bi bi-chevron-down ms-1"></i>`);
+                .html(`<i class="bi bi-chevron-down ms-1"></i>&nbsp&nbsp답글 ${total}개</i>`);
             return;
         }
 
