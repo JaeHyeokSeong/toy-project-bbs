@@ -211,13 +211,16 @@ $(document).ready(function () {
                     let replyButton = '';
                     if (c.totalChildComments > 0) {
                         replyButton = `
-                        <button class="btn btn-sm load-child-comments"
+                            <button
+                                class="btn btn-link text-decoration-none d-flex align-items-center mt-1 load-child-comments"
                                 data-id="${c.commentId}"
                                 data-page="0"
-                                data-total="${c.totalChildComments}">
-                          답글 ${c.totalChildComments}개
-                        </button>
-                      `;
+                                data-total="${c.totalChildComments}"
+                                style="font-size: 16px"
+                            >
+                                답글 ${c.totalChildComments}개
+                                <i class="bi bi-chevron-down ms-1"></i>
+                            </button>`;
                     }
 
                     const html = `
@@ -273,8 +276,16 @@ $(document).ready(function () {
                             
                             <div class="comment-content mt-3" data-original="${safeContent}">${safeContent}</div>
                             
-                            <button class="reply-comment-child-btn">답글</button>
-                            ${replyButton}
+                            <!-- 변경된 답글 영역 -->
+                            <div class="d-flex flex-column align-items-start">
+                                <!-- 항상 노출되는 '답글' 버튼 -->
+                                <button class="btn btn-link text-decoration-none d-flex align-items-center reply-comment-child-btn">
+                                    답글
+                                </button>
+                                <!-- '답글 N개' 버튼 (아이콘 포함) -->
+                                ${replyButton}
+                            </div>
+                            
                             <div class="child-comments-container"></div>
                         </div>
                     </div>`;
@@ -300,7 +311,7 @@ $(document).ready(function () {
         let   childPage  = $replyBtn.data('page');
         let isLast = true;
         const searchSort = $("#search-sort").val();
-        const $cont      = $replyBtn.siblings('.child-comments-container');
+        const $cont = $replyBtn.closest('.comment-body').find('.child-comments-container');
 
         $.ajax({
             url: `/api/comments/${boardId}`,
@@ -313,7 +324,7 @@ $(document).ready(function () {
             }
         })
             .done(data => {
-                $replyBtn.text('답글 ' + data.totalElements + '개');
+                $replyBtn.html(`답글 ${data.totalElements}개 <i class="bi bi-chevron-up ms-1"></i>`);
                 isLast = data.last;
                 data.content.forEach(c => {
                     const safe = $('<div>').text(c.content).html();
@@ -371,7 +382,12 @@ $(document).ready(function () {
                 // 3) 더 불러올 게 남았으면 “더보기”, 아니면 원래 텍스트로 복귀
                 if (!isLast) {
                     const $more = $(
-                        `<button class="btn btn-sm load-more-child mt-2">답글 더보기</button>`
+                        `<button 
+                              class="btn btn-sm load-more-child mt-2"
+                              style="font-size: 16px"
+                         >
+                                    답글 더보기 <i class="bi bi-chevron-down ms-1"></i>
+                         </button>`
                     );
                     $cont.append($more);
                 }
@@ -385,12 +401,16 @@ $(document).ready(function () {
     // ── 1) “답글 N개” 버튼 클릭 ──
     $(document).on('click', '.load-child-comments', function() {
         const $btn = $(this);
-        const $cont = $btn.siblings('.child-comments-container');
+        const $cont = $btn.closest('.comment-body')
+            .find('.child-comments-container');
+        const total = $btn.data('total');
 
         // 이미 댓글이 렌더링 되어있으면 → 토글: 숨기고 page 초기화
         if ($cont.children().length) {
             $cont.empty();
-            $btn.data('page', 0);
+            $cont.find('.load-more-child').remove();
+            $btn.data('page', 0)
+                .html(`답글 ${total}개 <i class="bi bi-chevron-down ms-1"></i>`);
             return;
         }
 
@@ -651,7 +671,7 @@ $(document).ready(function () {
             data: JSON.stringify({ content: raw, parentCommentId: parentId })
         })
             .done(() => {
-                // 1) 입력창 + 버튼 제거
+                /*// 1) 입력창 + 버튼 제거
                 $body.find('.child-reply-area, .submit-child-reply, .cancel-child-reply').remove();
 
                 // 2) 기존에 렌더된 대댓글 전부 지우기
@@ -663,7 +683,12 @@ $(document).ready(function () {
                 $replyBtn.data('page', 0);
 
                 // 5) 다시 첫 10개부터 로드
-                loadChildComments($replyBtn);
+                loadChildComments($replyBtn);*/
+
+                page = 0;
+                isLast = false;
+                $('#comments-container').empty();
+                loadComments();
             })
             .fail(() => {
                 alert('답글 등록에 실패했습니다.');
