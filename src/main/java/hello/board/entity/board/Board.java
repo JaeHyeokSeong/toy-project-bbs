@@ -39,7 +39,7 @@ public class Board extends BaseEntity {
     //==연관관계 메서드==//
     public void addUploadFile(UploadFile uploadFile) {
         uploadFiles.add(uploadFile);
-        uploadFile.setBoard(this);
+        uploadFile.changeBoard(this);
     }
 
     //==생성 메서드==//

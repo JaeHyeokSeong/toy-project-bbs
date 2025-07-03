@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hello.board.entity.ReactionType;
+import hello.board.entity.comment.QComment;
 import hello.board.entity.comment.QCommentReaction;
 import hello.board.repository.comment.query.dto.CommentDto;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
@@ -41,6 +42,7 @@ public class CommentQueryRepository {
 
         StringPath totalLikesPlusTotalDislikes = Expressions.stringPath("totalLikesPlusTotalDislikes");
         QCommentReaction subCommentReaction = new QCommentReaction("subCommentReaction");
+        QComment subComment = new QComment("subComment");
 
         List<CommentDto> content = queryFactory.select(Projections.constructor(CommentDto.class,
                         comment.board.id,
@@ -62,6 +64,9 @@ public class CommentQueryRepository {
                                 .from(commentReaction)
                                 .where(commentReaction.comment.id.eq(comment.id),
                                         commentReaction.reactionType.eq(ReactionType.LIKE)), "totalLikesPlusTotalDislikes"),
+                        JPAExpressions.select(subComment.id.count())
+                                .from(subComment)
+                                .where(subComment.parentComment.id.eq(comment.id)),
                         memberId == null ? Expressions.constantAs(null, commentReaction.reactionType) :
                                 JPAExpressions.select(commentReaction.reactionType)
                                         .from(commentReaction)

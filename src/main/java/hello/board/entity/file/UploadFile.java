@@ -6,14 +6,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UploadFile extends BaseEntity {
 
-    @Setter(value = AccessLevel.NONE)
     @Id @GeneratedValue
     @Column(name = "upload_file_id")
     private Long id;
@@ -28,5 +26,10 @@ public class UploadFile extends BaseEntity {
     public UploadFile(String originalFileName, String storeFileName) {
         this.originalFileName = originalFileName;
         this.storeFileName = storeFileName;
+    }
+
+    //==연관관계 메서드==//
+    public void changeBoard(Board board) {
+        this.board = board;
     }
 }

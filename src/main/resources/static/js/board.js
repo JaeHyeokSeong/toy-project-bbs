@@ -81,6 +81,86 @@ $(document).ready(function () {
 
 //답변
 $(document).ready(function () {
+
+    let isLoggedIn = false;
+    let userName = '';
+
+    // 1) 페이지 로드 시 로그인 여부 확인
+    $.getJSON('/api/member/profile')
+        .done(res => {
+            // data가 null 이면 비로그인, 아닐 때만 로그인
+            isLoggedIn = !!res.data;
+
+            if (isLoggedIn) {
+                userName = res.data.name;
+            }
+        })
+        .fail(() => {
+            // 네트워크 오류라도 일단 비로그인으로 처리
+            isLoggedIn = false;
+        });
+
+    // 2) 댓글 리액션 클릭 핸들러
+    $(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function (e) {
+        e.preventDefault();
+
+        // 비로그인 시 바로 경고
+        if (!isLoggedIn) {
+            return alert('로그인이 필요합니다.');
+        }
+
+        const isUp = $(this).is('#comment-thumbs-up');
+        const commentItem = $(this).closest('.comment-item');
+        const commentId = commentItem.data('id');
+        const upIcon = commentItem.find('#thumbs-up-class');
+        const downIcon = commentItem.find('#thumbs-down-class');
+        const wasUp = upIcon.hasClass('bi-hand-thumbs-up-fill');
+        const wasDown = downIcon.hasClass('bi-hand-thumbs-down-fill');
+        const reactionType = isUp
+            ? 'LIKE'
+            : 'DISLIKE';
+
+        // 3) 리액션 요청 (401 → 로그인 필요)
+        $.ajax({
+            url: `/api/comment-reaction/${commentId}`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({reactionType}),
+            dataType: 'json'
+        })
+            .done(resultDto => {
+                // 카운트 업데이트
+                commentItem.find('#total-reaction-ct')
+                    .text(resultDto.totalReactionCounts);
+
+                // 아이콘 토글
+                if (isUp) {
+                    if (wasUp) {
+                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                    } else {
+                        upIcon.removeClass('bi-hand-thumbs-up').addClass('bi-hand-thumbs-up-fill');
+                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                    }
+                } else {
+                    if (wasDown) {
+                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
+                    } else {
+                        downIcon.removeClass('bi-hand-thumbs-down').addClass('bi-hand-thumbs-down-fill');
+                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
+                    }
+                }
+            })
+            .fail((xhr) => {
+                // 401 Unauthorized → 로그인 필요
+                if (xhr.status === 401) {
+                    alert('로그인이 필요합니다.');
+                } else {
+                    console.error('리액션 적용 실패', xhr);
+                    alert('리액션 요청 중 오류가 발생했습니다.');
+                }
+            });
+    });
+
     const boardId = $("#board-id").text().trim();
     let page = 0, size = 10, loading = false, isLast = false;
 
@@ -110,17 +190,16 @@ $(document).ready(function () {
 
                 if (page === 0 && data.content.length === 0) {
                     $("#comments-container").html(`
-                <div class="no-comments">
-                    답변을 기다리고 있는 게시물이에요<br>
-                    첫번째 답변을 남겨보세요!
-                </div>`);
+                    <div class="no-comments">
+                        답변을 기다리고 있는 게시물이에요<br>
+                        첫번째 답변을 남겨보세요!
+                    </div>`);
                     return;
                 }
 
                 data.content.forEach(c => {
                     const safeContent = $('<div>').text(c.content).html();
 
-                    // ← 여기를 추가!
                     const upIconClass = c.reactionType === 'LIKE'
                         ? 'bi bi-hand-thumbs-up-fill'
                         : 'bi bi-hand-thumbs-up';
@@ -128,62 +207,78 @@ $(document).ready(function () {
                         ? 'bi bi-hand-thumbs-down-fill'
                         : 'bi bi-hand-thumbs-down';
 
+                    // 대댓글 버튼 HTML 추가
+                    let replyButton = '';
+                    if (c.totalChildComments > 0) {
+                        replyButton = `
+                        <button class="btn btn-sm load-child-comments"
+                                data-id="${c.commentId}"
+                                data-page="0"
+                                data-total="${c.totalChildComments}">
+                          답글 ${c.totalChildComments}개
+                        </button>
+                      `;
+                    }
+
                     const html = `
-                <div class="comment-item" data-id="${c.commentId}">
-                
-                    <div class="comment-action-buttons d-flex flex-column align-items-center">
-                        <button class="btn" id="comment-thumbs-up">
-                            <i id="thumbs-up-class"  class="${upIconClass}"></i>
-                        </button>
-                        <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
-                        <button class="btn" id="comment-thumbs-down">
-                            <i id="thumbs-down-class" class="${downIconClass}"></i>
-                        </button>
-                    </div>
-                
-                    <div class="comment-body">
-                        <div class="comment-meta-row">
-                            <div class="comment-avatar">
-                                <img
-                                    src="${c.profileImageUrl || '/images/default-profile.svg'}"
-                                    alt="${c.writerName} 프로필 사진"
-                                    class="avatar-img"
-                                />
-                            </div>
-                            <div class="comment-meta-info">
-                            
-                            <!-- ② 여기에 comment-header 살려두기 -->
-                            <div class="comment-header">
-                            <span class="comment-author">${c.writerName}</span>
-                            
-                            ${c.isEditable ? `
-                            <div class="comment-menu">
-                                <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
-                                <div class="comment-actions-owner">
-                                   <button class="edit-btn"   data-id="${c.commentId}">
-                                     <i class="bi bi-pencil"></i> 수정
-                                   </button>
-                                   <button class="delete-btn" data-id="${c.commentId}">
-                                     <i class="bi bi-trash3"></i> 삭제
-                                   </button>
-                                </div>
-                            </div>` : ''}
-                            
-                            </div>
-                            
-                            <!-- ③ 날짜는 header 바로 옆으로 -->
-                            <span class="comment-date">
-                                ${formatDate(new Date(c.createdDate))}
-                                ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
-                            </span>
-                            </div>
+                    <div class="comment-item" data-id="${c.commentId}">
+                    
+                        <div class="comment-action-buttons d-flex flex-column align-items-center">
+                            <button class="btn" id="comment-thumbs-up">
+                                <i id="thumbs-up-class" class="${upIconClass}"></i>
+                            </button>
+                            <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
+                            <button class="btn" id="comment-thumbs-down">
+                                <i id="thumbs-down-class" class="${downIconClass}"></i>
+                            </button>
                         </div>
-                        
-                        <div class="comment-content mt-3" data-original="${safeContent}">${safeContent}</div>
-                        
-                        <button class="reply-comment-child-btn">답글</button>
-                    </div>
-                </div>`;
+                    
+                        <div class="comment-body">
+                            <div class="comment-meta-row">
+                                <div class="comment-avatar">
+                                    <img
+                                        src="${c.profileImageUrl || '/images/default-profile.svg'}"
+                                        alt="${c.writerName} 프로필 사진"
+                                        class="avatar-img"
+                                    />
+                                </div>
+                                <div class="comment-meta-info">
+                                
+                                <!-- ② 여기에 comment-header 살려두기 -->
+                                <div class="comment-header">
+                                <span class="comment-author">${c.writerName}</span>
+                                
+                                ${c.isEditable ? `
+                                <div class="comment-menu">
+                                    <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
+                                    <div class="comment-actions-owner">
+                                       <button class="edit-btn"   data-id="${c.commentId}">
+                                         <i class="bi bi-pencil"></i> 수정
+                                       </button>
+                                       <button class="delete-btn" data-id="${c.commentId}">
+                                         <i class="bi bi-trash3"></i> 삭제
+                                       </button>
+                                    </div>
+                                </div>` : ''}
+                                
+                                </div>
+                                
+                                <!-- ③ 날짜는 header 바로 옆으로 -->
+                                <span class="comment-date">
+                                    ${formatDate(new Date(c.createdDate))}
+                                    ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
+                                </span>
+                                </div>
+                            </div>
+                            
+                            <div class="comment-content mt-3" data-original="${safeContent}">${safeContent}</div>
+                            
+                            <button class="reply-comment-child-btn">답글</button>
+                            ${replyButton}
+                            <div class="child-comments-container"></div>
+                        </div>
+                    </div>`;
+
                     $("#comments-container").append(html);
                 });
 
@@ -195,6 +290,123 @@ $(document).ready(function () {
                 loading = false;
             });
     }
+
+    const COMMENT_PAGE_SIZE = 10;
+
+    // ── 3) 대댓글 로드 함수 추가 ──
+    function loadChildComments($replyBtn) {
+        const boardId    = $("#board-id").text().trim();
+        const commentId  = $replyBtn.data('id');
+        let   childPage  = $replyBtn.data('page');
+        let isLast = true;
+        const searchSort = $("#search-sort").val();
+        const $cont      = $replyBtn.siblings('.child-comments-container');
+
+        $.ajax({
+            url: `/api/comments/${boardId}`,
+            method: 'GET',
+            data: {
+                page: childPage,
+                size: COMMENT_PAGE_SIZE,
+                parentCommentId: commentId,
+                searchSort: searchSort
+            }
+        })
+            .done(data => {
+                $replyBtn.text('답글 ' + data.totalElements + '개');
+                isLast = data.last;
+                data.content.forEach(c => {
+                    const safe = $('<div>').text(c.content).html();
+                    const upCls = c.reactionType === 'LIKE' ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up';
+                    const downCls = c.reactionType === 'DISLIKE' ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down';
+                    const childHtml = `
+                    <div class="comment-item child mt-3" data-id="${c.commentId}">
+                        <div class="comment-action-buttons d-flex flex-column align-items-center">
+                            <button class="btn" id="comment-thumbs-up">
+                                <i id="thumbs-up-class" class="bi ${upCls}"></i>
+                            </button>
+                            <p id="total-reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
+                            <button class="btn" id="comment-thumbs-down">
+                                <i id="thumbs-down-class" class="bi ${downCls}"></i>
+                            </button>
+                        </div>
+                        <div class="comment-body">
+                            <div class="comment-meta-row">
+                                <div class="comment-avatar">
+                                    <img src="${c.profileImageUrl || '/images/default-profile.svg'}"
+                                        alt="${c.writerName} 프로필 사진"
+                                        class="avatar-img"/>
+                                </div>
+                                <div class="comment-meta-info">
+                                    <div class="comment-header">
+                                        <span class="comment-author">${c.writerName}</span>
+                                        ${c.isEditable ? `
+                                            <div class="comment-menu">
+                                                <button class="menu-toggle"><i class="bi bi-three-dots-vertical"></i></button>
+                                                <div class="comment-actions-owner">
+                                                    <button class="edit-btn"   data-id="${c.commentId}">
+                                                        <i class="bi bi-pencil"></i> 수정
+                                                    </button>
+                                                    <button class="delete-btn" data-id="${c.commentId}">
+                                                        <i class="bi bi-trash3"></i> 삭제
+                                                    </button>
+                                                </div>
+                                            </div>` : ''}
+                                    </div>
+                                    <span class="comment-date">
+                                        ${formatDate(new Date(c.createdDate))}
+                                        ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="comment-content mt-3" data-original="${safe}">${safe}</div>
+                        </div>
+                    </div>`;
+                    $cont.append(childHtml);
+                });
+
+                childPage++;
+                $replyBtn.data('page', childPage);
+
+                // 3) 더 불러올 게 남았으면 “더보기”, 아니면 원래 텍스트로 복귀
+                if (!isLast) {
+                    const $more = $(
+                        `<button class="btn btn-sm load-more-child mt-2">답글 더보기</button>`
+                    );
+                    $cont.append($more);
+                }
+            })
+            .fail(err => {
+                console.error('대댓글 로드 실패', err);
+                $replyBtn.text(`답글 ${total}개`).prop('disabled', false);
+            });
+    }
+
+    // ── 1) “답글 N개” 버튼 클릭 ──
+    $(document).on('click', '.load-child-comments', function() {
+        const $btn = $(this);
+        const $cont = $btn.siblings('.child-comments-container');
+
+        // 이미 댓글이 렌더링 되어있으면 → 토글: 숨기고 page 초기화
+        if ($cont.children().length) {
+            $cont.empty();
+            $btn.data('page', 0);
+            return;
+        }
+
+        // 처음이거나 숨겨진 상태에서 클릭하면 load
+        $btn.data('page', 0);
+        loadChildComments($btn);
+    });
+
+    // ── 2) “더보기” 버튼 클릭 ──
+    $(document).on('click', '.load-more-child', function() {
+        const $moreBtn  = $(this);
+        const $replyBtn = $moreBtn.closest('.comment-body')
+            .find('.load-child-comments');
+        $moreBtn.remove();            // 이전 “더보기” 제거
+        loadChildComments($replyBtn);
+    });
 
     //답변 등록용 textarea 이벤트
     $('#add-comment-parent').on('focus click input', function () {
@@ -303,7 +515,7 @@ $(document).ready(function () {
             url: `/api/comment/${id}`,
             method: 'PUT',
             contentType: 'application/json',
-            data: JSON.stringify({commentId: id, content: raw}),
+            data: JSON.stringify({content: raw}),
             beforeSend: function () {
                 $save.hide();
                 $cancel.hide();
@@ -391,6 +603,76 @@ $(document).ready(function () {
         loadComments();
     });
 
+    // 1) "답글" 버튼 클릭 → 입력창 토글
+    $(document).on('click', '.reply-comment-child-btn', function() {
+        if (!isLoggedIn) {
+            return alert('로그인이 필요합니다.');
+        }
+        const $btn  = $(this);
+        const $body = $btn.closest('.comment-body');
+        // 이미 열려 있으면 포커스만
+        if ($body.find('.child-reply-area').length) {
+            return $body.find('.child-reply-area').focus();
+        }
+        // textarea + 등록/취소 버튼 삽입
+        const textareaPlaceholder = `${userName}님, 답글을 작성해보세요`
+        const $ta     = $('<textarea class="child-reply-area mt-2" rows="10"></textarea>').attr('placeholder', textareaPlaceholder);
+        const $submit = $('<button class="btn btn-sm submit-child-reply ms-1">답글 등록</button>');
+        const $cancel = $('<button class="btn btn-sm cancel-child-reply ms-1">취소</button>');
+        $btn.after($ta, $submit, $cancel);
+        $ta.focus();
+    });
+
+    // 2) "취소" 버튼 클릭 → 입력창 제거
+    $(document).on('click', '.cancel-child-reply', function() {
+        const $body = $(this).closest('.comment-body');
+        $body.find('.child-reply-area, .submit-child-reply, .cancel-child-reply').remove();
+    });
+
+    // 3) "등록" 버튼 클릭 → 답글 POST
+    $(document).on('click', '.submit-child-reply', function() {
+        if (!isLoggedIn) {
+            return alert('로그인이 필요합니다.');
+        }
+        const $btn    = $(this);
+        const $body   = $btn.closest('.comment-body');
+        const raw     = $body.find('.child-reply-area').val().trim();
+        if (!raw) return alert('답글 내용을 입력해주세요.');
+
+        const parentId = $btn.closest('.comment-item').data('id');
+        const $replyBtn = $body.find(`.load-child-comments[data-id="${parentId}"]`);
+        const $cont     = $body.find('.child-comments-container');
+
+        $btn.prop('disabled', true).text('등록중…');
+        $.ajax({
+            url: `/api/comment/${boardId}`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ content: raw, parentCommentId: parentId })
+        })
+            .done(() => {
+                // 1) 입력창 + 버튼 제거
+                $body.find('.child-reply-area, .submit-child-reply, .cancel-child-reply').remove();
+
+                // 2) 기존에 렌더된 대댓글 전부 지우기
+                $cont.empty();
+                // 3) 더보기 버튼도 제거
+                $cont.siblings('.load-more-child').remove();
+
+                // 4) 페이지 리셋
+                $replyBtn.data('page', 0);
+
+                // 5) 다시 첫 10개부터 로드
+                loadChildComments($replyBtn);
+            })
+            .fail(() => {
+                alert('답글 등록에 실패했습니다.');
+            })
+            .always(() => {
+                $btn.prop('disabled', false).text('등록');
+            });
+    });
+
     //초기 로드
     loadComments();
 });
@@ -405,7 +687,7 @@ function formatDate(date) {
     return `${Y}.${M}.${D} ${h}:${m}:${s}`;
 }
 
-$(document).on('click', '.menu-toggle', function(e) {
+$(document).on('click', '.menu-toggle', function (e) {
     e.stopPropagation();  // 외부 클릭 이벤트 막기
     const $menu = $(this).closest('.comment-menu');
     $('.comment-menu.open').not($menu).removeClass('open');
@@ -413,82 +695,6 @@ $(document).on('click', '.menu-toggle', function(e) {
 });
 
 // 빈 공간 클릭 시 닫기
-$(document).on('click', function() {
+$(document).on('click', function () {
     $('.comment-menu.open').removeClass('open');
-});
-
-$(document).ready(function () {
-    let isLoggedIn = false;
-
-    // 1) 페이지 로드 시 로그인 여부 확인
-    $.getJSON('/api/member/profile')
-        .done(res => {
-            // data가 null 이면 비로그인, 아닐 때만 로그인
-            isLoggedIn = !!res.data;
-        })
-        .fail(() => {
-            // 네트워크 오류라도 일단 비로그인으로 처리
-            isLoggedIn = false;
-        });
-
-    // 2) 댓글 리액션 클릭 핸들러
-    $(document).on('click', '#comment-thumbs-up, #comment-thumbs-down', function(e) {
-        e.preventDefault();
-
-        // 비로그인 시 바로 경고
-        if (!isLoggedIn) {
-            return alert('로그인이 필요합니다.');
-        }
-
-        const isUp       = $(this).is('#comment-thumbs-up');
-        const commentItem= $(this).closest('.comment-item');
-        const commentId  = commentItem.data('id');
-        const upIcon     = commentItem.find('#thumbs-up-class');
-        const downIcon   = commentItem.find('#thumbs-down-class');
-        const wasUp      = upIcon.hasClass('bi-hand-thumbs-up-fill');
-        const wasDown    = downIcon.hasClass('bi-hand-thumbs-down-fill');
-        const reactionType = isUp
-            ? 'LIKE'
-            : 'DISLIKE';
-
-        // 3) 리액션 요청 (401 → 로그인 필요)
-        $.ajax({
-            url: `/api/comment-reaction/${commentId}`,
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ reactionType }),
-            dataType: 'json'
-        })
-            .done(resultDto => {
-                // 카운트 업데이트
-                commentItem.find('#total-reaction-ct')
-                    .text(resultDto.totalReactionCounts);
-
-                // 아이콘 토글
-                if (isUp) {
-                    if (wasUp) {
-                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
-                    } else {
-                        upIcon.removeClass('bi-hand-thumbs-up').addClass('bi-hand-thumbs-up-fill');
-                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
-                    }
-                } else {
-                    if (wasDown) {
-                        downIcon.removeClass('bi-hand-thumbs-down-fill').addClass('bi-hand-thumbs-down');
-                    } else {
-                        downIcon.removeClass('bi-hand-thumbs-down').addClass('bi-hand-thumbs-down-fill');
-                        upIcon.removeClass('bi-hand-thumbs-up-fill').addClass('bi-hand-thumbs-up');
-                    }
-                }
-            })
-            .fail((xhr) => {
-                // 401 Unauthorized → 로그인 필요
-                if (xhr.status === 401) {
-                    alert('로그인이 필요합니다.');
-                } else {
-                    console.error('리액션 적용 실패', xhr);
-                    alert('리액션 요청 중 오류가 발생했습니다.');
-                }
-            });
-    });
 });

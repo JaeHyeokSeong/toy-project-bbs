@@ -70,7 +70,8 @@ public class CommentApiController {
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<UpdateCommentResultDto> updateComment(@Valid @RequestBody UpdateCommentDto dto,
                                                                 BindingResult bindingResult,
-                                                                @SessionAttribute(MEMBER_ID) Long memberId) {
+                                                                @SessionAttribute(MEMBER_ID) Long memberId,
+                                                                @PathVariable Long commentId) {
 
         log.info("comment 수정, 전달되어진 값={}", dto);
 
@@ -80,7 +81,7 @@ public class CommentApiController {
         }
 
         UpdateCommentResultDto updatedComment = commentService.changeContent(
-                dto.getCommentId(),
+                commentId,
                 memberId,
                 dto.getContent());
 
