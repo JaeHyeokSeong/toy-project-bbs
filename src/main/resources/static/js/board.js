@@ -266,7 +266,7 @@ $(document).ready(function () {
                                 <!-- ③ 날짜는 header 바로 옆으로 -->
                                 <span class="comment-date">
                                     ${formatDate(new Date(c.createdDate))}
-                                    ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
+                                    ${c.createdDate !== c.lastModifiedDate ? '*' : ''}
                                 </span>
                                 </div>
                             </div>
@@ -329,18 +329,10 @@ $(document).ready(function () {
                     const downCls = c.reactionType === 'DISLIKE' ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down';
                     const childHtml = `
                     <div class="comment-item child mt-3" data-id="${c.commentId}">
-                        <div class="comment-action-buttons d-flex flex-column align-items-center">
-                            <button class="btn comment-thumbs-up">
-                                <i class="bi ${upCls}"></i>
-                            </button>
-                            <p class="reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
-                            <button class="btn comment-thumbs-down">
-                                <i class="bi ${downCls}"></i>
-                            </button>
-                        </div>
                         <div class="comment-body">
-                            <div class="comment-meta-row">
+                            <div class="comment-meta-row ms-3">
                                 <div class="comment-avatar">
+                                    <i class="bi bi-arrow-return-right me-2"></i>
                                     <img src="${c.profileImageUrl || '/images/default-profile.svg'}"
                                         alt="${c.writerName} 프로필 사진"
                                         class="avatar-img"/>
@@ -363,11 +355,21 @@ $(document).ready(function () {
                                     </div>
                                     <span class="comment-date">
                                         ${formatDate(new Date(c.createdDate))}
-                                        ${c.createdDate !== c.lastModifiedDate ? ' (수정됨)' : ''}
+                                        ${c.createdDate !== c.lastModifiedDate ? '*' : ''}
                                     </span>
                                 </div>
                             </div>
-                            <div class="comment-content mt-3" data-original="${safe}">${safe}</div>
+                            <div class="comment-content mt-3 ms-5" data-original="${safe}">${safe}</div>
+                            
+                            <div class="comment-action-buttons d-flex align-items-center ms-4">
+                                <button class="btn comment-thumbs-up">
+                                    <i class="bi ${upCls}"></i>
+                                </button>
+                                <p class="reaction-ct">${c.totalLikesPlusTotalDislikes}</p>
+                                <button class="btn comment-thumbs-down">
+                                    <i class="bi ${downCls}"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>`;
                     $cont.append(childHtml);
@@ -632,9 +634,9 @@ $(document).ready(function () {
             return $body.find('.child-reply-area').focus();
         }
         // textarea + 등록/취소 버튼 삽입
-        const textareaPlaceholder = `${userName}님, 답글을 작성해보세요`
+        const textareaPlaceholder = `${userName}님, 답글을 작성해보세요.`
         const $ta     = $('<textarea class="child-reply-area mt-2" rows="10"></textarea>').attr('placeholder', textareaPlaceholder);
-        const $submit = $('<button class="btn btn-sm submit-child-reply ms-1">답글 등록</button>');
+        const $submit = $('<button class="btn btn-sm submit-child-reply ms-1">저장</button>');
         const $cancel = $('<button class="btn btn-sm cancel-child-reply ms-1">취소</button>');
         $btn.after($ta, $submit, $cancel);
         $ta.focus();

@@ -121,19 +121,21 @@
 
         <!-- 답변 등록 -->
         <div class="add-comment-parent mb-4">
-        <textarea id="add-comment-parent"
-                  class="add-comment-input"
-                  rows="1"
-                  th:placeholder="${session.memberId} != null
-                      ? ${dto.viewerName} + '님, 답변을 작성해보세요.' : '로그인 후 답변을 작성해 주세요.'"
-                  th:disabled="${session.memberId == null}"
-        ></textarea>
-            <button id="submit-comment-parent" class="reply-btn" style="display: none;">답변 등록</button>
-            <button id="cancel-comment-parent" class="cancel-btn" style="display: none;">취소</button>
-            <!-- 인라인 스타일로 폭·여백만 재정의 -->
-            <div id="submit-spinner"
-                 class="spinner"
-                 style="display: none; margin-left: 8px; width: 24px; height: 24px;">
+            <textarea id="add-comment-parent"
+                      class="add-comment-input"
+                      rows="1"
+                      th:placeholder="${session.memberId} != null
+                          ? ${dto.viewerName} + '님, 답변을 작성해보세요.' : '로그인 후 답변을 작성해 주세요.'"
+                      th:disabled="${session.memberId == null}"
+            ></textarea>
+            <div class="d-flex justify-content-end mt-2">
+                <button id="submit-comment-parent" class="save-btn" style="display: none; padding-right: 10px">저장</button>
+                <button id="cancel-comment-parent" class="cancel-btn" style="display: none;">취소</button>
+                <!-- 인라인 스타일로 폭·여백만 재정의 -->
+                <div id="submit-spinner"
+                     class="spinner"
+                     style="display: none; margin-left: 8px; width: 24px; height: 24px;">
+                </div>
             </div>
         </div>
 

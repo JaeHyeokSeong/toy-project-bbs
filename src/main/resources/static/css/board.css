@@ -100,33 +100,6 @@
     line-height: 1.4;
 }
 
-.reply-btn, .cancel-btn {
-    display: none;
-    margin-top: 6px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    padding: 4px 8px;
-}
-
-.reply-btn {
-    color: #065fd4;
-}
-
-.cancel-btn {
-    color: #888;
-    margin-left: 4px;
-}
-
-.reply-btn:hover {
-    text-decoration: underline;
-}
-
-.cancel-btn:hover {
-    text-decoration: underline;
-}
-
 .reply-comment-child-btn {
     color: #065fd4;
     margin-top: 4px;
@@ -268,7 +241,7 @@
     text-align: right;
 }
 
-.save-edit-btn, .cancel-edit-btn {
+.save-edit-btn, .cancel-edit-btn, .save-btn, .cancel-btn, .submit-child-reply, .cancel-child-reply {
     margin-top: 4px;
     background: none;
     border: none;
@@ -277,7 +250,8 @@
     padding-left: 0;
 }
 
-.save-edit-btn:hover, .cancel-edit-btn:hover {
+.save-edit-btn:hover, .cancel-edit-btn:hover, .save-btn:hover,
+.cancel-btn:hover, .submit-child-reply:hover, .cancel-child-reply:hover {
     text-decoration: underline;
 }
 
