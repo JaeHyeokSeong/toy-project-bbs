@@ -1,6 +1,9 @@
 package hello.board.controller.board;
 
 import hello.board.SessionConst;
+import hello.board.controller.board.dto.AddBoardDto;
+import hello.board.entity.board.Board;
+import hello.board.exception.BoardNotFoundException;
 import hello.board.repository.board.query.dto.BoardQueryDto;
 import hello.board.repository.board.query.dto.BoardSearchCondition;
 import hello.board.repository.board.query.dto.SearchSort;
@@ -10,11 +13,6 @@ import hello.board.service.board.BoardService;
 import hello.board.service.board.query.BoardQueryService;
 import hello.board.service.board.query.dto.BoardListDto;
 import hello.board.service.board.query.dto.BoardUpdateDto;
-import hello.board.service.member.MemberService;
-import hello.board.entity.board.Board;
-import hello.board.entity.file.FileStore;
-import hello.board.exception.BoardNotFoundException;
-import hello.board.controller.board.dto.AddBoardDto;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
@@ -39,8 +36,6 @@ public class BoardController {
 
     private final BoardService boardService;
     private final BoardQueryService boardQueryService;
-    private final FileStore fileStore;
-    private final MemberService memberService;
 
     @GetMapping
     public String boards(@ModelAttribute("condition") BoardSearchCondition condition,

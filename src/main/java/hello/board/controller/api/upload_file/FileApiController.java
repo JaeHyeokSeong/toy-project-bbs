@@ -1,7 +1,7 @@
 package hello.board.controller.api.upload_file;
 
-import hello.board.entity.file.FileStore;
-import hello.board.entity.file.UploadFile;
+import hello.board.entity.board.FileStore;
+import hello.board.entity.board.UploadFile;
 import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.service.upload_file.UploadFileService;
 import lombok.RequiredArgsConstructor;

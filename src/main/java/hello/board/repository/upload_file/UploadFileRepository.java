@@ -1,6 +1,6 @@
 package hello.board.repository.upload_file;
 
-import hello.board.entity.file.UploadFile;
+import hello.board.entity.board.UploadFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

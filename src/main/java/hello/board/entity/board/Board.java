@@ -2,7 +2,6 @@ package hello.board.entity.board;
 
 import hello.board.entity.BaseEntity;
 import hello.board.entity.member.Member;
-import hello.board.entity.file.UploadFile;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

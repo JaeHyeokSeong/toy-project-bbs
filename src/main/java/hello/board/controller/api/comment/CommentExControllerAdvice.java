@@ -14,19 +14,19 @@ public class CommentExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult NoAccessCommentEx(CommentNotFoundException e) {
+    public ErrorResult commentNotFoundEx(CommentNotFoundException e) {
         return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult NoAccessCommentEx(MemberNotFoundException e) {
+    public ErrorResult memberNotFoundEx(MemberNotFoundException e) {
         return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult NoAccessCommentEx(BoardNotFoundException e) {
+    public ErrorResult boardNotFoundEx(BoardNotFoundException e) {
         return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
     }
 }

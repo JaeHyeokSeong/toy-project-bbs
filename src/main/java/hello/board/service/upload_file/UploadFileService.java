@@ -1,6 +1,6 @@
 package hello.board.service.upload_file;
 
-import hello.board.entity.file.UploadFile;
+import hello.board.entity.board.UploadFile;
 import hello.board.exception.UploadFileNotFound;
 import hello.board.repository.upload_file.UploadFileRepository;
 import hello.board.repository.upload_file.dto.UploadFileDto;

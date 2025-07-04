@@ -1,6 +1,6 @@
 package hello.board.service.board;
 
-import hello.board.entity.file.FileStore;
+import hello.board.entity.board.FileStore;
 import hello.board.repository.board.BoardRepository;
 import hello.board.repository.board_reaction.BoardReactionRepository;
 import hello.board.repository.comment.CommentRepository;
@@ -9,7 +9,7 @@ import hello.board.repository.upload_file.UploadFileRepository;
 import hello.board.service.member.MemberService;
 import hello.board.entity.board.Board;
 import hello.board.entity.member.Member;
-import hello.board.entity.file.UploadFile;
+import hello.board.entity.board.UploadFile;
 import hello.board.exception.BoardNotFoundException;
 import hello.board.exception.MemberNotFoundException;
 import jakarta.validation.constraints.NotNull;

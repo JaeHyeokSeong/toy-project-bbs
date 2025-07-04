@@ -1,6 +1,6 @@
 package hello.board.repository.upload_file.dto;
 
-import hello.board.entity.file.UploadFile;
+import hello.board.entity.board.UploadFile;
 import lombok.Data;
 
 import java.time.LocalDateTime;
