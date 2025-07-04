@@ -474,8 +474,10 @@ $(document).ready(function () {
                     .blur();
             })
             .fail(err => {
-                console.error('댓글 등록 실패', err);
-                alert('댓글 등록에 실패했습니다.');
+                if (err.status === 401) alert('로그인이 필요합니다.');
+                else {
+                    alert('댓글 등록에 실패했습니다.');
+                }
             })
             .always(function () {
                 // 요청 완료 후 스피너 숨기고 버튼 복귀
@@ -548,8 +550,10 @@ $(document).ready(function () {
                 loadComments();
             })
             .fail(err => {
-                console.error('수정 실패', err);
-                alert('댓글 수정에 실패했습니다.');
+                if (err.status === 401) alert('로그인이 필요합니다.');
+                else {
+                    alert('댓글 수정에 실패했습니다.');
+                }
             })
             .always(() => {
                 $spin.hide();
@@ -585,8 +589,10 @@ $(document).ready(function () {
                 loadComments();
             })
             .fail(err => {
-                console.error('삭제 실패', err);
-                alert('댓글 삭제에 실패했습니다.');
+                if (err.status === 401) alert('로그인이 필요합니다.');
+                else {
+                    alert('댓글 삭제에 실패했습니다.');
+                }
             })
             .always(() => {
                 $spin.hide();
@@ -635,10 +641,19 @@ $(document).ready(function () {
         }
         // textarea + 등록/취소 버튼 삽입
         const textareaPlaceholder = `${userName}님, 답글을 작성해보세요.`
-        const $ta     = $('<textarea class="child-reply-area mt-2" rows="10"></textarea>').attr('placeholder', textareaPlaceholder);
-        const $submit = $('<button class="btn btn-sm submit-child-reply ms-1">저장</button>');
-        const $cancel = $('<button class="btn btn-sm cancel-child-reply ms-1">취소</button>');
-        $btn.after($ta, $submit, $cancel);
+
+        const $ta = $(`
+            <textarea class="child-reply-area w-100 mt-2" style="border-radius: 8px; padding: 8px 12px;"
+                      rows="10" placeholder="${textareaPlaceholder}"></textarea>
+        `);
+
+        const $btnGroup = $(`
+            <div class="mt-2 d-flex justify-content-end w-100">
+                <button class="btn btn-sm submit-child-reply" style="padding-right: 10px">저장</button>
+                <button class="btn btn-sm cancel-child-reply">취소</button>
+            </div>
+        `);
+        $btn.after($ta, $btnGroup);
         $ta.focus();
     });
 
@@ -689,8 +704,11 @@ $(document).ready(function () {
                 $('#comments-container').empty();
                 loadComments();
             })
-            .fail(() => {
-                alert('답글 등록에 실패했습니다.');
+            .fail(err => {
+                if (err.status === 401) alert('로그인이 필요합니다.');
+                else {
+                    alert('답글 등록에 실패했습니다.');
+                }
             })
             .always(() => {
                 $btn.prop('disabled', false).text('등록');
