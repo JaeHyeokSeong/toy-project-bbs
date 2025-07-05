@@ -40,7 +40,8 @@
         <!-- 로그인O -->
         <div th:if="${session.memberId} != null" class="d-flex align-items-center">
             <a href="/account" class="btn btn-outline-primary me-2">회원정보</a>
-            <form action="/logout" method="post" class="d-inline">
+            <form action="/logout" method="post" id="logout-form" class="d-inline">
+                <input type="hidden" id="redirectURL" name="redirectURL">
                 <button class="btn btn-primary">로그아웃</button>
             </form>
         </div>

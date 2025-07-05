@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -55,6 +57,7 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.MEMBER_ID, loginResult.get());
 
+        log.info("로그인 성공, redirectURL={}", redirectURL);
         if (redirectURL != null) {
             return "redirect:" + redirectURL;
         }
@@ -62,11 +65,19 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request) {
+    public String logout(HttpServletRequest request, @RequestParam(required = false) String redirectURL) {
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
+
+        //로그아웃 후 redirectURL로 보내기
+        if (redirectURL != null) {
+            String decodedRedirectURL = UriUtils.decode(redirectURL, StandardCharsets.UTF_8);
+            log.info("로그아웃 성공, decodedRedirectURL={}", decodedRedirectURL);
+            return "redirect:" + decodedRedirectURL;
+        }
+
         return "redirect:/";
     }
 }
