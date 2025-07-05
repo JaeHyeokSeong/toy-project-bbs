@@ -1,8 +1,8 @@
 package hello.board.controller.login;
 
 import hello.board.SessionConst;
-import hello.board.service.member.MemberService;
 import hello.board.controller.login.dto.LoginDto;
+import hello.board.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.util.UriUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -72,10 +70,9 @@ public class LoginController {
         }
 
         //로그아웃 후 redirectURL로 보내기
+        log.info("로그아웃 성공, redirectURL={}", redirectURL);
         if (redirectURL != null) {
-            String decodedRedirectURL = UriUtils.decode(redirectURL, StandardCharsets.UTF_8);
-            log.info("로그아웃 성공, decodedRedirectURL={}", decodedRedirectURL);
-            return "redirect:" + decodedRedirectURL;
+            return "redirect:" + redirectURL;
         }
 
         return "redirect:/";

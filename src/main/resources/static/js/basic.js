@@ -7,13 +7,8 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(search);
         if (urlParams.has("redirectURL")) {
             location.href = "/signup" + search;
-            return;
-        }
-
-        if (search !== '') {
-            location.href = '/signup?redirectURL=' + encodeURIComponent(pathname + search);
         } else {
-            location.href = '/signup?redirectURL=' + encodeURIComponent(pathname);
+            location.href = '/signup?redirectURL=' + encodeURIComponent(pathname + search);
         }
     });
 
@@ -24,13 +19,8 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(search);
         if (urlParams.has("redirectURL")) {
             location.href = "/login" + search;
-            return;
-        }
-
-        if (search !== '') {
-            location.href = '/login?redirectURL=' + encodeURIComponent(pathname + search);
         } else {
-            location.href = '/login?redirectURL=' + encodeURIComponent(pathname);
+            location.href = '/login?redirectURL=' + encodeURIComponent(pathname + search);
         }
     });
 
@@ -40,6 +30,6 @@ $(document).ready(function () {
         const search = location.search;
 
         const redirectURL = $('#redirectURL');
-        redirectURL.val(encodeURIComponent(pathname + search));
+        redirectURL.val(pathname + search);
     });
 });
