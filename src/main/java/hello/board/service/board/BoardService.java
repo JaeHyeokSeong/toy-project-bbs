@@ -104,7 +104,8 @@ public class BoardService {
         commentReactionRepository.deleteAllByBoardId(boardId);
 
         //게시물에 달린 댓글 삭제하기 (벌크연산)
-        commentRepository.deleteAllByBoardId(boardId);
+        commentRepository.deleteAllChildCommentsByBoardId(boardId);
+        commentRepository.deleteAllParentCommentsByBoardId(boardId);
 
         //게시물에 달린 좋아요, 싫어요 삭제하기 (벌크연산)
         boardReactionRepository.deleteAllBoardReaction(boardId);
