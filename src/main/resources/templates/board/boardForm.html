@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>게시물 작성 - 자유게시판</title>
-    <link rel="stylesheet" href="/css/board-add.css">
-    <script type="text/javascript" src="/js/file.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/board-edit.css">
+    <script defer type="text/javascript" src="/js/file.js"></script>
 </head>
 <body>
 
@@ -35,13 +33,15 @@
                         <button class="ql-strike"></button>
                         <button class="ql-link"></button>
                         <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                        <select class="ql-align"></select>
                     </span>
 
                     <span class="ql-formats">
                         <button class="ql-code"></button>
-                        <button class="ql-code-block"></button>
                         <button class="ql-blockquote"></button>
                         <button class="ql-image"></button>
+                        <button class="ql-video"></button>
                     </span>
 
                     <span class="ql-formats">
@@ -56,7 +56,7 @@
                     </span>
                 </div>
 
-                <div id="editor" style="height:450px; font-size: 16px"></div>
+                <div id="editor" style="height:450px; font-size: 18px"></div>
                 <p class="field-error mt-2" th:errors="*{content}"></p>
                 <p class="field-error mt-2" th:errors="*{storeFileNames}"></p>
 

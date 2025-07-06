@@ -40,14 +40,6 @@
 }
 
 /* 본문 */
-.content {
-    padding: 1rem 1rem 1rem 0;
-    white-space: pre-wrap;
-    font-size: .95rem;
-    line-height: 1.6;
-    overflow-wrap: break-word;
-    word-break: break-all;
-}
 
 /* 게시물 좋아요, 싫어요 버튼 */
 .action-buttons {
@@ -377,4 +369,16 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
+}
+
+.ql-editor .ql-video,
+.ql-editor iframe,
+.ql-editor video {
+    /* 너비는 컨테이너(=에디터) 전체에 딱 맞추고 */
+    width: 100% !important;
+    max-width: 100% !important;
+
+    /* 높이는 원본 가로세로비(aspect ratio)대로 자동 */
+    aspect-ratio: 16 / 9;       /* 필요하다면 4/3 등 다른 비율로 변경 */
+    height: auto !important;
 }

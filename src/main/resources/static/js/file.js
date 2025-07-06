@@ -48,13 +48,12 @@ $(document).ready(function () {
         modules: {
             toolbar: { container: '#toolbar', handlers: { image: imageHandler } }
         },
-        placeholder: '내용을 입력해 주세요.',
         theme: 'snow'
     });
 
     // 8) 수정 모드일 때 기존 컨텐츠 로드 & existingFileNames 채우기
     if (window.board_content) {
-        const clean = DOMPurify.sanitize(window.board_content);
+        const clean = DOMPurify.sanitize(window.board_content, {ADD_TAGS: ['iframe']});
         quill.clipboard.dangerouslyPasteHTML(clean);
         quill.root.querySelectorAll('img').forEach(img => {
             const name = img.getAttribute('src').split('/').pop();
