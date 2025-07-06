@@ -31,8 +31,28 @@
 
     <th:block th:replace="${links}"></th:block>
     <th:block th:replace="${scripts}"></th:block>
+
+    <style>
+        html {
+            height: 100%;
+        }
+
+        .layout-root {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* 뷰포트 전체 높이 */
+        }
+
+        .layout-main {
+            flex: 1 0 auto;
+        }
+
+        .layout-footer {
+            margin-top: auto;
+        }
+    </style>
 </head>
-<body>
+<body class="layout-root">
 
 <nav class="navbar navbar-light bg-white border-bottom py-3">
     <div class="container d-flex justify-content-between">
@@ -57,10 +77,27 @@
     </div>
 </nav>
 
-<main th:insert="${content}">메인 컨텐츠</main>
+<main class="layout-main" th:insert="${content}">메인 컨텐츠</main>
 
-<footer>
+<footer class="site-footer layout-footer">
 
+    <div class="footer-nav">
+        <div class="container d-flex align-items-center">
+            <span class="footer-brand">자유게시판</span>
+            <span class="footer-sep">|</span>
+            <a href="/privacy" class="footer-link">개인정보처리방침</a>
+            <span class="footer-sep">|</span>
+            <a href="/terms" class="footer-link">이용약관</a>
+        </div>
+    </div>
+
+    <div class="footer-info">
+        <div class="container">
+            <p>(주)자유게시판 | 대표자: 성재혁</p>
+            <p>개인정보보호책임자: 성재혁 | 이메일: seong5763@gmail.com</p>
+            <p class="copyright">©자유게시판. ALL RIGHTS RESERVED</p>
+        </div>
+    </div>
 </footer>
 
 </body>

@@ -152,8 +152,14 @@
         const raw = /*[[${dto.boardContent}]]*/ '';
         const clean = DOMPurify.sanitize(raw, {ADD_TAGS: ['iframe']});
 
-        console.log(raw);
-        console.log(clean);
+        const BlockEmbed = Quill.import('blots/block/embed');
+
+        class DividerBlot extends BlockEmbed {
+            static blotName = 'divider';
+            static tagName = 'hr';
+        }
+
+        Quill.register(DividerBlot);
 
         const quill = new Quill('#editor', {
             modules: {toolbar: false},

@@ -44,11 +44,28 @@ $(document).ready(function () {
     }
 
     // 7) Quill 초기화
+    const BlockEmbed = Quill.import('blots/block/embed');
+
+    class DividerBlot extends BlockEmbed {
+        static blotName = 'divider';
+        static tagName = 'hr';
+    }
+
+    Quill.register(DividerBlot);
+
     const quill = new Quill('#editor', {
         modules: {
             toolbar: { container: '#toolbar', handlers: { image: imageHandler } }
         },
         theme: 'snow'
+    });
+
+    // Quill 생성 후 바로
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('divider', function() {
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, 'divider', true, Quill.sources.USER);
+        quill.setSelection(range.index + 1, Quill.sources.SILENT);
     });
 
     // 8) 수정 모드일 때 기존 컨텐츠 로드 & existingFileNames 채우기
