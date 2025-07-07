@@ -1,7 +1,8 @@
 package hello.board.controller.api.upload_file;
 
-import hello.board.entity.board.FileStore;
+import hello.board.entity.FileStore;
 import hello.board.entity.board.UploadFile;
+import hello.board.exception.EmptyFileException;
 import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.service.upload_file.UploadFileService;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,12 @@ public class FileApiController {
 
     @PostMapping("/file")
     public ResponseEntity<UploadFileDto> uploadImage(@RequestParam MultipartFile multipartFile) {
-        UploadFile uploadFile = fileStore.storeFile(multipartFile);
-        UploadFileDto uploadFileDto = uploadFileService.saveUploadFile(uploadFile);
+
+        String storeFileName = fileStore.storeFile(multipartFile)
+                .orElseThrow(() -> new EmptyFileException("파일저장 실패, 전달된 파일이 없습니다."));
+
+        UploadFileDto uploadFileDto = uploadFileService
+                .saveUploadFile(new UploadFile(multipartFile.getOriginalFilename(), storeFileName));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

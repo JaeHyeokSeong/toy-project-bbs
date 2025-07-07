@@ -2,16 +2,10 @@
    Site Footer 공통
 ────────────────────────────────────────── */
 .site-footer {
-    background-color: #212529;
-    color: #aaa;
+    background-color: #fff;
+    color: #151414;
     font-size: 0.75rem;
     line-height: 1.5;
-}
-
-/* ─── 상단 (브랜드 + 링크) ─── */
-.footer-nav {
-    border-bottom: 1px solid #3c3c3c;
-    padding: 1rem 0;
 }
 
 /* ─── 하단 (회사 정보) ─── */
@@ -21,25 +15,25 @@
 
 .footer-info p {
     margin: 0.2rem 0;
-    color: #888;
+    color: #151414;
 }
 
 .footer-info .copyright {
     margin-top: 0.5rem;
-    color: #888;
+    color: #151414;
 }
 
 /* 상단 내비게이션: 구분자(|) 사이 여백 및 색상 */
 .footer-nav .footer-sep {
     margin: 0 .5rem;
-    color: #aaa;
+    color: #151414;
     user-select: none;
 }
 
 /* 링크 · 브랜드 공통 스타일 */
 .footer-nav .footer-brand,
 .footer-nav .footer-link {
-    color: #aaa;
+    color: #151414;
     text-decoration: none;
     font-size: 0.875rem;
 }
@@ -47,19 +41,10 @@
 /* 브랜드만 좀 더 강조 */
 .footer-nav .footer-brand {
     font-weight: bold;
-    color: #fff;
+    color: #151414;
 }
 
 /* 링크 호버 시 강조색 */
 .footer-nav .footer-link:hover {
-    color: #fff;
-}
-
-/* 모바일 대응: 아주 좁은 화면에서는 링크들 줄바꿈 */
-@media (max-width: 576px) {
-    .footer-nav .d-flex {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+    color: #151414;
 }

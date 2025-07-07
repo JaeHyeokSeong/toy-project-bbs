@@ -1,6 +1,6 @@
 package hello.board.service.board;
 
-import hello.board.entity.board.FileStore;
+import hello.board.entity.FileStore;
 import hello.board.repository.board.BoardRepository;
 import hello.board.repository.board_reaction.BoardReactionRepository;
 import hello.board.repository.comment.CommentRepository;

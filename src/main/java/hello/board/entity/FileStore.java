@@ -1,4 +1,4 @@
-package hello.board.entity.board;
+package hello.board.entity;
 
 import hello.board.exception.SaveFileException;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,8 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -21,21 +20,10 @@ public class FileStore {
         return fileDir + fileName;
     }
 
-    public List<UploadFile> storeFiles(List<MultipartFile> multipartFiles) {
-        List<UploadFile> uploadFiles = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            UploadFile uploadFile = storeFile(multipartFile);
-            if (uploadFile != null) {
-                uploadFiles.add(uploadFile);
-            }
-        }
-        return uploadFiles;
-    }
-
-    public UploadFile storeFile(MultipartFile multipartFile) {
+    public Optional<String> storeFile(MultipartFile multipartFile) {
         //파일이 들어있는지 검사하기
         if (multipartFile.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         String originalFilename = multipartFile.getOriginalFilename();
@@ -43,14 +31,15 @@ public class FileStore {
         try {
             multipartFile.transferTo(new File(getFullPath(storeFileName)));
         } catch (IOException e) {
-            throw new SaveFileException(e);
+            throw new SaveFileException("파일을 저장하는 과정에서 예외가 발생했습니다.", e);
         }
-        return new UploadFile(originalFilename, storeFileName);
+
+        return Optional.of(storeFileName);
     }
 
     private String createStoreFileName(String originalFileName) {
         String ext = extractExt(originalFileName);
-        return UUID.randomUUID().toString() + "." + ext;
+        return UUID.randomUUID() + "." + ext;
     }
 
     private String extractExt(String originalFileName) {
