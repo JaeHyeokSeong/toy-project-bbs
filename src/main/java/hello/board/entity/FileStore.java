@@ -46,4 +46,9 @@ public class FileStore {
         int pos = originalFileName.lastIndexOf(".");
         return originalFileName.substring(pos + 1);
     }
+
+    public boolean deleteFile(String storeFileName) {
+        File file = new File(getFullPath(storeFileName));
+        return file.delete();
+    }
 }
