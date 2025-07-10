@@ -27,7 +27,6 @@ public class MemberThumbnailFileService {
      * @param storeFileName
      * @return 삭제해야할 storeFileName을 리턴함, 만약에 삭제할 파일이 없을 경우에는 Optional.empty()를 반환함
      * @throws MemberNotFoundException 전달된 memberId로 회원을 찾지 못한 경우
-     * @throws EmptyFileException      전달된 multipartFile에 저장할 파일이 없는 경우
      */
     public Optional<String> changeMemberThumbnailFile(Long memberId, String originalFileName, String storeFileName) {
 
