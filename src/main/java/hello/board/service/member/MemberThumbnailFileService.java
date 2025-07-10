@@ -2,7 +2,6 @@ package hello.board.service.member;
 
 import hello.board.entity.member.Member;
 import hello.board.entity.member.MemberThumbnailFile;
-import hello.board.exception.EmptyFileException;
 import hello.board.exception.MemberNotFoundException;
 import hello.board.repository.member.MemberThumbnailFileRepository;
 import lombok.RequiredArgsConstructor;
