@@ -56,8 +56,9 @@ public class CommentApiController {
         return new ResponseResult(HttpStatus.OK.toString(), "", responseData);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/comment/{boardId}")
-    public ResponseEntity<AddCommentResultDto> addComment(@Valid @RequestBody AddCommentDto dto,
+    public ResponseResult addComment(@Valid @RequestBody AddCommentDto dto,
                                                           BindingResult bindingResult,
                                                           @PathVariable Long boardId,
                                                           @SessionAttribute(MEMBER_ID) Long memberId) {
@@ -67,7 +68,12 @@ public class CommentApiController {
         }
 
         Comment comment = commentService.addComment(boardId, memberId, dto.getContent(), dto.getParentCommentId());
-        return new ResponseEntity<>(new AddCommentResultDto(comment), HttpStatus.CREATED);
+
+        return new ResponseResult(
+                HttpStatus.CREATED.toString(),
+                "comment 등록 완료.",
+                new AddCommentResultDto(comment)
+        );
     }
 
     @PutMapping("/comment/{commentId}")
