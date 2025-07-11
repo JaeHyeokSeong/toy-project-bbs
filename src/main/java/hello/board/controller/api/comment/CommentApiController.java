@@ -69,15 +69,12 @@ public class CommentApiController {
 
         Comment comment = commentService.addComment(boardId, memberId, dto.getContent(), dto.getParentCommentId());
 
-        return new ResponseResult(
-                HttpStatus.CREATED.toString(),
-                "comment 등록 완료.",
-                new AddCommentResultDto(comment)
-        );
+        return new ResponseResult(HttpStatus.CREATED.toString(), "comment 등록 완료.", new AddCommentResultDto(comment));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/comment/{commentId}")
-    public ResponseEntity<UpdateCommentResultDto> updateComment(@Valid @RequestBody UpdateCommentDto dto,
+    public ResponseResult updateComment(@Valid @RequestBody UpdateCommentDto dto,
                                                                 BindingResult bindingResult,
                                                                 @SessionAttribute(MEMBER_ID) Long memberId,
                                                                 @PathVariable Long commentId) {
@@ -94,7 +91,7 @@ public class CommentApiController {
                 memberId,
                 dto.getContent());
 
-        return new ResponseEntity<>(updatedComment, HttpStatus.OK);
+        return new ResponseResult(HttpStatus.OK.toString(), "comment 수정 완료.", updatedComment);
     }
 
     @DeleteMapping("/comment/{commentId}")
