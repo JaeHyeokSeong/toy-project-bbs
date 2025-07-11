@@ -1,5 +1,6 @@
 package hello.board.controller.api.upload_file;
 
+import hello.board.dto.ResponseResult;
 import hello.board.entity.FileStore;
 import hello.board.entity.board.UploadFile;
 import hello.board.exception.EmptyFileException;
@@ -29,7 +30,7 @@ public class FileApiController {
     private final FileStore fileStore;
 
     @PostMapping("/file")
-    public ResponseEntity<UploadFileDto> uploadImage(@RequestParam MultipartFile multipartFile) {
+    public ResponseEntity<ResponseResult> uploadImage(@RequestParam MultipartFile multipartFile) {
 
         String storeFileName = fileStore.storeFile(multipartFile)
                 .orElseThrow(() -> new EmptyFileException("파일저장 실패, 전달된 파일이 없습니다."));
@@ -41,7 +42,7 @@ public class FileApiController {
                 .status(HttpStatus.CREATED)
                 .cacheControl(CacheControl.noCache())
                 .lastModified(uploadFileDto.getLastModifiedDate().atZone(ZoneId.of("Asia/Seoul")))
-                .body(uploadFileDto);
+                .body(new ResponseResult(HttpStatus.CREATED.toString(), "게시물 파일 업로드 완료.", uploadFileDto));
     }
 
     @GetMapping("/files/{storeFileName}")

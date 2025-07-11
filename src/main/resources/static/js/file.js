@@ -35,7 +35,7 @@ $(document).ready(function () {
                 return res.json();
             })
             .then(dto => {
-                const url = '/api/files/' + dto.storeFileName;
+                const url = '/api/files/' + dto.data.storeFileName;
                 const range = quill.getSelection(true);
                 quill.insertEmbed(range.index, 'image', url);
                 quill.setSelection(range.index + 1);
