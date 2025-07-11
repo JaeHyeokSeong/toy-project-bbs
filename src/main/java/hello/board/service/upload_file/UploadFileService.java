@@ -1,7 +1,7 @@
 package hello.board.service.upload_file;
 
 import hello.board.entity.board.UploadFile;
-import hello.board.exception.UploadFileNotFound;
+import hello.board.exception.UploadFileNotFoundException;
 import hello.board.repository.upload_file.UploadFileRepository;
 import hello.board.repository.upload_file.dto.UploadFileDto;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +22,11 @@ public class UploadFileService {
     }
 
     /**
-     * @throws UploadFileNotFound storeFileName으로 못찾은 경우
+     * @throws UploadFileNotFoundException storeFileName으로 못찾은 경우
      */
     public UploadFileDto findUploadFileDto(String storeFileName) {
         UploadFile uploadFile = uploadFileRepository.findByStoreFileName(storeFileName)
-                .orElseThrow(() -> new UploadFileNotFound("존재하지 않는 파일입니다. 전달된 파일명=" + storeFileName));
+                .orElseThrow(() -> new UploadFileNotFoundException("존재하지 않는 파일입니다. 전달된 파일명=" + storeFileName));
         return new UploadFileDto(uploadFile);
     }
 }

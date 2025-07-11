@@ -3,7 +3,6 @@ package hello.board.service.member;
 import hello.board.entity.member.Member;
 import hello.board.repository.member.query.MemberThumbnailFileQueryRepository;
 import hello.board.repository.member.query.dto.MemberThumbnailFileQueryDto;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,7 +38,7 @@ class MemberThumbnailFileServiceTest {
 
         //then
         Optional<MemberThumbnailFileQueryDto> result = memberThumbnailFileQueryRepository
-                .findMemberThumbnailFileByStoreFileName(storeFileName);
+                .findMemberThumbnailFile(member.getId(), storeFileName);
         assertThat(result.isPresent()).isTrue();
         assertThat(result.get().getOriginalFileName()).isEqualTo(originalFileName);
         assertThat(result.get().getStoreFileName()).isEqualTo(storeFileName);
@@ -67,9 +66,9 @@ class MemberThumbnailFileServiceTest {
         assertThat(deleteStoreFileName).isPresent();
         assertThat(deleteStoreFileName.get()).isEqualTo(storeFileName);
         assertThat(memberThumbnailFileQueryRepository
-                .findMemberThumbnailFileByStoreFileName(storeFileName).isEmpty()).isTrue();
+                .findMemberThumbnailFile(member.getId(), storeFileName).isEmpty()).isTrue();
         Optional<MemberThumbnailFileQueryDto> result = memberThumbnailFileQueryRepository
-                .findMemberThumbnailFileByStoreFileName(newStoreFileName);
+                .findMemberThumbnailFile(member.getId(), newStoreFileName);
         assertThat(result.isPresent()).isTrue();
         assertThat(result.get().getOriginalFileName()).isEqualTo(newOriginalFileName);
         assertThat(result.get().getStoreFileName()).isEqualTo(newStoreFileName);

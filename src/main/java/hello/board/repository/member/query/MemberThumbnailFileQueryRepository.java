@@ -19,7 +19,7 @@ public class MemberThumbnailFileQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Optional<MemberThumbnailFileQueryDto> findMemberThumbnailFileByStoreFileName(String storeFileName) {
+    public Optional<MemberThumbnailFileQueryDto> findMemberThumbnailFile(Long memberId, String storeFileName) {
         MemberThumbnailFileQueryDto data = queryFactory.select(Projections.fields(MemberThumbnailFileQueryDto.class,
                         memberThumbnailFile.id.as("memberThumbnailFileId"),
                         memberThumbnailFile.originalFileName,
@@ -29,7 +29,7 @@ public class MemberThumbnailFileQueryRepository {
                         memberThumbnailFile.member.id
                 ))
                 .from(memberThumbnailFile)
-                .where(memberThumbnailFile.storeFileName.eq(storeFileName))
+                .where(memberThumbnailFile.member.id.eq(memberId), memberThumbnailFile.storeFileName.eq(storeFileName))
                 .fetchOne();
 
         return Optional.ofNullable(data);
