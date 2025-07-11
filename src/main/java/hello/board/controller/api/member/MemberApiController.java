@@ -1,7 +1,7 @@
 package hello.board.controller.api.member;
 
 import hello.board.SessionConst;
-import hello.board.controller.api.member.dto.MemberProfileDto;
+import hello.board.dto.ResponseResult;
 import hello.board.entity.FileStore;
 import hello.board.repository.member.query.dto.MemberQueryDto;
 import hello.board.repository.member.query.dto.MemberThumbnailFileQueryDto;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +34,12 @@ public class MemberApiController {
     private final MemberThumbnailFileQueryService memberThumbnailFileQueryService;
 
     @GetMapping("/profile")
-    public MemberProfileDto profile(@SessionAttribute(value = SessionConst.MEMBER_ID, required = false) Long memberId,
-                                    HttpServletRequest request) {
+    public ResponseResult profile(@SessionAttribute(value = SessionConst.MEMBER_ID, required = false) Long memberId,
+                                  HttpServletRequest request) {
 
         //비로그인 회원 접근
         if (memberId == null) {
-            return new MemberProfileDto("비로그인 회원", null);
+            return new ResponseResult(HttpStatus.OK.toString(), "비로그인 회원", null);
         }
 
         Optional<MemberQueryDto> findMember = memberQueryService.findMember(memberId);
@@ -46,11 +47,11 @@ public class MemberApiController {
         if (findMember.isEmpty()) {
             HttpSession session = request.getSession(false);
             session.invalidate();
-            return new MemberProfileDto("비로그인 회원", null);
+            return new ResponseResult(HttpStatus.OK.toString(), "비로그인 회원", null);
         }
 
         //로그인 회원 접근
-        return new MemberProfileDto("로그인 회원", findMember.get());
+        return new ResponseResult(HttpStatus.OK.toString(), "로그인 회원", findMember.get());
     }
 
     @GetMapping("/thumbnails/{memberId}/{storeFileName}")
