@@ -72,7 +72,6 @@ public class CommentApiController {
         return new ResponseResult(HttpStatus.CREATED.toString(), "comment 등록 완료.", new AddCommentResultDto(comment));
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/comment/{commentId}")
     public ResponseResult updateComment(@Valid @RequestBody UpdateCommentDto dto,
                                                                 BindingResult bindingResult,
@@ -95,12 +94,11 @@ public class CommentApiController {
     }
 
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<DeleteCommentResultDto> deleteComment(@PathVariable Long commentId,
+    public ResponseResult deleteComment(@PathVariable Long commentId,
                                                                 @SessionAttribute(MEMBER_ID) Long memberId) {
 
         commentService.deleteComment(commentId, memberId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new DeleteCommentResultDto(commentId, "deleted"));
+
+        return new ResponseResult(HttpStatus.OK.toString(), "comment 삭제 완료.", new DeleteCommentResultDto(commentId, "deleted"));
     }
 }
