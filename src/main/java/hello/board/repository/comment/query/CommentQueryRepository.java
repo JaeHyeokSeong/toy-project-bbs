@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import hello.board.dto.ResponseData;
 import hello.board.entity.ReactionType;
 import hello.board.entity.comment.QComment;
 import hello.board.entity.comment.QCommentReaction;
@@ -37,7 +38,7 @@ public class CommentQueryRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public Page<CommentDto> findAllComments(Long boardId, @Nullable Long memberId,
+    public ResponseData findAllComments(Long boardId, @Nullable Long memberId,
                                             CommentSearchDto searchDto, Pageable pageable) {
 
         StringPath totalLikesPlusTotalDislikes = Expressions.stringPath("totalLikesPlusTotalDislikes");
@@ -93,10 +94,30 @@ public class CommentQueryRepository {
             for (int i = 0; i < pageable.getPageSize(); i++) {
                 recreatedContent.add(content.get(i));
             }
-            return new PageImpl<>(recreatedContent, pageable, count);
+
+            Page<CommentDto> page = new PageImpl<>(recreatedContent, pageable, count);
+            return new ResponseData(
+                    page.getNumber(),
+                    page.getSize(),
+                    page.getTotalElements(),
+                    page.getTotalPages(),
+                    page.isFirst(),
+                    page.isLast(),
+                    recreatedContent
+            );
+
         }
 
-        return new PageImpl<>(content, pageable, count);
+        PageImpl<CommentDto> page = new PageImpl<>(content, pageable, count);
+        return new ResponseData(
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isFirst(),
+                page.isLast(),
+                content
+        );
     }
 
     private BooleanExpression parentCommentIdEq(Long parentCommentId) {

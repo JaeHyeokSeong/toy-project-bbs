@@ -1,6 +1,6 @@
 package hello.board.controller.api.board_reaction;
 
-import hello.board.controller.dto.ErrorResult;
+import hello.board.dto.ResponseResult;
 import hello.board.exception.BoardNotFoundException;
 import hello.board.exception.MemberNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -14,20 +14,21 @@ public class BoardReactionExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult boardNotFoundEx(BoardNotFoundException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    public ResponseResult boardNotFoundEx(BoardNotFoundException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult memberNotFoundEx(MemberNotFoundException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    public ResponseResult memberNotFoundEx(MemberNotFoundException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult methodArgumentTypeMismatchEx(MethodArgumentTypeMismatchException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(),
+    public ResponseResult methodArgumentTypeMismatchEx(MethodArgumentTypeMismatchException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(),
+                "요청 값에 문제가 있습니다.",
                 "올바른 형식의 boardId가 아닙니다. 전달된 boardId: " + e.getValue());
     }
 }

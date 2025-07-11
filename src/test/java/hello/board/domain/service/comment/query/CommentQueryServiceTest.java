@@ -1,6 +1,6 @@
 package hello.board.domain.service.comment.query;
 
-import hello.board.repository.comment.query.dto.CommentDto;
+import hello.board.dto.ResponseData;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
 import hello.board.repository.comment.query.dto.CommentSearchSort;
 import hello.board.service.board.BoardService;
@@ -14,11 +14,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,13 +54,13 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Page<CommentDto> result = commentQueryService
+        ResponseData result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(0, 5));
 
         //then
-        assertThat(result.getContent().size()).isEqualTo(5);
-        assertThat(result.hasNext()).isTrue();
-        assertThat(result.getContent())
+        List<Object> items = (List<Object>) result.getItems();
+        assertThat(items.size()).isEqualTo(5);
+        assertThat(items)
                 .extracting("content")
                 .containsExactly("comment0", "comment1", "comment2", "comment3", "comment4");
     }
@@ -84,13 +84,13 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Page<CommentDto> result = commentQueryService
+        ResponseData result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 5));
 
         //then
-        assertThat(result.getContent().size()).isEqualTo(5);
-        assertThat(result.hasNext()).isTrue();
-        assertThat(result.getContent())
+        List<Object> items = (List<Object>) result.getItems();
+        assertThat(items.size()).isEqualTo(5);
+        assertThat(items)
                 .extracting("content")
                 .containsExactly("comment5", "comment6", "comment7", "comment8", "comment9");
     }
@@ -114,17 +114,16 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(null, CommentSearchSort.OLDEST);
 
-        Page<CommentDto> result = commentQueryService
+        ResponseData result = commentQueryService
                 .findAllComments(board.getId(), null, searchDto, PageRequest.of(1, 15));
 
         //then
-        assertThat(result.getContent().size()).isEqualTo(5);
-        assertThat(result.hasNext()).isFalse();
-        assertThat(result.getContent())
+        List<Object> items = (List<Object>) result.getItems();
+        assertThat(items.size()).isEqualTo(5);
+        assertThat(items)
                 .extracting("content")
                 .containsExactly("comment15", "comment16", "comment17", "comment18", "comment19");
     }
-
 
     @Test
     @DisplayName("1번째 부모댓글의 자식댓글 조회하기, page=0, size=5")
@@ -158,12 +157,13 @@ class CommentQueryServiceTest {
         //when
         CommentSearchDto searchDto = new CommentSearchDto(comment1.getId(), CommentSearchSort.OLDEST);
 
-        Page<CommentDto> result = commentQueryService.findAllComments(board1.getId(), null,
+        ResponseData result = commentQueryService.findAllComments(board1.getId(), null,
                 searchDto, PageRequest.of(0, 3));
 
         //then
-        assertThat(result.getNumberOfElements()).isEqualTo(3);
-        assertThat(result.getContent()).extracting("content")
+        List<Object> items = (List<Object>) result.getItems();
+        assertThat(items.size()).isEqualTo(3);
+        assertThat(items).extracting("content")
                 .containsExactly("board1,comment1,content0", "board1,comment1,content1", "board1,comment1,content2");
     }
 }

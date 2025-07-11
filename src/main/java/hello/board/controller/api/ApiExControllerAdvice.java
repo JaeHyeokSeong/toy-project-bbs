@@ -1,7 +1,7 @@
 package hello.board.controller.api;
 
 import hello.board.exception.BindingResultException;
-import hello.board.controller.dto.ErrorResult;
+import hello.board.dto.ResponseResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -21,13 +21,13 @@ public class ApiExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult bindingResultEx(BindingResultException e) {
+    public ResponseResult bindingResultEx(BindingResultException e) {
 
         List<ObjectError> errors = e.getErrors();
         List<String> message = errors.stream()
                 .map(oe -> messageSource.getMessage(oe, Locale.KOREAN))
                 .toList();
 
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), message);
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", message);
     }
 }

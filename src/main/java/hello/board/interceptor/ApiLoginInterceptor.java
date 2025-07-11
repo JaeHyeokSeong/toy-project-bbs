@@ -3,7 +3,7 @@ package hello.board.interceptor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.board.SessionConst;
 import hello.board.service.member.MemberService;
-import hello.board.controller.dto.ErrorResult;
+import hello.board.dto.ResponseResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -28,8 +28,12 @@ public class ApiLoginInterceptor implements HandlerInterceptor {
         }
 
         //비로그인 사용자 접근
-        ErrorResult errorResult = new ErrorResult(HttpStatus.UNAUTHORIZED.toString(), "로그인이 필요합니다.");
-        String value = objectMapper.writeValueAsString(errorResult);
+        ResponseResult responseResult = new ResponseResult(
+                HttpStatus.UNAUTHORIZED.toString(),
+                "접근 권한이 없습니다.",
+                "로그인이 필요합니다.");
+
+        String value = objectMapper.writeValueAsString(responseResult);
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");

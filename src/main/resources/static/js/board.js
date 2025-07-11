@@ -183,10 +183,10 @@ $(document).ready(function () {
         })
             .done(data => {
 
-                $("#comment-count").text(`답변 ${data.totalElements}개`);
-                isLast = data.last;
+                $("#comment-count").text(`답변 ${data.data.totalCount}개`);
+                isLast = data.data.last;
 
-                if (page === 0 && data.content.length === 0) {
+                if (page === 0 && data.data.totalCount === 0) {
                     $("#comments-container").html(`
                     <div class="no-comments">
                         답변을 기다리고 있는 게시물이에요<br>
@@ -195,7 +195,7 @@ $(document).ready(function () {
                     return;
                 }
 
-                data.content.forEach(c => {
+                data.data.items.forEach(c => {
                     const safeContent = $('<div>').text(c.content).html();
 
                     const upIconClass = c.reactionType === 'LIKE'
@@ -321,9 +321,9 @@ $(document).ready(function () {
             }
         })
             .done(data => {
-                $replyBtn.html(`<i class="bi bi-chevron-up ms-1"></i>&nbsp&nbsp답글 ${data.totalElements}개`);
-                isLast = data.last;
-                data.content.forEach(c => {
+                $replyBtn.html(`<i class="bi bi-chevron-up ms-1"></i>&nbsp&nbsp답글 ${data.data.totalCount}개`);
+                isLast = data.data.last;
+                data.data.items.forEach(c => {
                     const safe = $('<div>').text(c.content).html();
                     const upCls = c.reactionType === 'LIKE' ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up';
                     const downCls = c.reactionType === 'DISLIKE' ? 'bi-hand-thumbs-down-fill' : 'bi-hand-thumbs-down';

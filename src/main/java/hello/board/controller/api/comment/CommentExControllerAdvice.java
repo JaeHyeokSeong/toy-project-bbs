@@ -1,6 +1,6 @@
 package hello.board.controller.api.comment;
 
-import hello.board.controller.dto.ErrorResult;
+import hello.board.dto.ResponseResult;
 import hello.board.exception.BoardNotFoundException;
 import hello.board.exception.CommentNotFoundException;
 import hello.board.exception.MemberNotFoundException;
@@ -14,19 +14,19 @@ public class CommentExControllerAdvice {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult commentNotFoundEx(CommentNotFoundException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    public ResponseResult commentNotFoundEx(CommentNotFoundException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult memberNotFoundEx(MemberNotFoundException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    public ResponseResult memberNotFoundEx(MemberNotFoundException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public ErrorResult boardNotFoundEx(BoardNotFoundException e) {
-        return new ErrorResult(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    public ResponseResult boardNotFoundEx(BoardNotFoundException e) {
+        return new ResponseResult(HttpStatus.BAD_REQUEST.toString(), "요청 값에 문제가 있습니다.", e.getMessage());
     }
 }

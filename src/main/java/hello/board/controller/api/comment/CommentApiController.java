@@ -4,6 +4,8 @@ import hello.board.controller.api.comment.dto.AddCommentDto;
 import hello.board.controller.api.comment.dto.AddCommentResultDto;
 import hello.board.controller.api.comment.dto.DeleteCommentResultDto;
 import hello.board.controller.api.comment.dto.UpdateCommentDto;
+import hello.board.dto.ResponseData;
+import hello.board.dto.ResponseResult;
 import hello.board.repository.comment.query.dto.CommentDto;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
 import hello.board.service.comment.CommentService;
@@ -37,11 +39,11 @@ public class CommentApiController {
     private final CommentQueryService commentQueryService;
 
     @GetMapping("/comments/{boardId}")
-    public Page<CommentDto> findCommentDtoList(@Valid @ModelAttribute CommentSearchDto searchDto,
-                                               BindingResult bindingResult,
-                                               @PathVariable Long boardId,
-                                               @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
-                                               Pageable pageable) {
+    public ResponseResult findCommentDtoList(@Valid @ModelAttribute CommentSearchDto searchDto,
+                                             BindingResult bindingResult,
+                                             @PathVariable Long boardId,
+                                             @SessionAttribute(value = MEMBER_ID, required = false) Long memberId,
+                                             Pageable pageable) {
 
         log.info("comment 검색 전달되어진 값={}", searchDto);
 
@@ -50,7 +52,8 @@ public class CommentApiController {
             throw new BindingResultException(bindingResult.getAllErrors());
         }
 
-        return commentQueryService.findAllComments(boardId, memberId, searchDto, pageable);
+        ResponseData responseData = commentQueryService.findAllComments(boardId, memberId, searchDto, pageable);
+        return new ResponseResult(HttpStatus.OK.toString(), "", responseData);
     }
 
     @PostMapping("/comment/{boardId}")
