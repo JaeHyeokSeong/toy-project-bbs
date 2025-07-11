@@ -6,21 +6,17 @@ import hello.board.controller.api.comment.dto.DeleteCommentResultDto;
 import hello.board.controller.api.comment.dto.UpdateCommentDto;
 import hello.board.dto.ResponseData;
 import hello.board.dto.ResponseResult;
-import hello.board.repository.comment.query.dto.CommentDto;
+import hello.board.entity.comment.Comment;
+import hello.board.exception.BindingResultException;
 import hello.board.repository.comment.query.dto.CommentSearchDto;
 import hello.board.service.comment.CommentService;
 import hello.board.service.comment.dto.UpdateCommentResultDto;
 import hello.board.service.comment.query.CommentQueryService;
-import hello.board.entity.comment.Comment;
-import hello.board.exception.BindingResultException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -59,9 +55,9 @@ public class CommentApiController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/comment/{boardId}")
     public ResponseResult addComment(@Valid @RequestBody AddCommentDto dto,
-                                                          BindingResult bindingResult,
-                                                          @PathVariable Long boardId,
-                                                          @SessionAttribute(MEMBER_ID) Long memberId) {
+                                     BindingResult bindingResult,
+                                     @PathVariable Long boardId,
+                                     @SessionAttribute(MEMBER_ID) Long memberId) {
 
         if (bindingResult.hasErrors()) {
             throw new BindingResultException(bindingResult.getAllErrors());
@@ -74,9 +70,9 @@ public class CommentApiController {
 
     @PutMapping("/comment/{commentId}")
     public ResponseResult updateComment(@Valid @RequestBody UpdateCommentDto dto,
-                                                                BindingResult bindingResult,
-                                                                @SessionAttribute(MEMBER_ID) Long memberId,
-                                                                @PathVariable Long commentId) {
+                                        BindingResult bindingResult,
+                                        @SessionAttribute(MEMBER_ID) Long memberId,
+                                        @PathVariable Long commentId) {
 
         log.info("comment 수정, 전달되어진 값={}", dto);
 
@@ -95,7 +91,7 @@ public class CommentApiController {
 
     @DeleteMapping("/comment/{commentId}")
     public ResponseResult deleteComment(@PathVariable Long commentId,
-                                                                @SessionAttribute(MEMBER_ID) Long memberId) {
+                                        @SessionAttribute(MEMBER_ID) Long memberId) {
 
         commentService.deleteComment(commentId, memberId);
 
