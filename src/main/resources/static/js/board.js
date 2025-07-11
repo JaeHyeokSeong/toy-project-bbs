@@ -126,7 +126,7 @@ $(document).ready(function () {
         })
             .done(dto => {
                 // 1) 이 댓글의 카운트만 갱신
-                $count.text(dto.totalReactionCounts);
+                $count.text(dto.data.totalReactionCounts);
 
                 // 2) 이 버튼만 토글, 반대 버튼은 리셋
                 if (isUp) {
