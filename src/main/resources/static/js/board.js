@@ -35,7 +35,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({reactionType: 'LIKE'}),
             success: function (response) {
-                $("#total-reaction-ct").text(response.totalReactionCounts);
+                $("#total-reaction-ct").text(response.data.totalReactionCounts);
             },
             error: function (xhr, status, error) {
                 alert('좋아요 응답이 실패했습니다. 나중에 다시 시도해 주세요.');
@@ -70,7 +70,7 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({reactionType: 'DISLIKE'}),
             success: function (response) {
-                $("#total-reaction-ct").text(response.totalReactionCounts);
+                $("#total-reaction-ct").text(response.data.totalReactionCounts);
             },
             error: function (xhr, status, error) {
                 alert('좋아요 응답이 실패했습니다. 나중에 다시 시도해 주세요.');

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comment-reaction")
-public class CommentReactionApi {
+public class CommentReactionApiController {
 
     private final CommentReactionService commentReactionService;
 
