@@ -1,26 +1,31 @@
 package hello.board.controller.api.upload_file;
 
+import hello.board.controller.api.upload_file.dto.AddBoardFileDto;
 import hello.board.dto.ResponseResult;
 import hello.board.entity.FileStore;
 import hello.board.entity.board.UploadFile;
+import hello.board.exception.BindingResultException;
 import hello.board.exception.EmptyFileException;
 import hello.board.repository.upload_file.dto.UploadFileDto;
 import hello.board.service.upload_file.UploadFileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 
+@Slf4j
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -30,13 +35,19 @@ public class FileApiController {
     private final FileStore fileStore;
 
     @PostMapping("/file")
-    public ResponseEntity<ResponseResult> uploadImage(@RequestParam MultipartFile multipartFile) {
+    public ResponseEntity<ResponseResult> uploadImage(@Valid @ModelAttribute AddBoardFileDto dto,
+                                                      BindingResult bindingResult) {
 
-        String storeFileName = fileStore.storeFile(multipartFile)
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            throw new BindingResultException(bindingResult.getAllErrors());
+        }
+
+        String storeFileName = fileStore.storeFile(dto.getMultipartFile())
                 .orElseThrow(() -> new EmptyFileException("파일저장 실패, 전달된 파일이 없습니다."));
 
         UploadFileDto uploadFileDto = uploadFileService
-                .saveUploadFile(new UploadFile(multipartFile.getOriginalFilename(), storeFileName));
+                .saveUploadFile(new UploadFile(dto.getMultipartFile().getOriginalFilename(), storeFileName));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
