@@ -30,7 +30,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/api/board-reaction/*",
                         "/api/comment/*",
                         "/api/comment-reaction/*",
-                        "/api/file"
+                        "/api/file",
+                        "/api/member/thumbnail"
                 );
     }
 }
